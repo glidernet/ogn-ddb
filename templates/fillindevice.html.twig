@@ -1,0 +1,71 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+
+<DIV style="margin-left: auto; margin-right: auto; width:450px">
+<CENTER>
+    <FORM action="index.php" ENCTYPE="multipart/form-data" method="post">
+        <INPUT type="hidden" name="action" value="createdev">
+        <H2>{{ lang.input_createdev }}</H2>
+        {% if error!="" %}<H3 style="color:red">{{ error }}</H3>{% endif %}
+        <TABLE>
+            <TR>
+                <TD class="inp">{{ lang.table_devtype }}</TD>
+                <TD>
+                    <INPUT TYPE="radio" NAME="devtype" VALUE="1" {{ dtypc[1] }}>ICAO
+                    <INPUT TYPE="radio" NAME="devtype" VALUE="2" {{ dtypc[2] }}>Flarm
+                    <INPUT TYPE="radio" NAME="devtype" VALUE="3" {{ dtypc[3] }}>OGN
+                </TD>
+            </TR>
+            <TR>
+                <TD class="inp">{{ lang.table_devid }}</TD>
+                <TD><INPUT TYPE="text" name="devid" VALUE="{{ devid }}" size="25" maxlength="6"></TD>
+            </TR>
+            <TR>
+                <TD class="inp">{{ lang.table_actype }}</TD>
+                <TD>
+                    <SELECT name="actype">
+                        {% for category,aircraft in aircrafts %}
+                        <optgroup label="{{ catarray[category] }}">
+                            {% for ac in aircraft %}
+                            <OPTION VALUE="{{ ac.id }}">{{ ac.type }}</OPTION>
+                            {% endfor %}
+                        </optgroup>
+                        {% endfor %}
+                        </SELECT>
+                </TD>
+            </TR>
+            <TR>
+                <TD class="inp">{{ lang.table_acreg2 }}</TD>
+                <TD><INPUT TYPE="text" name="acreg" VALUE="{{ acreg }}" size="25" maxlength="7"></TD>
+            </TR>
+            <TR>
+                <TD class="inp">{{ lang.table_accn2 }}</TD>
+                <TD><INPUT TYPE="text" name="accn" VALUE="{{ accn }}" size="25" maxlength="3"></TD>
+            </TR>
+            <TR>
+                <TD class="inp"><input type="checkbox" name="notrack" value="yes" {{ cnotrack }}></TD>
+                <TD>{{ lang.input_notrack }}</TD>
+            </TR>
+            <TR>
+                <TD class="inp"><input type="checkbox" name="noident" value="yes" {{ cnoident }}></TD>
+                <TD>{{ lang.input_noident }}</TD>
+            </TR>
+            <TR>
+                <TD class="inp"><input type="checkbox" name="owner" value="yes"></TD>
+                <TD>{{ lang.input_owner }}</TD>
+            </TR>
+
+        </TABLE>
+        <input type="submit" value="{{ lang.input_submit }}">
+    </FORM>
+    &nbsp;&nbsp;&nbsp;
+    <FORM action="index.php" ENCTYPE="multipart/form-data" method="post">
+        <INPUT type="hidden" name="action" value="deviceslist">
+        <input type="submit" value="{{ lang.input_cancel }}">
+    </FORM>
+
+{% endblock %}
+
+
+{# {% block disconnect %} <a href="index.php?a=d"> {{ lang.disconnect }}</a><br> {% endblock %} #}

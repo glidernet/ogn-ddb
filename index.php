@@ -11,9 +11,6 @@ $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader, array('cache' => false));
 
 
-require_once "language/english.php";
-
-
 $url = "http://localhost/ogn_ddb/";
 $sender = "contact@glidernet.org";
 
@@ -156,12 +153,30 @@ if (isset($_GET['v'])) {
 	$action = 'validuser';
 	$validcode = $_GET['v'];
 }
+session_start();
+
+require_once "language/english.php";
 
 $lang = $languages['english'];
 
+if (isset($_GET['l']))
+{
+    include_once 'language/' . $_GET['l'] . '.php';
+
+    if (isset($languages[$_GET['l']]))
+    {
+        $lang = array_merge($lang, $languages[$_GET['l']]);
+        $_SESSION['lang'] = $_GET['l'];
+    }
+}
+elseif (isset($_SESSION['lang']))
+{
+    include_once 'language/' . $_SESSION['lang'] . '.php';
+    $lang = array_merge($lang, $languages[$_SESSION['lang']]);
+}
+
 $error=$user="";
 
-session_start();
 
 
 switch(strtolower($action))

@@ -6,7 +6,7 @@ include 'sql.php';
 // - aircraft types (see $catarray)
 //
 
-$url = "http://ddb.glidernet.org/";
+$url = "https://ddb.glidernet.org/";
 $sender = "contact@glidernet.org";
 
 $languages= array (
@@ -204,11 +204,11 @@ form { margin-bottom: 0; }
 }
 
 function htmlfooter($dis="") {
-	global $lang,$url;
+	global $lang;
 		echo "<BR><BR><CENTER>";
 		if ($dis!="no") echo "<A HREF=\"index.php?a=d\">".$lang['disconnect']."</A><BR>";
 		
-		echo "<IMG SRC=\"".$url."pict/ogn-logo-ani.gif\"></CENTER>
+		echo "<IMG SRC=\"/pict/ogn-logo-ani.gif\"></CENTER>
 	</BODY></HTML>
 	";
 }
@@ -244,6 +244,7 @@ function home() {
 	
 	echo "<DIV style=\"margin-left: auto; margin-right: auto; width:450px\">
 	<CENTER>
+	<A HREF=\"/?l=english\"><IMG SRC=\"/pict/english.gif\" alt=\"English\"></A>&nbsp;&nbsp;&nbsp;<A HREF=\"/?l=german\"><IMG SRC=\"/pict/german.gif\" alt=\"Deutsch\"></A>&nbsp;&nbsp;&nbsp;<A HREF=\"/?l=french\"><IMG SRC=\"/pict/french.gif\" alt=\"Francais\"></A>
 	<FORM action=\"index.php\" ENCTYPE=\"multipart/form-data\" method=\"post\">
 	<INPUT type=\"hidden\" name=\"action\" value=\"login\">
 	<H2>{$lang['input_welcome']}</H2>";
@@ -354,18 +355,18 @@ function fillindevice() {
 }
 
 function devicelist() {
-	global $dbh,$lang,$error,$url;
+	global $dbh,$lang,$error;
 	$arraytype = array(1 => "ICAO", 2=> "Flarm", 3=> "OGN");
 	$req2 = $dbh->prepare("SELECT * FROM devices,aircrafts where dev_userid=:us AND dev_actype=ac_id ORDER BY dev_id ASC");
 	$req2->bindParam(":us", $_SESSION['user']);
 	$req2->execute();
 	htmlheader();
 	if ($req2->rowCount()==0) {
-		echo "<CENTER>".$lang['error_nodevice'].", ".$lang['table_new'].": <A HREF=\"?a=n\"><IMG style=\"border: none\" SRC=\"".$url."pict/plu.png\" title=\"".$lang['table_new']."\"></A></CENTER>";
+		echo "<CENTER>".$lang['error_nodevice'].", ".$lang['table_new'].": <A HREF=\"?a=n\"><IMG style=\"border: none\" SRC=\"/pict/plu.png\" title=\"".$lang['table_new']."\"></A></CENTER>";
 	} else {
 		echo "<CENTER>";
 		if ($error!="") echo "<H3 style=\"color:red\">$error</H3>";
-		echo "<TABLE class=\"tab1\"><TR><TH colspan=\"2\"><A HREF=\"?a=n\"><IMG style=\"border: none\" SRC=\"".$url."pict/plu.png\" title=\"".$lang['table_new']."\"></A></TH><TH>".$lang['table_devtype']."</TH><TH>".$lang['table_devid']."</TH><TH>".$lang['table_actype']."</TH><TH>".$lang['table_acreg']."</TH><TH>".$lang['table_accn']."</TH><TH>".$lang['table_notrack']."</TH><TH>".$lang['table_noident']."</TH></TR>";
+		echo "<TABLE class=\"tab1\"><TR><TH colspan=\"2\"><A HREF=\"?a=n\"><IMG style=\"border: none\" SRC=\"/pict/plu.png\" title=\"".$lang['table_new']."\"></A></TH><TH>".$lang['table_devtype']."</TH><TH>".$lang['table_devid']."</TH><TH>".$lang['table_actype']."</TH><TH>".$lang['table_acreg']."</TH><TH>".$lang['table_accn']."</TH><TH>".$lang['table_notrack']."</TH><TH>".$lang['table_noident']."</TH></TR>";
 		//$alldev = $req2->fetchAll();
 		$cl=1;
 		while($ligne = $req2->fetch(PDO::FETCH_ASSOC)) {
@@ -375,22 +376,22 @@ function devicelist() {
 						<FORM action=\"index.php\" ENCTYPE=\"multipart/form-data\" method=\"post\">
 							<INPUT type=\"hidden\" name=\"action\" value=\"updatedev\">
 							<INPUT type=\"hidden\" name=\"devid\" value=\"{$dev_id}\">
-							<INPUT border=0 SRC=\"".$url."pict/mod.gif\" type=\"image\" Value=\"submit\" title=\"".$lang['table_update']."\"> 
+							<INPUT border=0 SRC=\"/pict/mod.gif\" type=\"image\" Value=\"submit\" title=\"".$lang['table_update']."\"> 
 						</FORM>
 					</TD>
 				<TD class=\"tab2\">
 						<FORM action=\"index.php\" ENCTYPE=\"multipart/form-data\" method=\"post\">
 							<INPUT type=\"hidden\" name=\"action\" value=\"deletedev\">
 							<INPUT type=\"hidden\" name=\"devid\" value=\"{$dev_id}\">
-							<INPUT border=0 SRC=\"".$url."pict/bin.gif\" type=\"image\" Value=\"submit\" title=\"".$lang['table_delete']."\"> 
+							<INPUT border=0 SRC=\"/pict/bin.gif\" type=\"image\" Value=\"submit\" title=\"".$lang['table_delete']."\"> 
 						</FORM>
 				</TD>
 				<TD class=\"tab2\">".$arraytype[$dev_type]."</TD>
 				<TD class=\"tab2\">{$dev_id}</TD><TD class=\"tab2\">{$ac_type}</TD>
 				<TD class=\"tab2\">{$dev_acreg}</TD>
 				<TD class=\"tab2\">{$dev_accn}</TD>
-				<TD class=\"tab2\"><iMG SRC=\"".$url."pict/yn{$dev_notrack}.gif\"></TD>
-				<TD class=\"tab2\"><iMG SRC=\"".$url."pict/yn{$dev_noident}.gif\"></TD>
+				<TD class=\"tab2\"><iMG SRC=\"/pict/yn{$dev_notrack}.gif\"></TD>
+				<TD class=\"tab2\"><iMG SRC=\"/pict/yn{$dev_noident}.gif\"></TD>
 				</TR>";
 			if (++$cl==3) $cl=1;
 		}
@@ -411,11 +412,21 @@ if (isset($_GET['v'])) {
 	$validcode = $_GET['v'];
 }
 
-$lang = $languages['english'];
-
 $error=$user="";
 
 session_start();
+
+$lang = $languages['english'];
+
+if (isset($_SESSION['lang'])) $lang = $languages[$_SESSION['lang']];
+
+if (isset($_GET['l'])) {
+	if (isset($languages[$_GET['l']])) { 
+	$lang = $languages[$_GET['l']];
+	$_SESSION['lang'] = $_GET['l'];
+	} 
+} 
+
 
 
 switch(strtolower($action))

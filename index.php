@@ -1,11 +1,5 @@
 <?php
 include 'sql.php';
-ini_set('display_errors','true');
-error_reporting(E_ALL);
-
-/*
-\{\$lang\['([a-zA-Z0-9_]+)'\]\}
-*/
 
 //
 // Localisation TODO:

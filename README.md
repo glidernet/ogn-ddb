@@ -1,4 +1,4 @@
 # ogn-ddb
-OGN Devices DataBAse
+OGN Devices DataBase
 
 To Do: finish multi languages management

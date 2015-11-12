@@ -1,71 +1,53 @@
 <?php
 include '../sql.php';
 $dbh = Database::connect();
-$yesno = array(0=>"Y",1=>"N");
 $devtype = array(1=>"I", 2=>"F", 3=>"O");
 
-// if parameter t=1 also display aircraft type (1=gliders 2=plane 3=ultralight 4=helicopter 5=Drones 6=Others)
-if (isset($_GET['t'])) $t=$_GET['t'];
-else $t=0;
+$t = !empty($_GET['t']);
+$actype = $t ? ', ac_cat AS aircraft_type ' : '';
 
-// if parameter j=1 display JSon format
-if (isset($_GET['j'])) $j=$_GET['j'];
-else $j=0;
+$sql = 'SELECT
+            dev_type AS device_type,
+            dev_id AS device_id,
 
+            IF(!dev_notrack AND !dev_noident,ac_type,"" ) AS aircraft_model,
+            IF(!dev_notrack AND !dev_noident,dev_acreg,"") AS registration,
+            IF(!dev_notrack AND !dev_noident,dev_accn,"") AS cn,
 
-$sql = 'SELECT * FROM devices LEFT JOIN aircrafts ON dev_actype = ac_id ORDER BY dev_id ASC';
+            IF(!dev_notrack,"Y","N") AS tracked,
+            IF(!dev_noident,"Y","N") AS identified
+            '.$actype.'
+        FROM devices
+         LEFT JOIN aircrafts
+          ON dev_actype = ac_id
+         ORDER BY dev_id ASC';
 
-
-
-switch($j) {
-	case 1:		// JSon format
-		// Allow from any origin
-    header('Access-Control-Allow-Headers: Content-Type');
-		header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-		header('Access-Control-Allow-Origin: *');
-		header('Content-Type: application/json');
-		
-		$cpt=0;
-		echo "{\r\n\"devices\": [";
-		foreach ($dbh->query($sql) as $row) {
-			$dt=$devtype[$row['dev_type']];
-			$did=$row['dev_id'];
-			$am=$row['ac_type'];
-			$reg=$row['dev_acreg'];
-			$cn=$row['dev_accn'];
-			$tr=$yesno[$row['dev_notrack']];
-			$id=$yesno[$row['dev_noident']];
-			$at=$row['ac_cat'];
-			
-			if ($tr=="N" OR $id=="N") $am=$reg=$cn=''; 
-				
-			if (++$cpt!=1) echo ",";
-			echo "\r\n	{\r\n	\"device_type\": \"$dt\",\r\n	\"device_id\": \"$did\",\r\n	\"aircraft_model\": \"$am\",\r\n	\"registration\": \"$reg\",\r\n	\"cn\": \"$cn\",\r\n	\"tracked\": \"$tr\",\r\n	\"identified\": \"$id\"";
-
-			if ($t==1) echo ",\r\n	\"aircraft_type\": \"$at\"";
-			
-			echo "\r\n	}";
-		}
-		echo "\r\n	]\r\n}";
-
-		break;
-	default:		// txt cvs format
-		header('Content-Type: text/plain; charset="UTF-8"');
-		
-		echo "#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED";
-		if ($t==1) echo ",AIRCRAFT_TYPE";
-		echo "\r\n";
-
-		foreach ($dbh->query($sql) as $row) {
-			if ($row['dev_notrack']==1 OR $row['dev_noident']==1 ) echo "'".$devtype[$row['dev_type']]."','{$row['dev_id']}','','','','".$yesno[$row['dev_notrack']]."','".$yesno[$row['dev_noident']]."'";
-			else echo "'".$devtype[$row['dev_type']]."','{$row['dev_id']}','{$row['ac_type']}','{$row['dev_acreg']}','{$row['dev_accn']}','Y','Y'";
-			if ($t==1) echo ",'{$row['ac_cat']}'";
-			echo "\r\n";
-		}
-
-	
-	
+//$result['devices'] = $dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+$output=array();
+foreach ($dbh->query($sql, PDO::FETCH_ASSOC) as $row) {
+    $row['device_type'] = $devtype[$row['device_type']];
+    $output['devices'][] = $row;
 }
 
-
-Database::disconnect();
+if (!empty($_GET['j']) || $_SERVER['HTTP_ACCEPT'] == 'application/json')
+{
+    // Allow from any origin
+    header('Access-Control-Allow-Headers: Content-Type');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Origin: *');
+    header('Content-Type: application/json');
+    echo json_encode($output);
+}
+else
+{
+    header('Content-Type: text/plain; charset="UTF-8"');
+    echo "#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED";
+    if ($t) echo ",AIRCRAFT_TYPE";
+    echo "\r\n";
+    foreach ($output['devices'] as $row)
+    {
+        echo "'";
+        echo implode("','", $row);
+        echo "'\r\n";
+    }
+}

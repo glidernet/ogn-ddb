@@ -6,6 +6,40 @@ $devtype = array(1=>"I", 2=>"F", 3=>"O");
 $t = !empty($_GET['t']);
 $actype = $t ? ', ac_cat AS aircraft_type ' : '';
 
+$params = array();
+$filter = array();
+
+if (!empty($_GET['device_id']))
+{
+    $regs = explode(',',$_GET['device_id']);
+    $qm = implode(',', array_fill(0, count($regs), '?'));
+    $filter[] = 'dev_id IN ('.$qm.')';
+    $params = array_merge($params,$regs);
+}
+if (!empty($_GET['registration']))
+{
+    $regs = explode(',',$_GET['registration']);
+    $qm = implode(',', array_fill(0, count($regs), '?'));
+    $filter[] = ' ( dev_acreg IN ('.$qm.') AND dev_notrack = 0 AND dev_noident = 0 ) ';
+    $params = array_merge($params,$regs);
+}
+if (!empty($_GET['cn']))
+{
+    $regs = explode(',',$_GET['cn']);
+    $qm = implode(',', array_fill(0, count($regs), '?'));
+    $filter[] = ' ( dev_accn IN ('.$qm.') AND dev_notrack = 0 AND dev_noident = 0 ) ';
+    $params = array_merge($params,$regs);
+}
+if (count($filter))
+{
+    $filterstring = 'WHERE ' . implode(' OR ' , $filter);
+}
+else
+{
+    $filterstring = '';
+}
+
+
 $sql = 'SELECT
             dev_type AS device_type,
             dev_id AS device_id,
@@ -20,11 +54,16 @@ $sql = 'SELECT
         FROM devices
          LEFT JOIN aircrafts
           ON dev_actype = ac_id
+         ' .$filterstring. '
          ORDER BY dev_id ASC';
 
-//$result['devices'] = $dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-$output=array();
-foreach ($dbh->query($sql, PDO::FETCH_ASSOC) as $row) {
+$stmt = $dbh->prepare($sql);
+$stmt->execute($params);
+
+$output['devices']=array();
+
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+{
     $row['device_type'] = $devtype[$row['device_type']];
     $output['devices'][] = $row;
 }
@@ -51,3 +90,4 @@ else
         echo "'\r\n";
     }
 }
+

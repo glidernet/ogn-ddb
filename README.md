@@ -43,10 +43,14 @@ Example:
 ```
 
 #### URL parameters
-parameter | values | default | effect
---------- | -------|---------|---------------------------------------------------------------
-t         | 0/1    | 0       | show field `aircraft_type` if set to 1
-j         | 0/1    | 0       | forces JSON output when set to 1 (regardless of accept header)
+parameter    | values | default | effect
+------------ | -------|---------|---------------------------------------------------------------
+t            | 0/1    | 0       | show field `aircraft_type` if set to 1
+j            | 0/1    | 0       | forces JSON output when set to 1 (regardless of accept header)
+device\_id   | csv    | n/a     | select a comma separated list of device ID's              
+registration | csv    | n/a     | select a comma separated list of registrations
+cn           | csv    | n/a     | select a comma separated list of callsigns
+
 
 
 ### /download/?j=1

@@ -2,6 +2,23 @@
 
 Offical server at <http://ddb.glidernet.org>.
 
+## Installation
+This project uses the PHP template engine [Twig](http://twig.sensiolabs.org).
+
+1. Install package manager [Composer](http://getcomposer.org)
+
+2. Clone repository
+   ```
+   git clone https://github.com/glidernet/ogn-ddb
+   ```
+
+3. Install all dependencies automatically (as defined in the composer.json file).
+   This will automatically install twig.
+   ```
+   cd ogn-ddb
+   composer update
+   ```
+
 ## API-Endpoints
 ### /download
 This returns a CSVish-File. Each value is quoted with `'`,
@@ -24,6 +41,13 @@ Example:
 'F','0123BC','LS-4','X-0123','23','Y','Y'
 'F','DEADBE','DR-400','X-EABC','','N','N'
 ```
+
+#### URL parameters
+parameter | values | default | effect
+--------- | -------|---------|---------------------------------------------------------------
+t         | 0/1    | 0       | show field `aircraft_type` if set to 1
+j         | 0/1    | 0       | forces JSON output when set to 1 (regardless of accept header)
+
 
 ### /download/?j=1
 This returns all devices of the DDB in JSON. The output validates against the [ogn-ddb-schema-1.0.0](ogn-ddb-schema-1.0.0.json).

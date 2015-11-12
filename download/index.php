@@ -6,6 +6,40 @@ $devtype = array(1=>"I", 2=>"F", 3=>"O");
 $t = !empty($_GET['t']);
 $actype = $t ? ', ac_cat AS aircraft_type ' : '';
 
+$params = array();
+$filter = array();
+
+if (!empty($_GET['device_id']))
+{
+    $regs = explode(',',$_GET['device_id']);
+    $qm = implode(',', array_fill(0, count($regs), '?'));
+    $filter[] = 'dev_id IN ('.$qm.')';
+    $params = array_merge($params,$regs);
+}
+if (!empty($_GET['registration']))
+{
+    $regs = explode(',',$_GET['registration']);
+    $qm = implode(',', array_fill(0, count($regs), '?'));
+    $filter[] = 'dev_acreg IN ('.$qm.')';
+    $params = array_merge($params,$regs);
+}
+if (!empty($_GET['cn']))
+{
+    $regs = explode(',',$_GET['cn']);
+    $qm = implode(',', array_fill(0, count($regs), '?'));
+    $filter[] = 'dev_accn IN ('.$qm.')';
+    $params = array_merge($params,$regs);
+}
+if (count($filter))
+{
+    $filterstring = 'WHERE ' . implode(' AND ' , $filter);
+}
+else
+{
+    $filterstring = '';
+}
+
+
 $sql = 'SELECT
             dev_type AS device_type,
             dev_id AS device_id,
@@ -20,11 +54,16 @@ $sql = 'SELECT
         FROM devices
          LEFT JOIN aircrafts
           ON dev_actype = ac_id
+         ' .$filterstring. '
          ORDER BY dev_id ASC';
 
-//$result['devices'] = $dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-$output=array();
-foreach ($dbh->query($sql, PDO::FETCH_ASSOC) as $row) {
+$stmt = $dbh->prepare($sql);
+$stmt->execute($params);
+
+$output['devices']=array();
+
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+{
     $row['device_type'] = $devtype[$row['device_type']];
     $output['devices'][] = $row;
 }
@@ -40,7 +79,7 @@ if (!empty($_GET['j']) || $_SERVER['HTTP_ACCEPT'] == 'application/json')
 }
 else
 {
-    header('Content-Type: text/plain; charset="UTF-8"');
+    //header('Content-Type: text/plain; charset="UTF-8"');
     echo "#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED";
     if ($t) echo ",AIRCRAFT_TYPE";
     echo "\r\n";
@@ -51,3 +90,4 @@ else
         echo "'\r\n";
     }
 }
+

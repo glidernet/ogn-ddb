@@ -20,19 +20,19 @@ if (!empty($_GET['registration']))
 {
     $regs = explode(',',$_GET['registration']);
     $qm = implode(',', array_fill(0, count($regs), '?'));
-    $filter[] = 'dev_acreg IN ('.$qm.')';
+    $filter[] = ' ( dev_acreg IN ('.$qm.') AND dev_notrack = 0 AND dev_noident = 0 ) ';
     $params = array_merge($params,$regs);
 }
 if (!empty($_GET['cn']))
 {
     $regs = explode(',',$_GET['cn']);
     $qm = implode(',', array_fill(0, count($regs), '?'));
-    $filter[] = 'dev_accn IN ('.$qm.')';
+    $filter[] = ' ( dev_accn IN ('.$qm.') AND dev_notrack = 0 AND dev_noident = 0 ) ';
     $params = array_merge($params,$regs);
 }
 if (count($filter))
 {
-    $filterstring = 'WHERE ' . implode(' AND ' , $filter);
+    $filterstring = 'WHERE ' . implode(' OR ' , $filter);
 }
 else
 {
@@ -79,7 +79,7 @@ if (!empty($_GET['j']) || $_SERVER['HTTP_ACCEPT'] == 'application/json')
 }
 else
 {
-    //header('Content-Type: text/plain; charset="UTF-8"');
+    header('Content-Type: text/plain; charset="UTF-8"');
     echo "#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED";
     if ($t) echo ",AIRCRAFT_TYPE";
     echo "\r\n";

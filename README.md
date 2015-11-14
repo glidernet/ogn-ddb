@@ -5,7 +5,6 @@ Offical server at <http://ddb.glidernet.org>.
 
 ## API-Endpoints
 ### /download
-
 This returns a CSVish-File. Each value is quoted with `'`,
 Each line starting with `#` is a comment.
 
@@ -26,6 +25,9 @@ Example:
 'F','0123BC','LS-4','X-0123','23','Y','Y'
 'F','DEADBE','DR-400','X-EABC','','N','N'
 ```
+
+### /download/download-fln.php
+This returns the device database in a flarmnet-compatible format.
 
 ## ToDo
 - finish multi languages management

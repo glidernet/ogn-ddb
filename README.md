@@ -25,6 +25,9 @@ Example:
 'F','DEADBE','DR-400','X-EABC','','N','N'
 ```
 
+### /download/?j=1
+This returns all devices of the DDB in JSON. The output validates against the [ogn-ddb-schema-1.0.0](ogn-ddb-schema-1.0.0.json).
+
 ### /download/download-fln.php
 This returns the device database in a flarmnet-compatible format.
 

@@ -1,5 +1,4 @@
-# ogn-ddb
-OGN Devices DataBAse
+# ogn-ddb: OGN Devices DataBase
 
 Offical server at <http://ddb.glidernet.org>.
 
@@ -10,9 +9,9 @@ Each line starting with `#` is a comment.
 
 Field           | Possible Values
 --------------- | -------------------------------
-device\_type    | `^[A-F0-9]{6}$`
-device\_id      | any string
-aircraft\_model | `^[FIO]$`
+device\_type    | `^[FIO]$`
+device\_id      | `^[A-F0-9]{6}$`
+aircraft\_model | any string
 registration    | any string
 cn              | any string
 tracked         | `^[YN]$`

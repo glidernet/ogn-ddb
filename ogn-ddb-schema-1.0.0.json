@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The OpenGliderNetwork DeviceDataBase (ogn-ddb)",
+  "type": "object",
+  "properties": {
+    "devices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "device_type": { "type": "string",
+            "pattern": "^[FIO]$"
+          },
+          "device_id": { "type": "string",
+            "pattern": "^[A-F0-9]{6}$"
+          },
+          "aircraft_model": {"type": "string"
+          },
+          "registration": {"type": "string"
+          },
+          "cn": {"type": "string"
+          },
+          "tracked": { "type": "string",
+            "pattern": "^[YN]$"
+          },
+          "identified": { "type": "string",
+            "pattern": "^[YN]$"
+          }
+        },
+        "required": ["device_type", "device_id", "aircraft_model", "registration", "cn", "tracked", "identified"]
+      }
+    }
+  },
+  "required" : ["devices"]
+}

@@ -18,19 +18,14 @@ $url = "https://ddb.glidernet.org/";
 $sender = "contact@glidernet.org";
 
 
+function send_email($to, $subject, $message, $from="")  {
+    $headers =  "From: {$from}\n".
+                "MIME-Version: 1.0\n".
+                "Content-Type: text/html; charset=utf-8\n";
 
-function email($dest, $subject, $message, $from="")  {
-    $email_subject = $subject; // The Subject of the email
-    $email_txt = $message;
-    $email_to = "$dest"; // Who the email is to
+    $email_message = "$message \n\n";
 
-    $headers = "From: {$from}\n".
-               "MIME-Version: 1.0\n".
-               "Content-Type: text/html; charset=\"UTF-8\"\n";
-
-    $email_message = "$email_txt \n\n";
-
-    return mail($email_to, $email_subject, $email_message, $headers, "-f".$from);
+    return mail($to, $subject, $email_message, $headers, "-f".$from);
 }
 
 function home() {
@@ -351,11 +346,12 @@ case "createuser":		// create user
         $ins->bindParam(":va", $valid);
         $ins->bindParam(":ti", $ttime);
 
-        if ( $ins->execute() ) {	// insert ok, sent email
-            $msglink=$url."?v=".$valid;
-            $msg="<HTML><HEAD><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><TITLE>".$lang['email_object']."</TITLE></HEAD><BODY>".$lang['email_content']."<A HREF=\"$msglink\">$msglink</A></BODY></HTML>";
-            if (email($user,$lang['email_object'],$msg,$sender))
-            {	// email sent
+        if ( $ins->execute() ) {   // insert ok, sent email
+            $validation_link = $url."?v=".$valid;
+            $msg = $twig->render('email-validation-request.html.twig', array('lang'=>$lang, 'validation_link'=>$validation_link));
+            if (send_email($user, $lang['email_object'], $msg, $sender))
+            {
+                // email sent
                 echo $twig->render('emailsent.html.twig',array('lang'=>$lang));
             }
             else {

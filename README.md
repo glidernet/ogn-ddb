@@ -1,28 +1,32 @@
-# ogn-ddb
-OGN Devices DataBase
+# ogn-ddb: OGN Devices DataBase
 
-### This fork implements:
-* Twig Template Engine (HTML moved to templates directory)
-* Language in separate language files 
-* Filters in the download section
+Offical server at <http://ddb.glidernet.org>.
 
-### On my todo list are:
-* Fancy landing page that explains what the DDB is for
-* Fancy fillindevice page that explains (better) what the options are for
-* Some documentation of the download functions
+## Installation
+This project uses the PHP template engine [Twig](http://twig.sensiolabs.org).
 
-### To install [Twig](http://twig.sensiolabs.org)
-* install package manager [Composer](http://getcomposer.org) (if it's not installed already)
-* run `composer update` in the DDB directory. This will automatically install twig, as defined in the composer.json file
+1. Install package manager [Composer](http://getcomposer.org)
+
+2. Clone repository
+   ```
+   git clone https://github.com/glidernet/ogn-ddb
+   ```
+
+3. Install all dependencies automatically (as defined in the composer.json file).
+   This will automatically install twig.
+   ```
+   cd ogn-ddb
+   composer update
+   ```
 
 ## API-Endpoints
 ### /download
-This returns a CSVish or JSON File. In the CSV file, each value is quoted with `'`,
+This returns a CSVish-File. Each value is quoted with `'`,
 Each line starting with `#` is a comment.
 
 Field           | Possible Values
 --------------- | -------------------------------
-device\_type    | `^[FIO]$` 
+device\_type    | `^[FIO]$`
 device\_id      | `^[A-F0-9]{6}$`
 aircraft\_model | any string
 registration    | any string
@@ -38,18 +42,22 @@ Example:
 'F','DEADBE','DR-400','X-EABC','','N','N'
 ```
 
-####Filters:
-filter       | values | default  | effect
------------- | -------|----------|----------------------------------------------------------------------------
-t            | 0/1    | 0        | adds the aircraft_type field to output when set to 1
-j            | 0/1    | 0        | forces JSON output when set to 1 (regardless of accept header) 
-device\_id   | csv    | n/a      | select a comma separated list of device ID's              
-registration | csv    | n/a      | select a comma separated list of registrations
-cn           | csv    | n/a      | select a comma separated list of callsigns
+#### URL parameters
+parameter    | values | default | effect
+------------ | -------|---------|---------------------------------------------------------------
+t            | 0/1    | 0       | show field `aircraft_type` if set to 1
+j            | 0/1    | 0       | forces JSON output when set to 1 (regardless of accept header)
+device\_id   | csv    | n/a     | select a comma separated list of device ID's              
+registration | csv    | n/a     | select a comma separated list of registrations
+cn           | csv    | n/a     | select a comma separated list of callsigns
+
+
+### /download/?j=1
+This returns all devices of the DDB in JSON. The output validates against the [ogn-ddb-schema-1.0.0](ogn-ddb-schema-1.0.0.json).
 
 ### /download/download-fln.php
-returns the Devices Database in a flarmnet-compatible format
+This returns the device database in a flarmnet-compatible format.
 
-# ToDo
+## ToDo
 - finish multi languages management
 - document accurate meaning of `tracked` and `identified`

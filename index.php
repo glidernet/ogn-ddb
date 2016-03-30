@@ -10,8 +10,9 @@ require_once 'vendor/autoload.php';
 $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader, array('cache' => false));
 
+require_once "language/english.php";
 
-$url = "http://localhost/ogn_ddb/";
+$url = "https://ddb.glidernet.org/";
 $sender = "contact@glidernet.org";
 
 
@@ -34,7 +35,8 @@ function home() {
 	global $lang,$error,$user,$url,$twig;
 
 	$dbh = Database::connect();
-  	$req = $dbh->query("SELECT count(dev_id) as nb FROM devices ");
+
+	$req = $dbh->query("SELECT count(dev_id) as nb FROM devices ");
 	$result = $req->fetch();
 	$req->closeCursor();
 	$nbdevices=$result['nb'];

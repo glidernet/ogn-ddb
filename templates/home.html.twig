@@ -3,7 +3,8 @@
 {% block content %}
 <DIV style="margin-left: auto; margin-right: auto; width:450px">
 <CENTER>
-    <FORM action="index.php" ENCTYPE="multipart/form-data" method="post">
+
+    <FORM action="/" ENCTYPE="multipart/form-data" method="post">
         <INPUT type="hidden" name="action" value="login">
         <H2> {{ lang.welcome }}</H2>
         {% if error != '' %}<H3 style="color:red">{{  error }}</H3> {% endif %}
@@ -13,10 +14,10 @@
         </TABLE>
         <input type="submit" value="{{ lang.input_submit }}"></FORM>
     <BR><BR>
-    {{ lang.input_nouser }}<A HREF="index.php?a=u">{{ lang.input_create }}</A><BR><BR>(&nbsp;<B> {{ nbdevices  }} {{ lang.input_nbdevices }}</B>&nbsp;)
+    {{ lang.input_nouser }}<A HREF="/?a=u">{{ lang.input_create }}</A><BR><BR>(&nbsp;<B> {{ nbdevices  }} {{ lang.input_nbdevices }}</B>&nbsp;)
 
 </CENTER></DIV>
 
 {% endblock %}
 
-{# {% block disconnect %} <a href="index.php?a=d"> {{ lang.disconnect }}</a><br> {% endblock %} #}
+{# {% block disconnect %} <a href="/?a=d"> {{ lang.disconnect }}</a><br> {% endblock %} #}

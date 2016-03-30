@@ -41,21 +41,21 @@ else
 
 
 $sql = 'SELECT
-            dev_type AS device_type,
-            dev_id AS device_id,
+    dev_type AS device_type,
+    dev_id AS device_id,
 
-            IF(!dev_notrack AND !dev_noident,ac_type,"" ) AS aircraft_model,
-            IF(!dev_notrack AND !dev_noident,dev_acreg,"") AS registration,
-            IF(!dev_notrack AND !dev_noident,dev_accn,"") AS cn,
+    IF(!dev_notrack AND !dev_noident,ac_type,"" ) AS aircraft_model,
+    IF(!dev_notrack AND !dev_noident,dev_acreg,"") AS registration,
+    IF(!dev_notrack AND !dev_noident,dev_accn,"") AS cn,
 
-            IF(!dev_notrack,"Y","N") AS tracked,
-            IF(!dev_noident,"Y","N") AS identified
-            '.$actype.'
-        FROM devices
-         LEFT JOIN aircrafts
-          ON dev_actype = ac_id
-         ' .$filterstring. '
-         ORDER BY dev_id ASC';
+    IF(!dev_notrack,"Y","N") AS tracked,
+    IF(!dev_noident,"Y","N") AS identified
+    '.$actype.'
+    FROM devices
+    LEFT JOIN aircrafts
+    ON dev_actype = ac_id
+    ' .$filterstring. '
+    ORDER BY dev_id ASC';
 
 $stmt = $dbh->prepare($sql);
 $stmt->execute($params);
@@ -90,4 +90,3 @@ else
         echo "'\r\n";
     }
 }
-

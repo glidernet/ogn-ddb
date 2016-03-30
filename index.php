@@ -349,7 +349,7 @@ case "createuser":		// create user
         if ( $ins->execute() ) {   // insert ok, sent email
             $validation_link = $url."?v=".$valid;
             $msg = $twig->render('email-validation-request.html.twig', array('lang'=>$lang, 'validation_link'=>$validation_link));
-            if (send_email($user, $lang['email_object'], $msg, $sender))
+            if (send_email($user, $lang['email_subject'], $msg, $sender))
             {
                 // email sent
                 echo $twig->render('emailsent.html.twig',array('lang'=>$lang));

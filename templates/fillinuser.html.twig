@@ -2,19 +2,19 @@
 
 {% block content %}
 
-<DIV style="margin-left: auto; margin-right: auto; width:450px">
-<CENTER>
-    <FORM action="/" ENCTYPE="multipart/form-data" method="post">
-        <INPUT type="hidden" name="action" value="createuser">
-        <H2>{{ lang.input_create }}</H2>
-        {% if error!="" %}<H3 style="color:red">{{ error }}</H3>{% endif %}
-        <TABLE>
-            <TR><TD>{{ lang.input_login }}</TD><TD><INPUT TYPE="text" name="user" VALUE="{{ user }}" SIZE=25></TD></TR>
-            <TR><TD>{{ lang.input_password }}</TD><TD><INPUT TYPE="password" name="pw1" VALUE="" SIZE=25></TD></TR>
-            <TR><TD>{{ lang.input_confpassword }}</TD><TD><INPUT TYPE="password" name="pw2" VALUE="" SIZE=25></TD></TR>
-            <TR><TD colspan="2">{{ lang.input_verif }}<BR>{{ v1 }} x {{ v2 }} =<INPUT TYPE="text" name="verif" VALUE="" SIZE=5></TD></TR>
-        </TABLE>
-        <input type="submit" value="{{ lang.input_submit }}"></FORM>
+<div style="margin-left: auto; margin-right: auto; width:450px">
+<center>
+    <form action="/" enctype="multipart/form-data" method="post">
+        <input type="hidden" name="action" value="createuser">
+        <h2>{{ lang.input_create }}</h2>
+        {% if error!="" %}<h3 style="color:red">{{ error }}</h3>{% endif %}
+        <table>
+            <tr><td>{{ lang.input_login }}</td><td><input type="text" name="user" value="{{ user }}" SIZE=25></td></tr>
+            <tr><td>{{ lang.input_password }}</td><td><input type="password" name="pw1" value="" SIZE=25></td></tr>
+            <tr><td>{{ lang.input_confpassword }}</td><td><input type="password" name="pw2" value="" SIZE=25></td></tr>
+            <tr><td colspan="2">{{ lang.input_verif }}<br>{{ v1 }} x {{ v2 }} =<input type="text" name="verif" value="" SIZE=5></td></tr>
+        </table>
+        <input type="submit" value="{{ lang.input_submit }}"></form>
 {% endblock %}
 
 {# {% block disconnect %} <a href="/?a=d"> {{ lang.disconnect }}</a><br> {% endblock %} #}

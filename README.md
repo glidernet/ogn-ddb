@@ -3,21 +3,22 @@
 Offical server at <http://ddb.glidernet.org>.
 
 ## Installation
-This project uses the PHP template engine [Twig](http://twig.sensiolabs.org).
+This project uses the PHP template engine [Twig](http://twig.sensiolabs.org), available via [Composer](https://getcomposer.org/).
 
-1. Install package manager [Composer](http://getcomposer.org)
+1. Download and install [Composer](https://getcomposer.org/download/)
 
 2. Clone repository
    ```
    git clone https://github.com/glidernet/ogn-ddb
    ```
 
-3. Install all dependencies automatically (as defined in the composer.json file).
-   This will automatically install twig.
+3. Install all dependencies defined in [composer.json](composer.json) (this will install Twig)
    ```
    cd ogn-ddb
    composer update
    ```
+
+There is an [installation guide](INSTALL.md) to run a local development instance of the DDB with [Vagrant](https://www.vagrantup.com/).
 
 ## API-Endpoints
 ### /download

@@ -1,23 +1,33 @@
 {% extends "base.html.twig" %}
 
-{% block content %}
-<DIV style="margin-left: auto; margin-right: auto; width:450px">
-<CENTER>
+{% block sidebar %}
+    <a href="#" class="button u-full-width" >Browse the DDB</a>
+    <a href="#" class="button u-full-width" >Create an account</a>
+    <h5>Login</h5>
+    <form action="/" ENCTYPE="multipart/form-data" method="post">
 
-    <FORM action="/" ENCTYPE="multipart/form-data" method="post">
-        <INPUT type="hidden" name="action" value="login">
-        <H2> {{ lang.welcome }}</H2>
-        {% if error != '' %}<H3 style="color:red">{{  error }}</H3> {% endif %}
-        <TABLE>
-            <TR><TD>{{ lang.input_login }}</TD><TD><INPUT TYPE="text" name="user" VALUE="{{ user }}" SIZE=25></TD></TR>
-            <TR><TD>{{ lang.input_password }}</TD><TD><INPUT TYPE="password" name="pw" VALUE="" SIZE=25></TD></TR>
-        </TABLE>
-        <input type="submit" value="{{ lang.input_submit }}"></FORM>
-    <BR><BR>
-    {{ lang.input_nouser }}<A HREF="/?a=u">{{ lang.input_create }}</A><BR><BR>(&nbsp;<B> {{ nbdevices  }} {{ lang.input_nbdevices }}</B>&nbsp;)
+        <input type="hidden" name="action" value="login">
+        {% if error != '' %}<b style="color:red">{{  error }}</b> {% endif %}
 
-</CENTER></DIV>
+        <label>{{ lang.input_login }}<br>
+        <input type="email" name="user" value="{{ user }}" class="u-full-width" placeholder="example@email.com"></label>
+        <label>{{ lang.input_password }} <br>
+        <input type="password" name="pw" value="" class="u-full-width" placeholder="********"></label>
+        <input type="submit" value="{{ lang.input_submit }}" class="u-full-width">
+
+    </form>
+
+
 
 {% endblock %}
+
+{% block content %}
+    <h3> {{ lang.input_welcome }}</h3>
+
+    {{ lang.welcome_text|raw }}
+    <p>{{ lang.input_nouser }}<a href="/?a=u">{{ lang.input_create }}</a></p>
+    <p><b> {{ nbdevices  }} {{ lang.input_nbdevices }}</b></p>
+{% endblock %}
+
 
 {# {% block disconnect %} <a href="/?a=d"> {{ lang.disconnect }}</a><br> {% endblock %} #}

@@ -2,8 +2,6 @@
 
 {% block content %}
 
-<DIV style="margin-left: auto; margin-right: auto; width:450px">
-<CENTER>
     <FORM action="/" ENCTYPE="multipart/form-data" method="post">
         <INPUT type="hidden" name="action" value="createdev">
         <H2>{{ lang.input_createdev }}</H2>
@@ -59,13 +57,15 @@
         </TABLE>
         <input type="submit" value="{{ lang.input_submit }}">
     </FORM>
-    &nbsp;&nbsp;&nbsp;
     <FORM action="/" ENCTYPE="multipart/form-data" method="post">
         <INPUT type="hidden" name="action" value="deviceslist">
         <input type="submit" value="{{ lang.input_cancel }}">
     </FORM>
 
 {% endblock %}
-
-
-{# {% block disconnect %} <a href="/?a=d"> {{ lang.disconnect }}</a><br> {% endblock %} #}
+{% block sidebar %}
+    <a href="/?a=deviceslist" class="button u-full-width" >My devices</a>
+    <a href="#" class="button u-full-width button-primary" >Add device</a>
+    <a href="#" class="button u-full-width" >Preferences</a>
+    <a href="/?a=d" class="button u-full-width" >{{ lang.disconnect }}</a>
+{% endblock %}

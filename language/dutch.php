@@ -8,7 +8,7 @@
 
 $languages['dutch'] = array (
     "input_welcome" => "Welkom bij de OGN Devices Database",
-    "input_login" => "Gebruikersnaam (email adres):",
+    "input_login" => "Email adres:",
     "input_password" => "Wachtwoord:",
     "input_confpassword" => "Bevestig wachtwoord:",
     "input_submit" => "Verstuur",

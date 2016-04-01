@@ -1,33 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>OGN Devices Database</title>
+
     <meta charset="UTF-8">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <meta name="robots" content="noindex,nofollow" />
-    <title>OGN Database</title>
-    <style>
-        form { margin-bottom: 0; }
-        .tab1 {border-width:1px; border-style:solid; border-color:black; border-collapse: collapse; border-spacing: 1px;}
-        .tab2 {border-width:1px; border-style:solid; border-color:grey; }
-        .tab1 tr {min-width:70px; background-color: #EEEEFF; text-align: left; vertical-align:middle; }
-        .tab1 tr:nth-child(even) {background-color: #CCCCFF;}
-        .tab1 td, .tab1 th {padding: 0 3px;}
-        .inp {min-width:70px; text-align: right;}
+    <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FONT
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+    <!-- CSS
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <style type="text/css">
+        .header {border-bottom: 1px solid #888; margin-bottom: 20px;}
+        .logo {margin: 10px 20px 10px 0; float:left;}
+        .languageflags {text-align: justify; padding:10px 0; justify-content: space-between}
+        .languageflags:after {content: "";display: inline-block;width: 100%;}
+        h5 {border-bottom: 1px solid #888;}
     </style>
 </head>
 <body>
-<center>
+<div class="container">
+    <div class="row header">
+        <div class="ten columns">
+            <img class="logo" src="pict/ogn-logo.png"><h1>  Devices DataBase</h1>
+        </div>
+        <div class="two columns languageflags">
+            <a href="?l=english"><img src="/pict/english.gif" alt="English"></a>
+            <a href="?l=german"><img src="/pict/german.gif" alt="Deutsch"></a>
+            <a href="?l=french"><img src="/pict/french.gif" alt="Francais"></a>
+            <a href="?l=dutch"><img src="/pict/dutch.png" alt="Nederlands"></a>
+        </div>
+    </div>
+    <div class="row">
 
-<A HREF="?l=english"><IMG SRC="/pict/english.gif" alt="English"></A>&nbsp;&nbsp;&nbsp;
-<A HREF="?l=german"><IMG SRC="/pict/german.gif" alt="Deutsch"></A>&nbsp;&nbsp;&nbsp;
-<A HREF="?l=french"><IMG SRC="/pict/french.gif" alt="Francais"></A>&nbsp;&nbsp;&nbsp;
-<A HREF="?l=dutch"><IMG SRC="/pict/dutch.png" alt="Nederlands"></A>
-</center>
-{% block content %}{% endblock %}
 
+        <div class="three columns">
+            {%  block sidebar    %}{% endblock %}
+            {%  block disconnect %}{% endblock %}
 
-<br><br><center>
-{%  block disconnect %}{% endblock %}
-    <img src="/pict/ogn-logo-ani.gif"></center>
+        </div>
+
+        <div class="nine columns">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+</div>
+
 </body>
 </html>

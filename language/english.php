@@ -7,8 +7,17 @@
  */
 
 $languages['english'] = array (
+    "welcome_text" => "<p>This is the place to register your glider, towplane or other FLARM-equipped aircraft
+                        to the Open Glider Network. Registering has several advantages:
+                        <ul>
+                            <li>You can influence how your glider is displayed on
+                                <a href='http://live.glidernet.org'>live.glidernet.org</a> and other tracking sites</li>
+                            <li>In case of SAR, your glider may be easier to find</li>
+                        </ul>
+                        The data is freely available under the [insert license] license.
+                        </p>",
     "input_welcome" => "Welcome to the OGN Devices database",
-    "input_login" => "User (email address):",
+    "input_login" => "Email address:",
     "input_password" => "Password:",
     "input_confpassword" => "Confirm password:",
     "input_submit" => "Submit",

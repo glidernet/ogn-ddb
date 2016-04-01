@@ -1,9 +1,12 @@
--- Adminer 4.2.2 MySQL dump
-
 SET NAMES utf8;
 SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+DROP TABLE IF EXISTS `aircrafts`;
+DROP TABLE IF EXISTS `devices`;
+DROP TABLE IF EXISTS `tmpusers`;
+DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `aircrafts` (
   `ac_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
@@ -40,6 +43,3 @@ CREATE TABLE `users` (
   `usr_pw` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`usr_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-
--- 2015-10-31 21:21:32

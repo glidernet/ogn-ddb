@@ -17,15 +17,16 @@ require_once "language/english.php";
 $url = "https://ddb.glidernet.org/";
 $sender = "contact@glidernet.org";
 
-
 function send_email($to, $subject, $message, $from="")  {
-    $headers =  "From: {$from}\n".
-                "MIME-Version: 1.0\n".
-                "Content-Type: text/html; charset=utf-8\n";
+    $headers = array();
+    $headers[] = "MIME-Version: 1.0";
+    $headers[] = "Content-type: text/html; charset=UTF-8";
+    $headers[] = "Content-Transfer-Encoding: quoted-printable";
+    $headers[] = "From: {$from}";
 
-    $email_message = "$message \n\n";
+    $email_message = quoted_printable_encode($message);
 
-    return mail($to, $subject, $email_message, $headers, "-f".$from);
+    return mail($to, $subject, $email_message, implode("\n", $headers), "-f".$from);
 }
 
 function home() {

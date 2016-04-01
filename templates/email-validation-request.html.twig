@@ -1,10 +1,10 @@
-<HTML>
-<HEAD>
+<html>
+<head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<TITLE>{{ lang.email_subject }}</TITLE>
-</HEAD>
-<BODY>
-{{ lang.email_content }}
-<A HREF="{{ validation_link }}">{{ validation_link }}</A>
-</BODY>
-</HTML>
+<title>{{ lang.email_subject }}</title>
+</head>
+<body>
+{{ lang.email_content | raw }}
+<a href="{{ validation_link }}">{{ validation_link }}</a>
+</body>
+</html>

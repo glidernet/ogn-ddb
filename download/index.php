@@ -61,7 +61,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $output['devices'][] = $row;
 }
 
-if (!empty($_GET['j']) || $_SERVER['HTTP_ACCEPT'] == 'application/json') {
+if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] == 'application/json') {
     // Allow from any origin
     header('Access-Control-Allow-Headers: Content-Type');
     header('Access-Control-Allow-Methods: GET, POST, OPTIONS');

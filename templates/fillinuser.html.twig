@@ -1,17 +1,32 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
-    <FORM action="/" ENCTYPE="multipart/form-data" method="post">
-        <INPUT type="hidden" name="action" value="createuser">
-        <H2>{{ lang.input_create }}</H2>
-        {% if error!="" %}<H3 style="color:red">{{ error }}</H3>{% endif %}
-        <TABLE>
-            <TR><TD>{{ lang.input_login }}</TD><TD><INPUT TYPE="text" name="user" VALUE="{{ user }}" SIZE=25></TD></TR>
-            <TR><TD>{{ lang.input_password }}</TD><TD><INPUT TYPE="password" name="pw1" VALUE="" SIZE=25></TD></TR>
-            <TR><TD>{{ lang.input_confpassword }}</TD><TD><INPUT TYPE="password" name="pw2" VALUE="" SIZE=25></TD></TR>
-            <TR><TD colspan="2">{{ lang.input_verif }}<BR>{{ v1 }} x {{ v2 }} =<INPUT TYPE="text" name="verif" VALUE="" SIZE=5></TD></TR>
-        </TABLE>
-        <input type="submit" value="{{ lang.input_submit }}"></FORM>
+    <form action="/" enctype="multipart/form-data" method="post">
+        <input type="hidden" name="action" value="createuser">
+        <h3>{{ lang.input_create }}</h3>
+        {% if error!="" %}<b style="color:red">{{ error }}</b>{% endif %}
+
+            <label class="" for="user">{{ lang.input_login }}</label><input type="email" name="user" id="user" value="{{ user }}">
+
+            <label class="" for="pw1">{{ lang.input_password }}</label><input type="password" name="pw1" id="pw1" value=""  >
+
+            <label class="" for="pw2">{{ lang.input_confpassword }}</label><input type="password" name="pw2" id="pw2" value=""  ></label>
+
+            <label class="" for="verif">{{ lang.input_verif }}</label>
+
+            <label class="" for="verif">{{ v1 }} x {{ v2 }} = </label>
+            <input type="text" name="verif" id="verif" value="" >
+
+            <div class="">&nbsp;</div>
+            <input type="submit" value="{{ lang.input_submit }}">
+
+    </form>
+{% endblock %}
+
+{% block sidebar %}
+    <a href="/" class="button u-full-width" >{{ lang.home }}</a>
+    {# <a href="#" class="button u-full-width" >Browse the DDB</a> #}
+    <a href="/?a=u" class="button button-primary u-full-width" >{{ lang.create_account }}</a>
 {% endblock %}
 
 {# {% block disconnect %} <a href="/?a=d"> {{ lang.disconnect }}</a><br> {% endblock %} #}

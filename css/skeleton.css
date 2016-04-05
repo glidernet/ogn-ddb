@@ -78,6 +78,32 @@
     .one-half.column                { width: 48%; }
 }
 
+/* for nested grid, mainly used in forms */
+@media (max-width: 950px) {
+    .columns .column                { width: 100% !important; margin-left: 0;}
+    table, thead, tbody, th, td, tr { display: block;}
+    thead tr { display: none; }
+    tr { border: 1px solid #ccc; }
+
+    td {
+        /* Behave  like a "row" */
+        border: none;
+        position: relative;
+        padding-left: 50%!important;
+    }
+
+    td:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        left: 6px;
+        width: 45% !important;
+        padding-right: 10px;
+        white-space: nowrap;
+    }
+
+}
+
 /* For devices larger than 950px */
 @media (min-width: 950px) {
   .container {

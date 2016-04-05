@@ -256,7 +256,7 @@ switch(strtolower($action))
 		fromhome();
 		if (!isset($_SESSION['login'])) exit(); // test if user come from login page
 		$_SESSION['dev'] = 'yes';
-		if (isset($_POST['devid'])) $devid=$_POST['devid'];
+		if (isset($_REQUEST['devid'])) $devid=$_REQUEST['devid'];
 		$dbh = Database::connect();
 
 		$req = $dbh->prepare("select * from devices where dev_id=:de AND dev_userid=:us");
@@ -289,7 +289,7 @@ switch(strtolower($action))
 		fromhome();
 		if (!isset($_SESSION['login'])) exit(); // test if user come from login page
 		$_SESSION['dev'] = 'yes';
-		if (isset($_POST['devid'])) $devid=$_POST['devid'];
+		if (isset($_REQUEST['devid'])) $devid=$_REQUEST['devid'];
 		$dbh = Database::connect();
 		$req = $dbh->prepare("select * from devices where dev_id=:de AND dev_userid=:us");
 		$req->bindParam(":de", $devid);

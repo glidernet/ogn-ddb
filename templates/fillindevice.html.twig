@@ -2,70 +2,101 @@
 
 {% block content %}
 
-    <FORM action="/" ENCTYPE="multipart/form-data" method="post">
-        <INPUT type="hidden" name="action" value="createdev">
-        <H2>{{ lang.input_createdev }}</H2>
-        {% if error!="" %}<H3 style="color:red">{{ error }}</H3>{% endif %}
-        <TABLE>
-            <TR>
-                <TD class="inp">{{ lang.table_devtype }}</TD>
-                <TD>
-                    <INPUT TYPE="radio" NAME="devtype" VALUE="1" {{ dtypc[1] }}>ICAO
-                    <INPUT TYPE="radio" NAME="devtype" VALUE="2" {{ dtypc[2] }}>Flarm
-                    <INPUT TYPE="radio" NAME="devtype" VALUE="3" {{ dtypc[3] }}>OGN
-                </TD>
-            </TR>
-            <TR>
-                <TD class="inp">{{ lang.table_devid }}</TD>
-                <TD><INPUT TYPE="text" name="devid" VALUE="{{ devid }}" size="25" maxlength="6"></TD>
-            </TR>
-            <TR>
-                <TD class="inp">{{ lang.table_actype }}</TD>
-                <TD>
-                    <SELECT name="actype">
-                        {% for category,aircraft in aircrafts %}
-                        <optgroup label="{{ catarray[category] }}">
-                            {% for ac in aircraft %}
-                            <OPTION VALUE="{{ ac.id }}">{{ ac.type }}</OPTION>
-                            {% endfor %}
-                        </optgroup>
+    <form action="/" enctype="multipart/form-data" method="post" xmlns="http://www.w3.org/1999/html">
+        <input type="hidden" name="action" value="createdev">
+        <h3>{{ lang.input_createdev }}</h3>
+        {% if error!="" %}<b style="color:red">{{ error }}</b>{% endif %}
+        <div class="row">
+            <div class="one-half column">
+                <label>{{ lang.table_devtype }}</label>
+                <select class="u-full-width" id="devtype" name="devtype" >
+                    <option value="1" {{ dtypc[1] }}>ICAO</option>
+                    <option value="2" {{ dtypc[2] }}>Flarm</option>
+                    <option value="3" {{ dtypc[3] }}>OGN</option>
+                </select>
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_devid }}</label>
+                <input type="text" name="devid" value="{{ devid }}" size="25" maxlength="6" class="u-full-width">
+            </div>
+        </div>
+        <div class="row">
+            <div class="one-half column">
+                <label>{{ lang.table_actype }}</label>
+                <select name="actype" class="u-full-width">
+                    {% for category,aircraft in aircrafts %}
+                    <optgroup label="{{ catarray[category] }}">
+                        {% for ac in aircraft %}
+                        <option value="{{ ac.id }}">{{ ac.type }}</option>
                         {% endfor %}
-                        </SELECT>
-                </TD>
-            </TR>
-            <TR>
-                <TD class="inp">{{ lang.table_acreg2 }}</TD>
-                <TD><INPUT TYPE="text" name="acreg" VALUE="{{ acreg }}" size="25" maxlength="7"></TD>
-            </TR>
-            <TR>
-                <TD class="inp">{{ lang.table_accn2 }}</TD>
-                <TD><INPUT TYPE="text" name="accn" VALUE="{{ accn }}" size="25" maxlength="3"></TD>
-            </TR>
-            <TR>
-                <TD class="inp"><input type="checkbox" name="notrack" value="yes" {{ cnotrack }}></TD>
-                <TD>{{ lang.input_notrack }}</TD>
-            </TR>
-            <TR>
-                <TD class="inp"><input type="checkbox" name="noident" value="yes" {{ cnoident }}></TD>
-                <TD>{{ lang.input_noident }}</TD>
-            </TR>
-            <TR>
-                <TD class="inp"><input type="checkbox" name="owner" value="yes"></TD>
-                <TD>{{ lang.input_owner }}</TD>
-            </TR>
+                    </optgroup>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="one-half column">
+                <label>{{ lang.table_acreg2 }}</label>
+                <input type="text" name="acreg" value="{{ acreg }}" maxlength="7" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_accn2 }}</label>
+                <input type="text" name="accn" value="{{ accn }}"  maxlength="3" class="u-full-width">
+            </div>
+        </div>
 
-        </TABLE>
-        <input type="submit" value="{{ lang.input_submit }}">
-    </FORM>
-    <FORM action="/" ENCTYPE="multipart/form-data" method="post">
-        <INPUT type="hidden" name="action" value="deviceslist">
-        <input type="submit" value="{{ lang.input_cancel }}">
-    </FORM>
+        <div class="row">
+            <div class="one-half column">
+                <label>
+                    <input type="checkbox" id="noident" name="noident" value="yes" {{ cnoident }} onclick="participationDescription()">
+                    {{ lang.input_noident }}
+                </label>
+            </div>
+            <div class="one-half column">
+                <label>
+                    <input type="checkbox" id="notrack" name="notrack" value="yes" {{ cnotrack }} onclick="participationDescription()">
+                    {{ lang.input_notrack }}
+                </label>
+            </div>
+        </div>
+        <div id="participation">
 
+        </div>
+        <label><input type="checkbox" name="owner" value="yes">
+            {{ lang.input_owner }}
+        </label>
+        <div class="row">
+            <div class="one-half column">
+                <input type="submit" value="{{ lang.input_submit }}" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <a class="button u-full-width" href="/?a=deviceslist" >{{ lang.input_cancel }}</a>
+            </div>
+        </div>
+    </form>
+    <script type="text/javascript">
+        {% autoescape 'js' %}
+        function participationDescription(){
+            if (document.getElementById('notrack').checked)
+            {
+                document.getElementById('participation').innerHTML = "<h5>{{ lang.no_participation }}</h5>{{ lang.no_participation_description }}";
+            }
+            else if (document.getElementById('noident').checked)
+            {
+                document.getElementById('participation').innerHTML = "<h5>{{ lang.anonymous_participation }}</h5>{{ lang.anonymous_participation_description }}";
+            }
+            else
+            {
+                document.getElementById('participation').innerHTML = "<h5>{{ lang.full_participation }}</h5>{{ lang.full_participation_description }}";
+            }
+        }
+        participationDescription();
+        {% endautoescape %}
+    </script>
 {% endblock %}
 {% block sidebar %}
-    <a href="/?a=deviceslist" class="button u-full-width" >My devices</a>
-    <a href="#" class="button u-full-width button-primary" >Add device</a>
-    <a href="#" class="button u-full-width" >Preferences</a>
+    <a href="/?a=deviceslist" class="button u-full-width" >{{ lang.my_devices }}</a>
+    <a href="#" class="button u-full-width button-primary" >{{ lang.add_device }}</a>
+    {# <a href="#" class="button u-full-width" >Preferences</a> #}
     <a href="/?a=d" class="button u-full-width" >{{ lang.disconnect }}</a>
 {% endblock %}

@@ -58,4 +58,35 @@ $languages['dutch'] = array (
     "table_delete" => "Verwijder",
     "table_new" => "Toevoegen",
     "disconnect" => "Uitloggen",
+    //new
+    "home" => "Home",
+    "login" => "Inloggen",
+    "create_account" => "Maak een account aan",
+    "my_devices" => "Mijn devices",
+    "add_device" => "Device toevoegen",
+    "full_participation" => "Volledig deelnemen",
+    "full_participation_description" => "<ul>
+        <li>Tracking applicaties die de OGN DDB gebruiken, geven de positie weer met vliegtuig identificatie</li>
+        <li>De vliegtuiggevens zijn te vinden in de openbare Devices Database</li></ul>",
+    "anonymous_participation" => "Annoniem deelnemen",
+    "anonymous_participation_description" => "<ul>
+        <li>Tracking applicaties die de OGN DDB gebruiken, geven de positie weer met een <em>anonieme</em> marker</li>
+        <li>De registratie en callsign worden <em>niet</em> openbaar gemaakt</li></ul>",
+    "no_participation" => "Niet deelnemen",
+    "no_participation_description" => "<ul>
+        <li>Tracking applicaties die de OGN DDB gebruiken, geven de positie <em>niet</em> weer</li>
+        <li>De registratie en callsign worden <em>niet</em> openbaar gemaakt</li>
+        <li>Hulp bij SAR-activiteiten kan mogelijk niet plaatsvinden</li>
+        <li>Deze device draagt niet bij aan traffic-awareness m.b.v. OGN</li></ul>",
+    "welcome_text" => "<p>
+        Hier kunt u met FLARM of OGN-tracker uitgeruiste (zweef)vliegtuigen registreren in de OGN Devices Database.
+        Registreren heeft verschillende voordelen:
+        <ul>
+            <li>U kunt bepalen hoe uw (zweef)vliegtuig wordt weergegeven op
+                <a href='http://live.glidernet.org'>live.glidernet.org</a> en andere tracking websites</li>
+            <li>Bij Search and Rescue operaties is uw vliegtuig sneller vindbaar</li>
+            <li>U draagt bij aan traffic-awareness bij medepiloten en luchtverkeersleiding</li>
+        </ul>
+        De data wordt gepubliceerd onder de [insert license] licentie.
+        </p>",
 );

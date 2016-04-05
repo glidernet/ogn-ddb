@@ -58,5 +58,36 @@ $languages['french'] = array (
     "table_delete" => "Supprimer",
     "table_new" => "Ajouter",
     "disconnect" => "Déconnexion",
+    //new:
+    "home" => "Accueil",
+    "login" => "Connectez-vous",
+    "create_account" => "créez un compte",
+    "my_devices" => "Mon appareil",
+    "add_device" => "Ajouter appareil",
+    "full_participation" => "Full participation", //no checkboxes checked
+    "full_participation_description" => "<ul>
+        <li>Tracking applications that use the OGN DDB will mark the position with aircraft identification</li>
+        <li>Aircraft registration and CN are published in the OGN Devices Database</li></ul>",
+    "anonymous_participation" => "Anonymous participation", //only noident checkbox checked
+    "anonymous_participation_description" => "<ul>
+        <li>Tracking applications that use the OGN DDB will mark the position with an <em>anonymous</em> marker</li>
+        <li>Aircraft registration and CN are <em>not</em> made public</li></ul>",
+    "no_participation" => "No participation", //notrack or both checkboxes checked
+    "no_participation_description" => "<ul>
+        <li>Tracking applications that use the OGN DDB will <em>not</em> mark your position</li>
+        <li>Aircraft registration and CN are <em>not</em> made public.</li>
+        <li>SAR-functions <em>may not</em> be available for this device</li>
+        <li>This device <em>may not</em> contribute to traffic awareness through OGN</li></ul>",
+    "welcome_text" => "<p>
+        This is the place to register your glider, towplane or other FLARM/OGN-equipped aircraft
+        to the Open Glider Network. Registering has several advantages:
+        <ul>
+            <li>You can influence how your glider is displayed on
+                <a href='http://live.glidernet.org'>live.glidernet.org</a> and other tracking sites</li>
+            <li>In case of SAR, your glider may be easier to find</li>
+            <li>You contribute to traffic-awareness among other pilots and ATC</li>
+        </ul>
+        The data is freely available under the [insert license] license.
+        </p>",
 
 );

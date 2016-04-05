@@ -1,10 +1,12 @@
 {% extends "base.html.twig" %}
 
 {% block sidebar %}
-    <a href="#" class="button u-full-width" >Browse the DDB</a>
-    <a href="#" class="button u-full-width" >Create an account</a>
-    <h5>Login</h5>
-    <form action="/" ENCTYPE="multipart/form-data" method="post">
+    <a href="/" class="button button-primary u-full-width" >{{ lang.home }}</a>
+    {# <a href="#" class="button u-full-width" >Browse the DDB</a> #}
+    <a href="/?a=u" class="button u-full-width" >{{ lang.create_account }}</a>
+
+    <h5>{{ lang.login }}</h5>
+    <form action="/" enctype="multipart/form-data" method="post">
 
         <input type="hidden" name="action" value="login">
         {% if error != '' %}<b style="color:red">{{  error }}</b> {% endif %}
@@ -12,13 +14,10 @@
         <label>{{ lang.input_login }}<br>
         <input type="email" name="user" value="{{ user }}" class="u-full-width" placeholder="example@email.com"></label>
         <label>{{ lang.input_password }} <br>
-        <input type="password" name="pw" value="" class="u-full-width" placeholder="********"></label>
+        <input type="password" name="pw" value="" class="u-full-width" ></label>
         <input type="submit" value="{{ lang.input_submit }}" class="u-full-width">
 
     </form>
-
-
-
 {% endblock %}
 
 {% block content %}

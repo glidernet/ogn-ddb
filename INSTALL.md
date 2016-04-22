@@ -16,7 +16,7 @@
    # The following commands get executed in the vm
    cd /var/www/public
    composer update
-   cp sql.php.dist sql.php
+   cp config.php.dist config.php
    mysql --database scotchbox < database_schema.sql
    ```
 

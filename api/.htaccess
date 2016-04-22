@@ -1,0 +1,7 @@
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule . index.php [L]
+<ifmodule mod_deflate.c>
+AddOutputFilterByType DEFLATE application/json
+</ifmodule>

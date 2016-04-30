@@ -498,8 +498,8 @@ case 'createdev':        // create device
     $acreg = trim(preg_replace('/\t+/', ' ', $acreg));
     $accn = trim(preg_replace('/\t+/', ' ', $accn));
 
-    // replace all " ' by -
-    $repstr = array("'", '"', ',');
+    // replace all " ' . , ? by -
+    $repstr = array("'", '"', ',','.',',','?');
     $acreg = str_replace($repstr, '-', $acreg);
     $accn = str_replace($repstr, '-', $accn);
 

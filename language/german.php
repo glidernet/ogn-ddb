@@ -3,9 +3,8 @@
  * Created by PhpStorm.
  * User: david
  * Date: 10-11-15
- * Time: 16:22
+ * Time: 16:22.
  */
-
 
 // German terminology:
 // Datenbank
@@ -55,7 +54,7 @@ $languages['german'] = array (
     "device_deleted" => "Gerät gelöscht",
     "device_updated" => "Gerät aktualisiert",
     "device_inserted" => "Gerät eingetragen",
-    "email_object" => "[OGN] Benutzerkonto-Validierung",
+    "email_subject" => "[OGN] Benutzerkonto-Validierung",
     "email_content" => "Hallo,<BR>Vielen Dank für Ihren Beitrag zu OGN!<BR>Um diese E-Mail-Adresse zu validieren, klicken Sie bitte auf folgenden Link:<BR>",
     "email_sent" => "Sie erhalten in Kürze eine E-Mail.  Darin finden Sie Instruktionen, wie Sie Ihr Benutzerkonto validieren können.",
     "email_not_sent" => "Versand der E-Mail fehlgeschlagen.  Bitte überprüfen Sie Ihre E-Mail-Adresse!",

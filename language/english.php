@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: david
  * Date: 10-11-15
- * Time: 16:19
+ * Time: 16:19.
  */
 
 $languages['english'] = array (
@@ -40,7 +40,7 @@ $languages['english'] = array (
     "device_deleted" => "Device deleted",
     "device_updated" => "Device updated",
     "device_inserted" => "Device inserted",
-    "email_object" => "[OGN] Account Validation",
+    "email_subject" => "[OGN] Account Validation",
     "email_content" => "Hello,<BR>Thank you for contributing to OGN.<BR>To confirm this email address you have to click on the link below:<BR>",
     "email_sent" => "An email has just been sent to you, you'll find instructions on how to validate your account.",
     "email_not_sent" => "Error sending email, check your address is correct.",

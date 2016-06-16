@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: david
  * Date: 10-11-15
- * Time: 16:21
+ * Time: 16:21.
  */
 
 $languages['french'] = array (
@@ -40,7 +40,7 @@ $languages['french'] = array (
     "device_deleted" => "Appareil supprimé",
     "device_updated" => "Appareil mis à jour",
     "device_inserted" => "Appareil enregistré",
-    "email_object" => "[OGN] Validation du Compte",
+    "email_subject" => "[OGN] Validation du Compte",
     "email_content" => "Bonjour,<BR>Merci de contribuer à OGN.<BR>Pour confirmer cette adresse de courriel, cliquez sur le lien ci-dessous:<BR>",
     "email_sent" => "Un courriel vous a été envoyé, vous trouverez les instruction pour valider votre compte.",
     "email_not_sent" => "Erreur d'envoi de courriel, vérifiez que votre adresse est correcte.",
@@ -91,3 +91,4 @@ $languages['french'] = array (
         </p>",
 
 );
+

@@ -101,7 +101,7 @@ $languages['german'] = array (
             <li>In case of SAR, your glider may be easier to find</li>
             <li>You contribute to traffic-awareness among other pilots and ATC</li>
         </ul>
-        The data is freely available under the [insert license] license.
+        The data is freely available under the <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> license.
         </p>",
 
 );

@@ -87,6 +87,6 @@ $languages['dutch'] = array (
             <li>Bij Search and Rescue operaties is uw vliegtuig sneller vindbaar</li>
             <li>U draagt bij aan traffic-awareness bij medepiloten en luchtverkeersleiding</li>
         </ul>
-        De data wordt gepubliceerd onder de [insert license] licentie.
+        De data wordt gepubliceerd onder de <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> licentie.
         </p>",
 );

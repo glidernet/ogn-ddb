@@ -27,7 +27,7 @@
                     {% for category,aircraft in aircrafts %}
                     <optgroup label="{{ catarray[category] }}">
                         {% for ac in aircraft %}
-                        <option value="{{ ac.id }}">{{ ac.type }}</option>
+                        <option value="{{ ac.id }}" {{ ac.selected }}>{{ ac.type }} </option>
                         {% endfor %}
                     </optgroup>
                     {% endfor %}

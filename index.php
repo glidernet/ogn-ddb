@@ -96,12 +96,11 @@ function fillindevice()
     );
 
     $dtypc = array('', '', '');
-    $dtypc[$devtype] = 'checked';
+    $dtypc[$devtype] = 'selected';
 
     $aircraft = array();
     $dbh = Database::connect();
     $result = $dbh->query('SELECT * FROM aircrafts ORDER BY ac_cat,ac_type');
-
     foreach ($result as $row) {
         $selected = ($row['ac_id'] == $actype) ? 'selected' : '';
 

@@ -146,8 +146,8 @@ function devicelist()
     echo $twig->render('devicelist.html.twig', $template_vars);
 }
 
-if (isset($_POST['action'])) {
-    $action = $_POST['action'];
+if (isset($_REQUEST['action'])) {
+    $action = $_REQUEST['action'];
 } else {
     $action = '';
 }
@@ -259,8 +259,8 @@ case 'updatedev':        // update/create device
         exit();
     } // test if user come from login page
     $_SESSION['dev'] = 'yes';
-    if (isset($_POST['devid'])) {
-        $devid = $_POST['devid'];
+    if (isset($_REQUEST['devid'])) {
+        $devid = $_REQUEST['devid'];
     }
     $dbh = Database::connect();
 
@@ -294,8 +294,8 @@ case 'deletedev':        // delete device
         exit();
     } // test if user come from login page
     $_SESSION['dev'] = 'yes';
-    if (isset($_POST['devid'])) {
-        $devid = $_POST['devid'];
+    if (isset($_REQUEST['devid'])) {
+        $devid = $_REQUEST['devid'];
     }
     $dbh = Database::connect();
     $req = $dbh->prepare('select * from devices where dev_id=:de AND dev_userid=:us');
@@ -446,44 +446,44 @@ case 'createdev':        // create device
         exit();
     } // test if user id defined
 
-    if (isset($_POST['devid'])) {
-        $devid = $_POST['devid'];
+    if (isset($_REQUEST['devid'])) {
+        $devid = $_REQUEST['devid'];
     } else {
         $error = $lang['error_devid'];
     }
-    if (isset($_POST['devtype'])) {
-        $devtype = $_POST['devtype'];
+    if (isset($_REQUEST['devtype'])) {
+        $devtype = $_REQUEST['devtype'];
     } else {
         $error = $lang['error_devtype'];
     }
-    if (isset($_POST['actype'])) {
-        $actype = $_POST['actype'];
+    if (isset($_REQUEST['actype'])) {
+        $actype = $_REQUEST['actype'];
     } else {
         $error = $lang['error_actype'];
     }
-    if (isset($_POST['acreg'])) {
-        $acreg = $_POST['acreg'];
+    if (isset($_REQUEST['acreg'])) {
+        $acreg = $_REQUEST['acreg'];
     } else {
         $error = $lang['error_acreg'];
     }
-    if (isset($_POST['accn'])) {
-        $accn = $_POST['accn'];
+    if (isset($_REQUEST['accn'])) {
+        $accn = $_REQUEST['accn'];
     } else {
         $error = $lang['error_accn'];
     }
-    if (isset($_POST['notrack'])) {
-        if ($_POST['notrack'] == 'yes') {
+    if (isset($_REQUEST['notrack'])) {
+        if ($_REQUEST['notrack'] == 'yes') {
             $notrack = 1;
         }
     }
-    if (isset($_POST['noident'])) {
-        if ($_POST['noident'] == 'yes') {
+    if (isset($_REQUEST['noident'])) {
+        if ($_REQUEST['noident'] == 'yes') {
             $noident = 1;
         }
     }
 
-    if (isset($_POST['owner'])) {
-        if ($_POST['owner'] != 'yes') {
+    if (isset($_REQUEST['owner'])) {
+        if ($_REQUEST['owner'] != 'yes') {
             $error = $lang['error_owner'];
         }
     } else {

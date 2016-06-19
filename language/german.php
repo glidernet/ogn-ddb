@@ -6,12 +6,18 @@
  * Time: 16:22.
  */
 
+/**
+ * Updated
+ * User: mrandt
+ * Date: 2016-06-19
+ */
+
 // German terminology:
 // Datenbank
 // Gerät
 // Benutzer
 // Benutzerkonto
-// Tracking
+// Verfolgen (Tracking)
 // E-Mail (with dash)
 // (Wettbewerbs-)Kennzeichen
 // identifizieren
@@ -22,7 +28,7 @@
 
 $languages['german'] = array (
     "input_welcome" => "Willkommen zur OGN-Gerätedatenbank",
-    "input_login" => "E-Mail-Addresse:",
+    "input_login" => "E-Mail-Adresse:",
     "input_password" => "Passwort:",
     "input_confpassword" => "Passwort (Bestätigung):",
     "input_submit" => "OK",
@@ -33,15 +39,15 @@ $languages['german'] = array (
     "input_owner" => "Ich bestätige, der Besitzer dieses Gerätes zu sein.",
     "input_verif" => "Beweisen Sie, dass Sie ein Mensch sind:",
     "input_nbdevices" => "eingetragene Geräte",
-    "input_notrack" => "Dieses Gerät nicht tracken",
-    "input_noident" => "Dieses Gerät nicht mit Kennzeichen identifizieren",
+    "input_notrack" => "Dieses Gerät nicht verfolgen (Tracking)",
+    "input_noident" => "Dieses Gerät nicht mit Kennzeichen identifizieren (No-Ident)",
     "error_login" => "Falsche E-Mail-Adresse oder Passwort",
     "error_pwdontmatch" => "Passwörter stimmen nicht überein",
     "error_pwtooshort" => "Das Passwort muss mindestens vier Zeichen haben",
     "error_emailformat" => "Falsche E-Mail-Adresse",
     "error_userexists" => "Benutzerkonto existiert bereits",
     "error_insert_tmpusers" => "Datenbank-Fehler, bitte versuchen Sie es später nochmals.",
-    "error_validation" => "Ihre E-Mail-Adresse konnte nicht validiert werden. Wurde sie bereits validiert?",
+    "error_validation" => "Ihre E-Mail-Adresse konnte nicht validiert werden. Wurde diese bereits validiert?",
     "error_nodevice" => "Kein Gerät unter diesem Benutzerkonto eingetragen",
     "error_devid" => "Format-Fehler (Geräte-ID)",
     "error_devtype" => "Format-Fehler (Gerätetyp)",
@@ -66,42 +72,43 @@ $languages['german'] = array (
     "table_acreg2" => "Kennzeichen",
     "table_accn" => "WK",
     "table_accn2" => "Wettbewerbskennzeichen",
-    "table_notrack" => "Tracking",
-    "table_noident" => "Kennzeichen",
+    "table_notrack" => "Verfolgen (Tracking)",
+    "table_noident" => "Identifizieren (Ident)",
     "table_update" => "Aktualisieren",
     "table_delete" => "Löschen",
     "table_new" => "Hinzufügen",
     "disconnect" => "Abmelden",
     //new:
     "home" => "Startseite",
-    "login" => "Einloggen",
+    "login" => "Anmelden",
     "create_account" => "Konto erstellen",
-    "my_devices" => "Mein Geräten",
-    "add_device" => "Gerät eintragen",
-    "full_participation" => "Full participation", //no checkboxes checked
+    "my_devices" => "Meine Geräte",
+    "add_device" => "Neues Gerät eintragen",
+    "full_participation" => "Teilnahme an allen Diensten (Opt-In)", //no checkboxes checked
     "full_participation_description" => "<ul>
-        <li>Tracking applications that use the OGN DDB will mark the position with aircraft identification</li>
-        <li>Aircraft registration and CN are published in the OGN Devices Database</li></ul>",
-    "anonymous_participation" => "Anonymous participation", //only noident checkbox checked
+        <li>Anwendungen und Dienste, welche die OGN Devices Database (OGN DDB) verwenden, zeigen die Position Ihres Luftfahrzeuges inklusive der Kennung und des Musters an.</li>
+        <li>Luftfahrzeugkennung, Muster und die hexadezimale FLARM bzw. OGN ID werden in der OGN DDB veröffentlicht.</li></ul>",
+    "anonymous_participation" => "Anonyme Teilnahme", //only noident checkbox checked
     "anonymous_participation_description" => "<ul>
-        <li>Tracking applications that use the OGN DDB will mark the position with an <em>anonymous</em> marker</li>
-        <li>Aircraft registration and CN are <em>not</em> made public</li></ul>",
-    "no_participation" => "No participation", //notrack or both checkboxes checked
+        <li>Anwendungen und Dienste, welche die OGN DDB verwenden, zeigen die Position Ihres Luftfahrzeuges <em>anonym</em> an; das Luftfahrzeug kann <em>nicht</em> identifiziert werden.</li>
+        <li>Luftfahrzeugkennung und Muster werden <em>nicht</em> veröffentlicht</li>.</ul>",
+    "no_participation" => "Keine Teilnahme (Opt-Out)", //notrack or both checkboxes checked
     "no_participation_description" => "<ul>
-        <li>Tracking applications that use the OGN DDB will <em>not</em> mark your position</li>
-        <li>Aircraft registration and CN are <em>not</em> made public.</li>
-        <li>SAR-functions <em>may not</em> be available for this device</li>
-        <li>This device <em>may not</em> contribute to traffic awareness through OGN</li></ul>",
+        <li>Anwendungen und Dienste, welche die OGN DDB verwenden, zeigen die Position Ihres Luftfahrzeuges <em>nicht</em> an.</li>
+        <li>Luftfahrzeugkennung und Muster werden <em>nicht</em> veröffentlicht.</li>
+        <li>Im Notfall kann Ihr Luftfahrzeug <em>nicht</em> mit Hilfe des OGN geortet werden.</li>
+        <li>Sie tragen <em>nicht</em> zu einer Verbesserung des Verkehrslagebildes für Piloten, Flugleiter am Boden und die offiziellen Lotsen (ATC) bei.</li>
+        <li>Die von Ihrem FLARM ausgestrahlten Funksignale werden von OGN-Bodenstationen <em>nicht</em> verarbeitet, sofern diese den sogenannten &quot;Whitelist-Filter&quot; verwenden.</li>        
+        </ul>",
     "welcome_text" => "<p>
-        This is the place to register your glider, towplane or other FLARM/OGN-equipped aircraft
-        to the Open Glider Network. Registering has several advantages:
+        Hier können Sie Ihr Segelflugzeug, Schleppflugzeug oder ein anderes mit FLARM oder OGN-Tracker ausgestattetes Luftfahrzeug 
+        registrieren und die Nutzung der Positionsdaten durch das Open Glider Network konfigurieren.<br>
+        Die Registrierung bietet Ihnen folgende Vorteile:
         <ul>
-            <li>You can influence how your glider is displayed on
-                <a href='http://live.glidernet.org'>live.glidernet.org</a> and other tracking sites</li>
-            <li>In case of SAR, your glider may be easier to find</li>
-            <li>You contribute to traffic-awareness among other pilots and ATC</li>
+            <li>Sie können beeinflussen, ob und wie Ihr Luftfahrzeug auf <a href='http://live.glidernet.org'>live.glidernet.org</a> und in anderen OGN Anmwendungen und Diensten erscheint.</li>
+            <li>Ihr Luftfahrzeug kann im Notfall schnell mit Hilfe des OGN geortet und gefunden werden (SAR).</li>
+            <li>Sie tragen zu einer Verbesserung des Verkehrslagebildes für Piloten, Flugleiter am Boden und die offiziellen Lotsen (ATC) bei.</li>
         </ul>
-        The data is freely available under the <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> license.
+        Alle Daten des OGN sind frei und öffentlich unter der <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> Lizenz verfügbar.
         </p>",
-
 );

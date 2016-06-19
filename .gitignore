@@ -1,3 +1,5 @@
 sql.php
 /vendor
+/.idea
 composer.lock
+templates/cache

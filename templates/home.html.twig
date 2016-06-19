@@ -1,22 +1,30 @@
 {% extends "base.html.twig" %}
 
-{% block content %}
-<div style="margin-left: auto; margin-right: auto; width:450px">
-<center>
+{% block sidebar %}
+    <a href="/" class="button button-primary u-full-width" >{{ lang.home }}</a>
+    {# <a href="#" class="button u-full-width" >Browse the DDB</a> #}
+    <a href="/?a=u" class="button u-full-width" >{{ lang.create_account }}</a>
+
+    <h5>{{ lang.login }}</h5>
     <form action="/" enctype="multipart/form-data" method="post">
+
         <input type="hidden" name="action" value="login">
-        <h2> {{ lang.welcome }}</h2>
-        {% if error != '' %}<h3 style="color:red">{{  error }}</h3> {% endif %}
-        <table>
-            <tr><td>{{ lang.input_login }}</td><td><input type="text" name="user" value="{{ user }}" SIZE=25></td></tr>
-            <tr><td>{{ lang.input_password }}</td><td><input type="password" name="pw" value="" SIZE=25></td></tr>
-        </table>
-        <input type="submit" value="{{ lang.input_submit }}"></form>
-    <br><br>
-    {{ lang.input_nouser }}<a href="/?a=u">{{ lang.input_create }}</a><br><br>(&nbsp;<b> {{ nbdevices  }} {{ lang.input_nbdevices }}</b>&nbsp;)
+        {% if error != '' %}<b style="color:red">{{  error }}</b> {% endif %}
 
-</center></div>
+        <label>{{ lang.input_login }}<br>
+        <input type="email" name="user" value="{{ user }}" class="u-full-width" placeholder="example@email.com"></label>
+        <label>{{ lang.input_password }} <br>
+        <input type="password" name="pw" value="" class="u-full-width" ></label>
+        <input type="submit" value="{{ lang.input_submit }}" class="u-full-width">
 
+    </form>
 {% endblock %}
+
+{% block content %}
+    {{ lang.welcome_text|raw }}
+    <p>{{ lang.input_nouser }}<a href="/?a=u">{{ lang.input_create }}</a></p>
+    <p><b> {{ nbdevices  }} {{ lang.input_nbdevices }}</b></p>
+{% endblock %}
+
 
 {# {% block disconnect %} <a href="/?a=d"> {{ lang.disconnect }}</a><br> {% endblock %} #}

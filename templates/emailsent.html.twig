@@ -1,7 +1,12 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
-<center>
 {{ lang.email_sent }}
-</center>
 {% endblock %}
+
+{% block sidebar %}
+    <a href="/" class="button u-full-width" >{{ lang.home }}</a>
+    {# <a href="#" class="button u-full-width" >Browse the DDB</a> #}
+    <a href="/?a=u" class="button button-primary u-full-width" >{{ lang.create_account }}</a>
+{% endblock %}
+

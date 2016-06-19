@@ -34,7 +34,7 @@ registration    | any string
 cn              | any string
 tracked         | `^[YN]$`
 identified      | `^[YN]$`
-
+aircraft_type   | `^[1-6]` (optional, with t flag)
 
 Example:
 ```
@@ -51,7 +51,6 @@ j            | 0/1    | 0       | forces JSON output when set to 1 (regardless o
 device\_id   | csv    | n/a     | select a comma separated list of device ID's              
 registration | csv    | n/a     | select a comma separated list of registrations
 cn           | csv    | n/a     | select a comma separated list of callsigns
-
 
 
 ### /download/?j=1

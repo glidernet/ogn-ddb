@@ -1,49 +1,63 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
+    <style type="text/css">
+        @media (max-width: 950px) {
+            td:nth-of-type(1):before { content: "{{ lang.table_update }}:"; }
+            td:nth-of-type(2):before { content: "{{ lang.table_delete }}:"; }
+            td:nth-of-type(3):before { content: "{{ lang.table_devtype }}:"; }
+            td:nth-of-type(4):before { content: "{{ lang.table_devid }}:"; }
+            td:nth-of-type(5):before { content: "{{ lang.table_actype }}:"; }
+            td:nth-of-type(6):before { content: "{{ lang.table_acreg }}:"; }
+            td:nth-of-type(7):before { content: "{{ lang.table_accn }}:"; }
+            td:nth-of-type(8):before { content: "{{ lang.table_notrack }}:"; }
+            td:nth-of-type(9):before { content: "{{ lang.table_noident }}:"; }
+        }
+    </style>
 
-<div style="margin-left: auto; margin-right: auto;">
-    <center>
-        {% if error!="" %}<h3 style="color:red">{{ error }}</h3>{% endif %}
-    <table class="tab1">
-        <tr>
-            <th colspan="2"><a href="?a=n"><img style="border: none" src="/pict/plu.png" title="{{ lang.table_new }}"></a></th>
-            <th>{{ lang.table_devtype }}</th>
-            <th>{{ lang.table_devid }}</th>
-            <th>{{ lang.table_actype }}</th>
-            <th>{{ lang.table_acreg }}</th>
-            <th>{{ lang.table_accn }}</th>
-            <th>{{ lang.table_notrack }}</th>
-            <th>{{ lang.table_noident }}</th>
-        </tr>
-
+        {% if error!="" %}<h5 style="color:red">{{ error }}</h5>{% endif %}
+    <TABLE class="tab1"><thead>
+        <TR>
+            <TH colspan="2"></TH>
+            <TH>{{ lang.table_devtype }}</TH>
+            <TH>{{ lang.table_devid }}</TH>
+            <TH>{{ lang.table_actype }}</TH>
+            <TH>{{ lang.table_acreg }}</TH>
+            <TH>{{ lang.table_accn }}</TH>
+            <TH>{{ lang.table_notrack }}</TH>
+            <TH>{{ lang.table_noident }}</TH>
+        </TR>
+        </thead>
+        <tbody>
         {% for device in devicelist %}
         <tr>
-            <td class="tab2">
-                <form action="/" enctype="multipart/form-data" method="post">
-                    <input type="hidden" name="action" value="updatedev">
-                    <input type="hidden" name="devid" value="{{ device.dev_id }}">
-                    <input border=0 src="/pict/mod.gif" type="image" value="submit" title="{{ lang.table_update }}">
-                </form>
+            <td>
+                <a href="/?a=updatedev&devid={{ device.dev_id }}">
+                    <img src="/pict/mod.gif" title="{{ lang.table_update }}" class="devbutton">
+                </a>
             </td>
             <td class="tab2">
-                <form action="/" enctype="multipart/form-data" method="post">
-                    <input type="hidden" name="action" value="deletedev">
-                    <input type="hidden" name="devid" value="{{ device.dev_id }}">
-                    <input border=0 src="/pict/bin.gif" type="image" value="submit" title="{{ lang.table_delete }}">
-                </form>
+                <a href="/?a=deletedev&devid={{ device.dev_id }}">
+                    <img src="/pict/bin.gif" title="{{ lang.table_delete }}" class="devbutton">
+                </a>
             </td>
-            <td class="tab2"> {{ devicetypes[device.dev_type] }}</td>
-            <td class="tab2">{{ device.dev_id }}</td><td class="tab2">{{ device.ac_type }}</td>
-            <td class="tab2">{{ device.dev_acreg }}</td>
-            <td class="tab2">{{ device.dev_accn }}</td>
-            <td class="tab2"><img src="/pict/yn{{ device.dev_notrack }}.gif"></td>
-            <td class="tab2"><img src="/pict/yn{{ device.dev_noident }}.gif"></td>
-        </tr>
+            <TD class="tab2"> {{ devicetypes[device.dev_type] }}</TD>
+            <TD class="tab2">{{ device.dev_id }}</TD><TD class="tab2">{{ device.ac_type }}</TD>
+            <TD class="tab2">{{ device.dev_acreg }}</TD>
+            <TD class="tab2">{{ device.dev_accn }}</TD>
+            <TD class="tab2"><iMG SRC="/pict/yn{{ device.dev_notrack }}.gif"></TD>
+            <TD class="tab2"><iMG SRC="/pict/yn{{ device.dev_noident }}.gif"></TD>
+        </TR>
         {% else %}
-            <center>{{ lang.error_nodevice }}, {{ lang.table_new }}: <a href="?a=n"><img style="border: none" src="/pict/plu.png" title="{{ lang.table_new }}"></a></center>
+            {{ lang.error_nodevice }}, {{ lang.table_new }}: <A HREF="?a=n"><IMG style="border: none" SRC="/pict/plu.png" title="{{ lang.table_new }}"></A>
         {% endfor %}
-    </table></center>
+        </tbody>
+    </TABLE>
 {% endblock %}
 
-{% block disconnect %} <a href="/?a=d"> {{ lang.disconnect }}</a><br> {% endblock %}
+{% block sidebar %}
+    <a href="#" class="button u-full-width button-primary" >{{ lang.my_devices }}</a>
+    <a href="?a=n" class="button u-full-width" >{{ lang.add_device }}</a>
+    {# <a href="#" class="button u-full-width" >Preferences</a> #}
+    <a href="/?a=d" class="button u-full-width" >{{ lang.disconnect }}</a>
+{% endblock %}

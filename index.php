@@ -11,6 +11,10 @@ require_once 'vendor/autoload.php';
 $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader, array('cache' => false));
 
+$dbh = Database::connect();
+$req = $dbh->query('SELECT count(dev_id) FROM devices ');
+$nbdevices = $req->fetchColumn();
+$twig->addGlobal('nbdevices',$nbdevices);
 
 require_once 'language/english.php';
 
@@ -34,18 +38,10 @@ function home()
 {
     global $lang,$error,$user,$url,$twig;
 
-    $dbh = Database::connect();
-    $req = $dbh->query('SELECT count(dev_id) as nb FROM devices ');
-    $result = $req->fetch();
-    $req->closeCursor();
-    $nbdevices = $result['nb'];
-    Database::disconnect();
-
     $template_vars = array(
         'lang' => $lang,
         'error' => $error,
         'url' => $url,
-        'nbdevices' => $nbdevices,
         'user' => $user,
     );
     echo $twig->render('home.html.twig', $template_vars);

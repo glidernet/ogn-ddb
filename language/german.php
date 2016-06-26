@@ -9,7 +9,7 @@
 /**
  * Updated
  * User: mrandt
- * Date: 2016-06-19
+ * Date: 2016-06-20
  */
 
 // German terminology:
@@ -27,20 +27,20 @@
 // an/abmelden (log in/out)
 
 $languages['german'] = array (
-    "input_welcome" => "Willkommen zur OGN-Gerätedatenbank",
+    "input_welcome" => "Willkommen zur OGN-Gerätedatenbank (OGN DDB)",
     "input_login" => "E-Mail-Adresse:",
     "input_password" => "Passwort:",
     "input_confpassword" => "Passwort (Bestätigung):",
     "input_submit" => "OK",
     "input_cancel" => "Abbrechen",
     "input_nouser" => "Wenn Sie noch kein Benutzerkonto haben, ",
-    "input_create" => "erzeugen Sie ein Benutzerkonto",
+    "input_create" => "erstellen Sie ein neues Konto!",
     "input_createdev" => "Gerät eintragen",
     "input_owner" => "Ich bestätige, der Besitzer dieses Gerätes zu sein.",
     "input_verif" => "Beweisen Sie, dass Sie ein Mensch sind:",
     "input_nbdevices" => "eingetragene Geräte",
-    "input_notrack" => "Dieses Gerät nicht verfolgen (Tracking)",
-    "input_noident" => "Dieses Gerät nicht mit Kennzeichen identifizieren (No-Ident)",
+    "input_notrack" => "Dieses Gerät nicht verfolgen (No-Track)",
+    "input_noident" => "Dieses Gerät nicht identifizieren (No-Ident)",
     "error_login" => "Falsche E-Mail-Adresse oder Passwort",
     "error_pwdontmatch" => "Passwörter stimmen nicht überein",
     "error_pwtooshort" => "Das Passwort muss mindestens vier Zeichen haben",
@@ -48,7 +48,7 @@ $languages['german'] = array (
     "error_userexists" => "Benutzerkonto existiert bereits",
     "error_insert_tmpusers" => "Datenbank-Fehler, bitte versuchen Sie es später nochmals.",
     "error_validation" => "Ihre E-Mail-Adresse konnte nicht validiert werden. Wurde diese bereits validiert?",
-    "error_nodevice" => "Kein Gerät unter diesem Benutzerkonto eingetragen",
+    "error_nodevice" => "Zu diesem Benutzerkonto ist kein Gerät registriert.",
     "error_devid" => "Format-Fehler (Geräte-ID)",
     "error_devtype" => "Format-Fehler (Gerätetyp)",
     "error_actype" => "Format-Fehler (Flugzeugtyp)",
@@ -101,11 +101,11 @@ $languages['german'] = array (
         <li>Die von Ihrem FLARM ausgestrahlten Funksignale werden von OGN-Bodenstationen <em>nicht</em> verarbeitet, sofern diese den sogenannten &quot;Whitelist-Filter&quot; verwenden.</li>        
         </ul>",
     "welcome_text" => "<p>
-        Hier können Sie Ihr Segelflugzeug, Schleppflugzeug oder ein anderes mit FLARM oder OGN-Tracker ausgestattetes Luftfahrzeug 
-        registrieren und die Nutzung der Positionsdaten durch das Open Glider Network konfigurieren.<br>
+        Hier können Sie Ihr Segelflugzeug, Schleppflugzeug oder ein anderes mit FLARM bzw. OGN-Tracker ausgestattetes Luftfahrzeug 
+        registrieren und die Nutzung der Positionsdaten durch das Open Glider Network konfigurieren.<br><br>
         Die Registrierung bietet Ihnen folgende Vorteile:
         <ul>
-            <li>Sie können beeinflussen, ob und wie Ihr Luftfahrzeug auf <a href='http://live.glidernet.org'>live.glidernet.org</a> und in anderen OGN Anmwendungen und Diensten erscheint.</li>
+            <li>Sie können beeinflussen, ob und wie Ihr Luftfahrzeug auf <a href='http://live.glidernet.org'>live.glidernet.org</a> und in anderen OGN Anwendungen und Diensten erscheint.</li>
             <li>Ihr Luftfahrzeug kann im Notfall schnell mit Hilfe des OGN geortet und gefunden werden (SAR).</li>
             <li>Sie tragen zu einer Verbesserung des Verkehrslagebildes für Piloten, Flugleiter am Boden und die offiziellen Lotsen (ATC) bei.</li>
         </ul>

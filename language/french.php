@@ -79,15 +79,15 @@ $languages['french'] = array (
         <li>SAR-functions <em>may not</em> be available for this device</li>
         <li>This device <em>may not</em> contribute to traffic awareness through OGN</li></ul>",
     "welcome_text" => "<p>
-        This is the place to register your glider, towplane or other FLARM/OGN-equipped aircraft
-        to the Open Glider Network. Registering has several advantages:
+        C'est ici qu'on enregistre les planeurs, remorqueurs ou tout autre aéronefs équipés de FLARM dans la base de données Open Glider Network.
+        L'enregistrement à plusieurs avantages:
         <ul>
-            <li>You can influence how your glider is displayed on
-                <a href='http://live.glidernet.org'>live.glidernet.org</a> and other tracking sites</li>
-            <li>In case of SAR, your glider may be easier to find</li>
-            <li>You contribute to traffic-awareness among other pilots and ATC</li>
+            <li>Vous pouvez gérer l'affichage de votre aéronefs sur
+                <a href='http://live.glidernet.org'>live.glidernet.org</a> et sur les autres sites de localisation.</li>
+            <li>En cas de sauvetage, votre aéronef est plus facile à localiser</li>
+            <li>Vous participez à la sensibilisation du traffic aérien pour les pilotes et les contrôleurs</li>
         </ul>
-        The data is freely available under the <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> license.
+        Les données sont disponibles gratuitement sous licence <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a>.
         </p>",
 
 );

@@ -79,10 +79,10 @@ $languages['french'] = array (
         <li>SAR-functions <em>may not</em> be available for this device</li>
         <li>This device <em>may not</em> contribute to traffic awareness through OGN</li></ul>",
     "welcome_text" => "<p>
-        C'est ici qu'on enregistre les planeurs, remorqueurs ou tout autre aéronefs équipés de FLARM dans la base de données Open Glider Network.
-        L'enregistrement à plusieurs avantages:
+        C'est ici qu'on enregistre les planeurs, remorqueurs ou tout autre aéronef équipé de FLARM dans la base de données Open Glider Network.
+        L'enregistrement a plusieurs avantages:
         <ul>
-            <li>Vous pouvez gérer l'affichage de votre aéronefs sur
+            <li>Vous pouvez gérer l'affichage de votre aéronef sur
                 <a href='http://live.glidernet.org'>live.glidernet.org</a> et sur les autres sites de localisation.</li>
             <li>En cas de sauvetage, votre aéronef est plus facile à localiser</li>
             <li>Vous participez à la sensibilisation du traffic aérien pour les pilotes et les contrôleurs</li>

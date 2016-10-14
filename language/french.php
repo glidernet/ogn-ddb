@@ -8,16 +8,16 @@
 
 $languages['french'] = array (
     "input_welcome" => "Bienvenue sur la database Emetteurs OGN",
-    "input_login" => "Utilisateur (adresse courriel):",
-    "input_password" => "Mot de passe:",
-    "input_confpassword" => "Confirmez le mot de passe:",
+    "input_login" => "Utilisateur (adresse courriel) :",
+    "input_password" => "Mot de passe :",
+    "input_confpassword" => "Confirmez le mot de passe :",
     "input_submit" => "Valider",
     "input_cancel" => "Annuler",
     "input_nouser" => "Si vous n'est pas encore membre, ",
     "input_create" => "créez un compte",
     "input_createdev" => "Enregistrer un appareil",
     "input_owner" => "Je certifie être le possesseur de cet appareil",
-    "input_verif" => "Pour être sûr que vous soyez un humain, merci de résoudre ceci:",
+    "input_verif" => "Pour être sûr que vous soyez un humain, merci de résoudre ceci :",
     "input_nbdevices" => "émetteurs enregistrés",
     "input_notrack" => "Je ne veux pas que cet émetteur soit pisté",
     "input_noident" => "Je ne veux pas que cet émetteur soit identifié",
@@ -27,7 +27,7 @@ $languages['french'] = array (
     "error_emailformat" => "Format d'adresse courriel invalide",
     "error_userexists" => "Utilisateur déjà existant",
     "error_insert_tmpusers" => "Erreur Base de données, ré-essayez plus tard",
-    "error_validation" => "Erreur de validation, déjà validé?",
+    "error_validation" => "Erreur de validation, déjà validé ?",
     "error_nodevice" => "Il n'y a pas d'appareil enregistré pour ce compte",
     "error_devid" => "Format ID appareil incorrect",
     "error_devtype" => "Format type d'appareil incorrect",
@@ -41,7 +41,7 @@ $languages['french'] = array (
     "device_updated" => "Appareil mis à jour",
     "device_inserted" => "Appareil enregistré",
     "email_subject" => "[OGN] Validation du Compte",
-    "email_content" => "Bonjour,<BR>Merci de contribuer à OGN.<BR>Pour confirmer cette adresse de courriel, cliquez sur le lien ci-dessous:<BR>",
+    "email_content" => "Bonjour,<BR>Merci de contribuer à OGN.<BR>Pour confirmer cette adresse de courriel, cliquez sur le lien ci-dessous :<BR>",
     "email_sent" => "Un courriel vous a été envoyé, vous trouverez les instruction pour valider votre compte.",
     "email_not_sent" => "Erreur d'envoi de courriel, vérifiez que votre adresse est correcte.",
     "email_validated" => "Votre compte est validé, vous pouvez vous connecter.",
@@ -80,7 +80,7 @@ $languages['french'] = array (
         <li>This device <em>may not</em> contribute to traffic awareness through OGN</li></ul>",
     "welcome_text" => "<p>
         C'est ici qu'on enregistre les planeurs, remorqueurs ou tout autre aéronef équipé de FLARM dans la base de données Open Glider Network.
-        L'enregistrement a plusieurs avantages:
+        L'enregistrement a plusieurs avantages :
         <ul>
             <li>Vous pouvez gérer l'affichage de votre aéronef sur
                 <a href='http://live.glidernet.org'>live.glidernet.org</a> et sur les autres sites de localisation.</li>

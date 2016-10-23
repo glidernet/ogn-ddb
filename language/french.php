@@ -64,20 +64,20 @@ $languages['french'] = array (
     "create_account" => "créez un compte",
     "my_devices" => "Mon appareil",
     "add_device" => "Ajouter appareil",
-    "full_participation" => "Full participation", //no checkboxes checked
+    "full_participation" => "Participation complète", //no checkboxes checked
     "full_participation_description" => "<ul>
-        <li>Tracking applications that use the OGN DDB will mark the position with aircraft identification</li>
-        <li>Aircraft registration and CN are published in the OGN Devices Database</li></ul>",
-    "anonymous_participation" => "Anonymous participation", //only noident checkbox checked
+        <li>Les applications de pistage utilisant OGN DDB afficheront la position avec l'identification de l'aéronef</li>
+        <li>L'immatriculation de l'aéronef et son n° de concours sont publié dans la base de donnée des apareils OGN (DDB)</li></ul>",
+    "anonymous_participation" => "Participation anonyme", //only noident checkbox checked
     "anonymous_participation_description" => "<ul>
-        <li>Tracking applications that use the OGN DDB will mark the position with an <em>anonymous</em> marker</li>
-        <li>Aircraft registration and CN are <em>not</em> made public</li></ul>",
-    "no_participation" => "No participation", //notrack or both checkboxes checked
+        <li>Les applications de pistage utilisant OGN DDB afficheront la position avec un marqueur <em>anonyme</em></li>
+        <li>L'immatriculation de l'aéronef et son n° de concours <em>ne</em> seront <em>pas</em> publiés</li></ul>",
+    "no_participation" => "Pas de participation", //notrack or both checkboxes checked
     "no_participation_description" => "<ul>
-        <li>Tracking applications that use the OGN DDB will <em>not</em> mark your position</li>
-        <li>Aircraft registration and CN are <em>not</em> made public.</li>
-        <li>SAR-functions <em>may not</em> be available for this device</li>
-        <li>This device <em>may not</em> contribute to traffic awareness through OGN</li></ul>",
+        <li>Les applications de pistage utilisant OGN DDB <em>n'</em>afficheront <em>pas</em> votre position</li>
+        <li>L'immatriculation de l'aéronef et son n° de concours <em>ne</em> sont <em>pas</em> publiés</li>
+        <li>Les fonctions de <abbr title="recherche et sauvetage (Search And Rescue)">SAR</abbr> <em>ne sont éventuellement pas</em> disponible pour cet appareil</li>
+        <li>Cet appareil <em>ne</em> contribura <em>éventuellement pas</em>à montrer la réalité du traffic via OGN</li></ul>",
     "welcome_text" => "<p>
         C'est ici qu'on enregistre les planeurs, remorqueurs ou tout autre aéronef équipé de FLARM dans la base de données Open Glider Network.
         L'enregistrement a plusieurs avantages :

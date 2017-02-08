@@ -30,6 +30,7 @@ $languages['german'] = array (
     "input_welcome" => "Willkommen zur OGN-Gerätedatenbank (OGN DDB)",
     "input_login" => "E-Mail-Adresse:",
     "input_password" => "Passwort:",
+    "input_newpassword" => "New password:",
     "input_confpassword" => "Passwort (Bestätigung):",
     "input_submit" => "OK",
     "input_cancel" => "Abbrechen",
@@ -84,6 +85,7 @@ $languages['german'] = array (
     "create_account" => "Konto erstellen",
     "my_devices" => "Meine Geräte",
     "add_device" => "Neues Gerät eintragen",
+    "change_password" => "Change password",
     "full_participation" => "Teilnahme an allen Diensten (Opt-In)", //no checkboxes checked
     "full_participation_description" => "<ul>
         <li>Anwendungen und Dienste, welche die OGN Devices Database (OGN DDB) verwenden, zeigen die Position Ihres Luftfahrzeuges inklusive der Kennung und des Musters an.</li>

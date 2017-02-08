@@ -10,6 +10,7 @@ $languages['czech'] = array (
     "input_welcome" => "Vítejte v databázi zařízení sítě OGN",
     "input_login" => "Email:",
     "input_password" => "Heslo:",
+    "input_newpassword" => "New password:",
     "input_confpassword" => "Potvrďte heslo:",
     "input_submit" => "Odeslat",
     "input_cancel" => "Zrušit",
@@ -64,6 +65,7 @@ $languages['czech'] = array (
     "create_account" => "Vytvoření účtu",
     "my_devices" => "Moje zařízení",
     "add_device" => "Přidat zařízení",
+    "change_password" => "Change password",
     "full_participation" => "Plná účast", //no checkboxes checked
     "full_participation_description" => "<ul>
         <li>Mapové aplikace které využívají databázi OGN označí pozici identifikací letadla</li>

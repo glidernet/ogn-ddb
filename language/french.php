@@ -10,6 +10,7 @@ $languages['french'] = array (
     "input_welcome" => "Bienvenue sur la database Emetteurs OGN",
     "input_login" => "Utilisateur (adresse courriel) :",
     "input_password" => "Mot de passe :",
+    "input_newpassword" => "Nouveau mot de passe :",
     "input_confpassword" => "Confirmez le mot de passe :",
     "input_submit" => "Valider",
     "input_cancel" => "Annuler",
@@ -64,6 +65,7 @@ $languages['french'] = array (
     "create_account" => "créez un compte",
     "my_devices" => "Mon appareil",
     "add_device" => "Ajouter appareil",
+    "change_password" => "Modifier mot de passe",
     "full_participation" => "Participation complète", //no checkboxes checked
     "full_participation_description" => "<ul>
         <li>Les applications de pistage utilisant OGN DDB afficheront la position avec l'identification de l'aéronef</li>

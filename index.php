@@ -416,7 +416,7 @@ case 'createuser':        // create user
     break;
 }
 
-case 'changepass':        // create user
+case 'changepass':        // change pass
 {
     fromhome();
     if (!isset($_SESSION['user'])) {

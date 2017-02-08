@@ -10,6 +10,7 @@ $languages['dutch'] = array (
     "input_welcome" => "Welkom bij de OGN Devices Database",
     "input_login" => "Email adres:",
     "input_password" => "Wachtwoord:",
+    "input_newpassword" => "New password:",
     "input_confpassword" => "Bevestig wachtwoord:",
     "input_submit" => "Verstuur",
     "input_cancel" => "Annuleer",
@@ -64,6 +65,7 @@ $languages['dutch'] = array (
     "create_account" => "Maak een account aan",
     "my_devices" => "Mijn devices",
     "add_device" => "Device toevoegen",
+    "change_password" => "Change password",
     "full_participation" => "Volledig deelnemen",
     "full_participation_description" => "<ul>
         <li>Tracking applicaties die de OGN DDB gebruiken, geven de positie weer met vliegtuig identificatie</li>

@@ -10,6 +10,7 @@ $languages['english'] = array (
     "input_welcome" => "Welcome to the OGN Devices database",
     "input_login" => "Email address:",
     "input_password" => "Password:",
+    "input_newpassword" => "New password:",
     "input_confpassword" => "Confirm password:",
     "input_submit" => "Submit",
     "input_cancel" => "Cancel",
@@ -64,6 +65,7 @@ $languages['english'] = array (
     "create_account" => "Create an account",
     "my_devices" => "My devices",
     "add_device" => "Add device",
+    "change_password" => "Change password",
     "full_participation" => "Full participation", //no checkboxes checked
     "full_participation_description" => "<ul>
         <li>Tracking applications that use the OGN DDB will mark the position with aircraft identification</li>

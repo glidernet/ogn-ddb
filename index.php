@@ -262,8 +262,6 @@ case 'p':        // fill in change password
     if (!isset($_SESSION['login'])) {
         exit();
     } // test if user come from login page
-//    $_SESSION['dev'] = 'yes';
-//    $devtype = 2;        // default type is Flarm
     changepassword();
     break;
 }
@@ -421,6 +419,9 @@ case 'createuser':        // create user
 case 'changepass':        // create user
 {
     fromhome();
+    if (!isset($_SESSION['user'])) {
+        exit();
+    } // test if user id defined
     if (isset($_POST['pw1'])) {
         $pw1 = $_POST['pw1'];
     } else {

@@ -125,6 +125,16 @@ function fillindevice()
     echo $twig->render('fillindevice.html.twig', $template_vars);
 }
 
+function changepassword()
+{
+    global $lang,$error,$twig;
+
+    $template_vars = array(
+        'lang' => $lang,
+    );
+    echo $twig->render('changepassword.html.twig', $template_vars);
+}
+
 function devicelist()
 {
     global $dbh,$lang,$error,$url,$twig;
@@ -243,6 +253,16 @@ case 'n':        // fill in create device
     $_SESSION['dev'] = 'yes';
     $devtype = 2;        // default type is Flarm
     fillindevice();
+    break;
+}
+
+case 'p':        // fill in change password
+{
+    fromhome();
+    if (!isset($_SESSION['login'])) {
+        exit();
+    } // test if user come from login page
+    changepassword();
     break;
 }
 
@@ -393,6 +413,48 @@ case 'createuser':        // create user
     }
 
     Database::disconnect();
+    break;
+}
+
+case 'changepass':        // change pass
+{
+    fromhome();
+    if (!isset($_SESSION['user'])) {
+        exit();
+    } // test if user id defined
+    if (isset($_POST['pw1'])) {
+        $pw1 = $_POST['pw1'];
+    } else {
+        $pw1 = '';
+    }
+    if (isset($_POST['pw2'])) {
+        $pw2 = $_POST['pw2'];
+    } else {
+        $pw2 = '';
+    }
+
+    if (strlen($pw1) < 4) {
+        $error = $lang['error_pwtooshort'];
+    }
+
+    if ($pw1 != $pw2) {
+        $error = $lang['error_pwdontmatch'];
+    }
+
+    $dbh = Database::connect();
+    $user_id = $_SESSION['user'];
+    $pass = crypt($pw1, 'GliderNetdotOrg');
+
+    $ins = $dbh->prepare('UPDATE users SET usr_pw = :pw WHERE usr_id = :us');
+    $ins->bindParam(':us', $user_id);
+    $ins->bindParam(':pw', $pass);
+
+    if ($ins->execute()) {
+        $ins->closeCursor();
+    }
+
+    Database::disconnect();
+    devicelist();
     break;
 }
 

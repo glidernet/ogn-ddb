@@ -78,7 +78,7 @@ $languages['french'] = array (
     "no_participation_description" => "<ul>
         <li>Les applications de pistage utilisant OGN DDB <em>n'</em>afficheront <em>pas</em> votre position</li>
         <li>L'immatriculation de l'aéronef et son n° de concours <em>ne</em> sont <em>pas</em> publiés</li>
-        <li>Les fonctions de <abbr title="recherche et sauvetage (Search And Rescue)">SAR</abbr> <em>ne sont éventuellement pas</em> disponible pour cet appareil</li>
+        <li>Les fonctions de <abbr title=\"recherche et sauvetage (Search And Rescue)\">SAR</abbr> <em>ne sont éventuellement pas</em> disponible pour cet appareil</li>
         <li>Cet appareil <em>ne</em> contribura <em>éventuellement pas</em>à montrer la réalité du traffic via OGN</li></ul>",
     "welcome_text" => "<p>
         C'est ici qu'on enregistre les planeurs, remorqueurs ou tout autre aéronef équipé de FLARM dans la base de données Open Glider Network.

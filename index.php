@@ -554,21 +554,9 @@ case 'createdev':        // create device
         $error = $lang['error_devid'];
     }
 
-    // replace all TAB by space
-    //$acreg = trim(preg_replace('/\t+/', ' ', $acreg));
-    //$accn = trim(preg_replace('/\t+/', ' ', $accn));
-
-    // replace all " ' . , ? by -
-    //$repstr = array("'", '"', ',','.',',','?');
-    //$acreg = str_replace($repstr, '-', $acreg);
-    //$accn = str_replace($repstr, '-', $accn);
-	
-	// Only allow alpha numeric characters and '.', '_', '-', ' ' in register/cn
-	$acreg = trim(preg_replace('/[^A-Za-z0-9._ -]/', '', $acreg));
-	$accn =  trim(preg_replace('/[^A-Za-z0-9._ -]/', '', $accn));
-	
-	
-		
+    // Only allow alpha numeric characters and '.', '_', '-', ' ' in register/cn
+    $acreg = trim(preg_replace('/[^A-Za-z0-9._ -]/', '', $acreg));
+    $accn =  trim(preg_replace('/[^A-Za-z0-9._ -]/', '', $accn));
 
     if (strlen($devid) != 6) {
         $error = $lang['error_devid'];

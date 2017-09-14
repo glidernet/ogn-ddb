@@ -185,7 +185,7 @@ if (isset($_GET['v'])) {
     $validcode = $_GET['v'];
 }
 
-if (isset($_GET['f'])) {
+if (isset($_GET['f'])) {			// the case of forgot password ...
     $action = 'validpasswd';
     $validcode = $_GET['f'];
 }
@@ -259,6 +259,7 @@ case 'u':        // fill in create user
     break;
 }
 
+// ---------------------------------------
 case 'forgot':    // forgot the password
 {
     fromhome();
@@ -600,7 +601,6 @@ case 'validuser':        // user validation from email
     break;
 }
 // ---------------------------------------
-
 case 'validpasswd':        // password validation from email
 {
     $dbh = Database::connect();

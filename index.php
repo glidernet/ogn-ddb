@@ -18,8 +18,8 @@ $twig->addGlobal('nbdevices',$nbdevices);
 
 require_once 'language/english.php';
 
-//$url = 'https://ddb.glidernet.org/';
-$url = 'http://localhost:82/';
+$url = 'https://ddb.glidernet.org/';
+//$url = 'http://localhost:82/';
 $sender = 'contact@glidernet.org';
 
 function send_email($to, $subject, $message, $from = '')

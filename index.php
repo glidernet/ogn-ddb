@@ -164,7 +164,7 @@ function devicelist()
         'devicelist' => $req2->fetchAll(),
         'url' => $url,
         'lang' => $lang,
-        'devicetypes' => array(1 => 'ICAO', 2 => 'Flarm', 3 => 'OGN'),
+        'devicetypes' => array(1 => 'ICAO', 2 => 'Flarm', 3 => 'OGN', 4=> 'NAVITER'),
 
     );
     echo $twig->render('devicelist.html.twig', $template_vars);
@@ -710,7 +710,7 @@ case 'createdev':        // create device
     if (strlen($accn) > 3) {
         $error = $lang['error_accn'];
     }
-    if ($devtype < 1 or $devtype > 3) {
+    if ($devtype < 1 or $devtype > 4) {
         $error = $lang['error_devtype'];
     }
 

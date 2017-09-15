@@ -2,7 +2,7 @@
 
 include '../sql.php';
 $dbh = Database::connect();
-$devtype = array(1 => 'I', 2 => 'F', 3 => 'O');
+$devtype = array(1 => 'I', 2 => 'F', 3 => 'O', 4 => 'N');
 
 $t = !empty($_GET['t']);
 $actype = $t ? ', ac_cat AS aircraft_type ' : '';

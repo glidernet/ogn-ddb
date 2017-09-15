@@ -19,6 +19,7 @@ $twig->addGlobal('nbdevices',$nbdevices);
 require_once 'language/english.php';
 
 $url = 'https://ddb.glidernet.org/';
+//$url = 'http://localhost:82/';
 $sender = 'contact@glidernet.org';
 
 function send_email($to, $subject, $message, $from = '')
@@ -76,6 +77,24 @@ function fillinuser()
         'v2' => $v2,
     );
     echo $twig->render('fillinuser.html.twig', $template_vars);
+}
+
+function fillinuserforgot()
+{
+    global $lang,$error,$user,$twig;
+
+    $v1 = rand(5, 9);
+    $v2 = rand(5, 9);
+    $_SESSION['verif'] = $v1 * $v2;
+
+    $template_vars = array(
+        'lang' => $lang,
+        'error' => $error,
+        'user' => $user,
+        'v1' => $v1,
+        'v2' => $v2,
+    );
+    echo $twig->render('fillinuserforgot.html.twig', $template_vars);
 }
 
 function fillindevice()
@@ -145,7 +164,7 @@ function devicelist()
         'devicelist' => $req2->fetchAll(),
         'url' => $url,
         'lang' => $lang,
-        'devicetypes' => array(1 => 'ICAO', 2 => 'Flarm', 3 => 'OGN'),
+        'devicetypes' => array(1 => 'ICAO', 2 => 'Flarm', 3 => 'OGN', 4=> 'NAVITER'),
 
     );
     echo $twig->render('devicelist.html.twig', $template_vars);
@@ -164,6 +183,11 @@ if (isset($_GET['a'])) {
 if (isset($_GET['v'])) {
     $action = 'validuser';
     $validcode = $_GET['v'];
+}
+
+if (isset($_GET['f'])) {			// the case of forgot password ...
+    $action = 'validpasswd';
+    $validcode = $_GET['f'];
 }
 session_start();
 
@@ -232,6 +256,14 @@ case 'u':        // fill in create user
 {
     fromhome();
     fillinuser();
+    break;
+}
+
+// ---------------------------------------
+case 'forgot':    // forgot the password
+{
+    fromhome();
+    fillinuserforgot();
     break;
 }
 
@@ -415,7 +447,87 @@ case 'createuser':        // create user
     Database::disconnect();
     break;
 }
+//  -------------------------------------
+case 'forgotpasswd':        // forgot password
+{
+    fromhome();
+    if (isset($_POST['user'])) {
+        $user = $_POST['user'];
+    }
+    if (isset($_POST['pw1'])) {
+        $pw1 = $_POST['pw1'];
+    } else {
+        $pw1 = '';
+    }
+    if (isset($_POST['pw2'])) {
+        $pw2 = $_POST['pw2'];
+    } else {
+        $pw2 = '';
+    }
+    if (isset($_POST['verif'])) {
+        $verif = $_POST['verif'];
+    } else {
+        $verif = '';
+    }
 
+    if ($verif == '' or $verif * 1 != $_SESSION['verif'] * 1) {
+        $error = $lang['error_verif'];
+    }
+
+    if (strlen($pw1) < 4) {
+        $error = $lang['error_pwtooshort'];
+    }
+
+    if ($pw1 != $pw2) {
+        $error = $lang['error_pwdontmatch'];
+    }
+    if (filter_var($user, FILTER_VALIDATE_EMAIL) === false) {
+        $error = $lang['error_emailformat'];
+    }
+
+    $dbh = Database::connect();
+    $req = $dbh->prepare('select usr_adress from users where usr_adress=:us UNION ALL select tusr_adress from tmpusers where tusr_adress=:us');
+    $req->bindParam(':us', $user);
+    $req->execute();
+
+    if ($req->rowCount() == 0) {
+        $error = $lang['error_userdoesnotexists'];
+    }
+    $req->closeCursor();
+
+    if ($error != '') {
+        fillinuser();
+    } else {
+        $pass = crypt($pw1, 'GliderNetdotOrg');
+        $valid = md5(date('dYmsHi').$user);
+        $ttime = time();
+
+        $ins = $dbh->prepare('INSERT INTO tmpusers (tusr_adress, tusr_pw, tusr_validation, tusr_time) VALUES (:us, :pw, :va, :ti)');
+        $ins->bindParam(':us', $user);
+        $ins->bindParam(':pw', $pass);
+        $ins->bindParam(':va', $valid);
+        $ins->bindParam(':ti', $ttime);
+
+        if ($ins->execute()) {   // insert ok, sent email
+            $validation_link = $url.'?f='.$valid;
+            $msg = $twig->render('email-validation-request.html.twig', array('lang' => $lang, 'validation_link' => $validation_link));
+            if (send_email($user, $lang['email_subject'], $msg, $sender)) {
+                // email sent
+                echo $twig->render('emailsent.html.twig', array('lang' => $lang));
+            } else {
+                $error = $lang['email_not_sent'];
+                fillinuser();
+            }
+        } else {
+            $error = $lang['error_insert_tmpusers'];
+            fillinuser();
+        }
+        $ins->closeCursor();
+    }
+
+    Database::disconnect();
+    break;
+}
 case 'changepass':        // change pass
 {
     fromhome();
@@ -488,7 +600,38 @@ case 'validuser':        // user validation from email
     home();
     break;
 }
+// ---------------------------------------
+case 'validpasswd':        // password validation from email
+{
+    $dbh = Database::connect();
+    $req = $dbh->prepare('select * from tmpusers where tusr_validation=:vl');
+    $req->bindParam(':vl', $validcode);
+    $req->execute();
+    if ($req->rowCount() == 1) {        // tmpuser user found
+        $result = $req->fetch();
+        $req->closeCursor();
 
+        $ins = $dbh->prepare('UPDATE users SET usr_pw = :pw WHERE usr_adress = :us');
+        $ins->bindParam(':us', $result['tusr_adress']);
+        $ins->bindParam(':pw', $result['tusr_pw']);
+
+        if ($ins->execute()) {    // insert ok, delete tmpuser
+            $ins->closeCursor();
+            $del = $dbh->prepare('DELETE FROM tmpusers where tusr_validation=:vl');
+            $del->bindParam(':vl', $validcode);
+            $del->execute();
+            $user = $result['tusr_adress'];
+            $error = $lang['email_validated'];
+        } else {
+            $error = $lang['error_validation'];
+        }
+    } else {
+        $error = $lang['error_validation'];
+    }
+    $_SESSION['home'] = 'yes';
+    home();
+    break;
+}
 case 'createdev':        // create device
 {
     fromhome();
@@ -567,7 +710,7 @@ case 'createdev':        // create device
     if (strlen($accn) > 3) {
         $error = $lang['error_accn'];
     }
-    if ($devtype < 1 or $devtype > 3) {
+    if ($devtype < 1 or $devtype > 4) {
         $error = $lang['error_devtype'];
     }
 

@@ -18,8 +18,8 @@ $twig->addGlobal('nbdevices',$nbdevices);
 
 require_once 'language/english.php';
 
-$url = 'https://ddb.glidernet.org/';
-//$url = 'http://localhost:82/';
+//$url = 'https://ddb.glidernet.org/';
+$url = 'http://localhost:82/';
 $sender = 'contact@glidernet.org';
 
 function send_email($to, $subject, $message, $from = '')
@@ -496,7 +496,7 @@ case 'forgotpasswd':        // forgot password
     $req->closeCursor();
 
     if ($error != '') {
-        fillinuser();
+        fillinuserforgot();
     } else {
         $pass = crypt($pw1, 'GliderNetdotOrg');
         $valid = md5(date('dYmsHi').$user);
@@ -516,11 +516,11 @@ case 'forgotpasswd':        // forgot password
                 echo $twig->render('emailsent.html.twig', array('lang' => $lang));
             } else {
                 $error = $lang['email_not_sent'];
-                fillinuser();
+                fillinuserforgot();
             }
         } else {
             $error = $lang['error_insert_tmpusers'];
-            fillinuser();
+            fillinuserforgot();
         }
         $ins->closeCursor();
     }

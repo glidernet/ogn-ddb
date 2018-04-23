@@ -67,7 +67,11 @@ if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCE
     header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
-    echo json_encode($output);
+    $json = json_encode($output); 
+    if ($json) 
+	echo $json; 
+    else 
+	echo json_last_error_msg();
 } else {
     header('Content-Type: text/plain; charset="UTF-8"');
     echo '#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED';

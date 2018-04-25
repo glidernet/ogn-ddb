@@ -71,7 +71,11 @@ if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCE
     if ($json) 
 	echo $json; 
     else 
-	echo json_last_error_msg();
+	{
+        header('HTTP/1.0 501 Not Implemented');
+	echo '{"errormsg":"'.json_last_error_msg().'"}';
+	exit;
+	}
 } else {
     header('Content-Type: text/plain; charset="UTF-8"');
     echo '#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED';

@@ -16,18 +16,17 @@ if (!empty($_GET['device_id'])) {
     $filter[] = 'dev_id IN ('.$qm.')';
     $params = array_merge($params, $regs);
 }
-
 if (!empty($_GET['from_id'])) {
     $fromid = $_GET['from_id'];
-    if (!empty($_GET['till_id'])) {
-	    $tillid = $_GET['till_id'];
+    $filter[] = 'dev_id >="'.$fromid.'"';
+}
+if (!empty($_GET['till_id'])) {
+    $tillid = $_GET['till_id'];
+    if (!empty($_GET['from_id'])) {
+      $filter[count($filter)-1] .= ' AND dev_id <="'.$tillid.'"';
     } else {
-	    $tillid = 'FFFFFF';
+      $filter[] = 'dev_id <="'.$tillid.'"';
     }
-    $regs = explode(',', $_GET['from_id']);
-    $regs = explode(',', $_GET['till_id']);
-    $filter[] = 'dev_id >="'.$fromid.'" AND dev_id <= "'.$tillid.'"';
-    $params = array_merge($params, $regs);
 }
 if (!empty($_GET['registration'])) {
     $regs = explode(',', $_GET['registration']);

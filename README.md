@@ -29,6 +29,8 @@ Field           | Possible Values
 --------------- | -------------------------------
 device\_type    | `^[FIO]$`
 device\_id      | `^[A-F0-9]{6}$`
+from\_id        | `^[A-F0-9]{6}$`
+till\_id        | `^[A-F0-9]{6}$`
 aircraft\_model | any string
 registration    | any string
 cn              | any string
@@ -49,6 +51,8 @@ parameter    | values | default | effect
 t            | 0/1    | 0       | show field `aircraft_type` if set to 1
 j            | 0/1    | 0       | forces JSON output when set to 1 (regardless of accept header)
 device\_id   | csv    | n/a     | select a comma separated list of device ID's              
+from\_id     | id     | n/a     | select list of device ID's starting from this provided ID
+till\_id     | id     | n/a     | select list of device ID's until this provided ID
 registration | csv    | n/a     | select a comma separated list of registrations
 cn           | csv    | n/a     | select a comma separated list of callsigns
 

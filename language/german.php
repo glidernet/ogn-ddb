@@ -37,6 +37,7 @@ $languages['german'] = array (
     "input_nouser" => "Wenn Sie noch kein Benutzerkonto haben, ",
     "input_forgot" => "Passwort vergessen ???, ",
     "input_forgotproc" => "Passwort zurücksetzen  ",
+    "input_help" => "Brauche Hilfe? ",
     "input_create" => "erstellen Sie ein neues Konto!",
     "input_createdev" => "Gerät eintragen",
     "input_owner" => "Ich bestätige, der Besitzer dieses Gerätes zu sein.",

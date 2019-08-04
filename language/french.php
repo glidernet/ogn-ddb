@@ -17,6 +17,7 @@ $languages['french'] = array (
     "input_nouser" => "Si vous n'est pas encore membre, ",
     "input_forgot" => "Mot de passe oublié ? ",
     "input_forgotproc" => "Réinitialiser le mot de passe",
+    "input_help" => "Besoin d'aide pour? ",
     "input_create" => "créez un compte",
     "input_createdev" => "Enregistrer un appareil",
     "input_owner" => "Je certifie être le possesseur de cet appareil",

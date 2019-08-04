@@ -17,6 +17,7 @@ $languages['czech'] = array (
     "input_nouser" => "Nemáte ještě svůj účet v databázi? - ",
     "input_forgot" => "Zapomněli jste heslo ??? - ",
     "input_forgotproc" => "Obnovit heslo  ",
+    "input_help" => "Potřebovat pomoc? ",
     "input_create" => "Vytvořit účet",
     "input_createdev" => "Registrace zařízení",
     "input_owner" => "Potvrzuji, že jsem vlastníkem tohoto zařízení",

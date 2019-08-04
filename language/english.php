@@ -17,6 +17,7 @@ $languages['english'] = array (
     "input_nouser" => "If you're not already a member, ",
     "input_forgot" => "Forgot your password ???, ",
     "input_forgotproc" => "Reset password  ",
+    "input_help" => "Need help? ",
     "input_create" => "Create an account",
     "input_createdev" => "Register a device",
     "input_owner" => "I certify to be the owner of this device",

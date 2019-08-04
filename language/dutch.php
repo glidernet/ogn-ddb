@@ -17,6 +17,7 @@ $languages['dutch'] = array (
     "input_nouser" => "Bent u nog niet geregistreerd? ",
     "input_forgot" => "Forgot your password ???, ",
     "input_forgotproc" => "Reset password  ",
+    "input_help" => "Hulp nodig? ",
     "input_create" => "Maak een account aan!",
     "input_createdev" => "Registreer een apparaat",
     "input_owner" => "Ik verklaar dat ik de eigenaar ben van dit apparaat",

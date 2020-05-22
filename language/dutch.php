@@ -89,10 +89,10 @@ $languages['dutch'] = array (
         Registreren heeft verschillende voordelen:
         <ul>
             <li>U kunt bepalen hoe uw (zweef)vliegtuig wordt weergegeven op
-                <a href='http://live.glidernet.org'>live.glidernet.org</a> en andere tracking websites</li>
+                <a href='https://live.glidernet.org'>live.glidernet.org</a> en andere tracking websites</li>
             <li>Bij Search and Rescue operaties is uw vliegtuig sneller vindbaar</li>
             <li>U draagt bij aan traffic-awareness bij medepiloten en luchtverkeersleiding</li>
         </ul>
-        De data wordt gepubliceerd onder de <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> licentie.
+        De data wordt gepubliceerd onder de <a href='https://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> licentie.
         </p>",
 );

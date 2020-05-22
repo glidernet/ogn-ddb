@@ -30,7 +30,7 @@ $languages['french'] = array (
     "error_pwtooshort" => "Mot de passe trop court (4 car mini)",
     "error_emailformat" => "Format d'adresse courriel invalide",
     "error_userexists" => "Utilisateur déjà existant",
-    "error_userdoesnotexists" => "This user does not exists", 
+    "error_userdoesnotexists" => "This user does not exists",
     "error_insert_tmpusers" => "Erreur Base de données, ré-essayez plus tard",
     "error_validation" => "Erreur de validation, déjà validé ?",
     "error_nodevice" => "Il n'y a pas d'appareil enregistré pour ce compte",
@@ -89,12 +89,11 @@ $languages['french'] = array (
         L'enregistrement a plusieurs avantages :
         <ul>
             <li>Vous pouvez gérer l'affichage de votre aéronef sur
-                <a href='http://live.glidernet.org'>live.glidernet.org</a> et sur les autres sites de localisation.</li>
+                <a href='https://live.glidernet.org'>live.glidernet.org</a> et sur les autres sites de localisation.</li>
             <li>En cas de sauvetage, votre aéronef est plus facile à localiser</li>
             <li>Vous participez à la sensibilisation du traffic aérien pour les pilotes et les contrôleurs</li>
         </ul>
-        Les données sont disponibles gratuitement sous licence <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a>.
+        Les données sont disponibles gratuitement sous licence <a href='https://opendatacommons.org/licenses/by/summary/'>ODC-BY</a>.
         </p>",
 
 );
-

@@ -89,11 +89,11 @@ $languages['english'] = array (
         to the Open Glider Network. Registering has several advantages:
         <ul>
             <li>You can influence how your glider is displayed on
-                <a href='http://live.glidernet.org'>live.glidernet.org</a> and other tracking sites</li>
+                <a href='https://live.glidernet.org'>live.glidernet.org</a> and other tracking sites</li>
             <li>In case of SAR, your glider may be easier to find</li>
             <li>You contribute to traffic-awareness among other pilots and ATC</li>
         </ul>
-        The data is freely available under the <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> license.
+        The data is freely available under the <a href='https://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> license.
         </p>",
 
 );

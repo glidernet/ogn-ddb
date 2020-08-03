@@ -4,3 +4,6 @@ sql.php
 composer.lock
 templates/cache
 utils/config.py
+utils/__cache__
+sscommit.sh
+sslink.sh

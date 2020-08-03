@@ -17,7 +17,7 @@
    cd /var/www/public
    composer update
    cp sql.php.dist sql.php
-   mysql --database scotchbox < database_schema.sql
+   mysql --database scotchbox < docs/glidernet_devicesdb.sql
    ```
 
 4. Access your local ogn-ddb instance at [192.168.33.10](http://192.168.33.10)

@@ -3,3 +3,4 @@ sql.php
 /.idea
 composer.lock
 templates/cache
+utils/config.py

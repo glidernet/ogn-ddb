@@ -1,0 +1,67 @@
+<div class="container">
+  <div class="twelve columns devices">
+            <b>{{ nbobjects }} {{ lang.input_nbobjects }}</b>
+  </div>
+
+  <div class="nine columns">
+
+  {% block content %}
+    <style type="text/css">
+        @media (max-width: 950px) {
+            td:nth-of-type(1):before { content: "{{ lang.table_update }}:"; }
+            td:nth-of-type(2):before { content: "{{ lang.table_delete }}:"; }
+            td:nth-of-type(5):before { content: "{{ lang.table_actype }}:"; }
+            td:nth-of-type(6):before { content: "{{ lang.table_acreg }}:"; }
+            td:nth-of-type(7):before { content: "{{ lang.table_accn }}:"; }
+            td:nth-of-type(8):before { content: "{{ lang.table_flyobj }}:"; }
+            td:nth-of-type(9):before { content: "{{ lang.table_active }}:"; }
+            td:nth-of-type(9):before { content: "{{ lang.table_phone }}:"; }
+            td:nth-of-type(9):before { content: "{{ lang.table_club }}:"; }
+            td:nth-of-type(9):before { content: "{{ lang.table_country }}:"; }
+        }
+    </style>
+
+        {% if error!="" %}<h5 style="color:red">{{ error }}</h5>{% endif %}
+    <TABLE class="tab1"><thead>
+        <TR>
+            <TH colspan="2"></TH>
+            <TH>{{ lang.table_flyobj }}</TH>
+            <TH>{{ lang.table_actype }}</TH>
+            <TH>{{ lang.table_acreg }}</TH>
+            <TH>{{ lang.table_accn }}</TH>
+            <TH>{{ lang.table_active }}</TH>
+            <TH>{{ lang.table_phone }}</TH>
+            <TH>{{ lang.table_club }}</TH>
+            <TH>{{ lang.table_country }}</TH>
+        </TR>
+        </thead>
+        <tbody>
+        {% for aircraft in aircraftlist %}
+        <tr>
+            <td>
+                <a href="/?a=updateacft&airid={{ aircraft.air_id }}">
+                    <img src="/pict/mod.gif" title="{{ lang.table_update }}" class="devbutton">
+                </a>
+            </td>
+            <td class="tab2">
+                <a href="/?a=deleteacft&airid={{ aircraft.air_id }}">
+                    <img src="/pict/bin.gif" title="{{ lang.table_delete }}" class="devbutton">
+                </a>
+            </td>
+            <TD class="tab2">{{ aircraft.air_id }}</TD>
+            <TD class="tab2">{{ aircraft.ac_type }}</TD>
+            <TD class="tab2">{{ aircraft.air_acreg }}</TD>
+            <TD class="tab2">{{ aircraft.air_accn }}</TD>
+            <TD class="tab2"><iMG SRC="/pict/yn{{ 1 - aircraft.air_active }}.gif"></TD>
+            <TD class="tab2">{{ aircraft.air_SARphone }}</TD>
+            <TD class="tab2">{{ aircraft.air_SARclub }}</TD>
+            <TD class="tab2">{{ aircraft.air_Country }}</TD>
+        </TR>
+        {% else %}
+            {{ lang.error_nodevice }}, {{ lang.table_new }}: <A HREF="?a=n"><IMG style="border: none" SRC="/pict/plu.png" title="{{ lang.table_new }}"></A>
+        {% endfor %}
+        </tbody>
+    </TABLE>
+  {% endblock %}
+  </div>
+</div>

@@ -13,6 +13,7 @@
             td:nth-of-type(8):before { content: "{{ lang.table_notrack }}:"; }
             td:nth-of-type(9):before { content: "{{ lang.table_noident }}:"; }
             td:nth-of-type(10):before { content: "{{ lang.table_active }}:"; }
+            td:nth-of-type(11):before { content: "{{ lang.table_idtype }}:"; }
         }
     </style>
 
@@ -22,6 +23,7 @@
             <TH colspan="2"></TH>
             <TH>{{ lang.table_devtype }}</TH>
             <TH>{{ lang.table_devid }}</TH>
+            <TH>{{ lang.table_idtype }}</TH>
             <TH>{{ lang.table_acreg }}</TH>
             <TH>{{ lang.table_accn }}</TH>
             <TH>{{ lang.table_notrack }}</TH>
@@ -44,6 +46,7 @@
             </td>
             <TD class="tab2"> {{ devicetypes[device.dev_type] }}</TD>
             <TD class="tab2">{{ device.dev_id }}</TD>
+            <TD class="tab2">{{ idtypes[device.dev_idtype] }}</TD>
             <TD class="tab2">{{ device.air_acreg }}</TD>
             <TD class="tab2">{{ device.air_accn }}</TD>
             <TD class="tab2"><iMG SRC="/pict/yn{{ device.dev_notrack }}.gif"></TD>

@@ -10,14 +10,20 @@
             <div class="one-half column">
                 <label>{{ lang.table_devtype }}</label>
                 <select class="u-full-width" id="devtype" name="devtype" >
-                        <option value="1" {{ dtypc[1] }}>ICAO</option>
-                        <option value="2" {{ dtypc[2] }}>Flarm</option>
-                        <option value="3" {{ dtypc[3] }}>OGN</option>
+                        <option value="2" {{ dtypc[2] }}>Flarm </option>
+                        <option value="3" {{ dtypc[3] }}>OGN Tracker</option>
                         <option value="4" {{ dtypc[4] }}>NAVITER</option>
                         <option value="5" {{ dtypc[5] }}>SPOT</option>
                         <option value="6" {{ dtypc[6] }}>SPIDER</option>
                         <option value="7" {{ dtypc[7] }}>INREACH</option>
                         <option value="8" {{ dtypc[8] }}>FANET</option>
+                </select>
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_idtype }}</label>
+                <select class="u-full-width" id="idtype" name="idtype" >
+                        <option value="1" {{ dtypc[2] }}>INTERNAL ID</option>
+                        <option value="2" {{ dtypc[3] }}>ICAO ID</option>
                 </select>
             </div>
             <div class="one-half column">
@@ -32,8 +38,8 @@
                         {% endfor %}
                 </select>
         </div>
-
         <div class="row">
+            <div class="clearfix"></div>
             <div class="one-half column">
                 <label>
                     <input type="checkbox" id="noident" name="noident" value="yes" {{ cnoident }} onclick="participationDescription()">

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 03, 2020 at 02:03 PM
+-- Generation Time: Aug 05, 2020 at 11:15 AM
 -- Server version: 5.7.31-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.6
 
@@ -30,6 +30,7 @@ USE `glidernet_devicesdb`;
 -- Table structure for table `aircraftstypes`
 --
 
+DROP TABLE IF EXISTS `aircraftstypes`;
 CREATE TABLE `aircraftstypes` (
   `ac_id` smallint(5) UNSIGNED NOT NULL COMMENT 'Acft ID (autoincremented)',
   `ac_type` varchar(32) CHARACTER SET utf32 COLLATE utf32_unicode_ci NOT NULL COMMENT 'Acft type(ASW20, ...)',
@@ -42,6 +43,7 @@ CREATE TABLE `aircraftstypes` (
 -- Table structure for table `devices`
 --
 
+DROP TABLE IF EXISTS `devices`;
 CREATE TABLE `devices` (
   `dev_id` varchar(36) COLLATE utf8_unicode_ci NOT NULL COMMENT 'The hex device ID',
   `dev_passwd` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Device password if requered',
@@ -50,7 +52,8 @@ CREATE TABLE `devices` (
   `dev_userid` mediumint(8) UNSIGNED NOT NULL COMMENT 'User registering thise device',
   `dev_notrack` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'If device does not want to be tracked',
   `dev_noident` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'If device does not want to be identified',
-  `dev_active` tinyint(1) DEFAULT '1' COMMENT 'A flag indicating if active or not in'
+  `dev_active` tinyint(1) DEFAULT '1' COMMENT 'A flag indicating if active or not in',
+  `dev_idtype` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'ID adress type (INTERNA; ICAO; ...)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='All thr tracking devices in use';
 
 -- --------------------------------------------------------
@@ -59,6 +62,7 @@ CREATE TABLE `devices` (
 -- Table structure for table `devtypes`
 --
 
+DROP TABLE IF EXISTS `devtypes`;
 CREATE TABLE `devtypes` (
   `dvt_id` tinyint(4) NOT NULL COMMENT 'Device type identifier',
   `dvt_name` varchar(8) NOT NULL COMMENT 'Device name, like Flarm, OGNT, SPOT',
@@ -70,9 +74,22 @@ CREATE TABLE `devtypes` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `idtypes`
+--
+
+DROP TABLE IF EXISTS `idtypes`;
+CREATE TABLE `idtypes` (
+  `idt_id` tinyint(1) NOT NULL,
+  `idt_type` varchar(9) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='All the posible device types of ID: Internal, ICAO, etc.';
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tmpusers`
 --
 
+DROP TABLE IF EXISTS `tmpusers`;
 CREATE TABLE `tmpusers` (
   `tusr_adress` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `tusr_pw` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
@@ -86,6 +103,7 @@ CREATE TABLE `tmpusers` (
 -- Table structure for table `trackedobjects`
 --
 
+DROP TABLE IF EXISTS `trackedobjects`;
 CREATE TABLE `trackedobjects` (
   `air_id` mediumint(8) UNSIGNED NOT NULL COMMENT 'Internal ID',
   `air_actype` smallint(5) UNSIGNED NOT NULL COMMENT 'Link with AIrcraft type table',
@@ -104,6 +122,7 @@ CREATE TABLE `trackedobjects` (
 -- Table structure for table `users`
 --
 
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `usr_id` mediumint(8) UNSIGNED NOT NULL COMMENT 'User ID (autoincremented)',
   `usr_adress` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'User email address',
@@ -135,11 +154,18 @@ ALTER TABLE `devtypes`
   ADD PRIMARY KEY (`dvt_id`);
 
 --
+-- Indexes for table `idtypes`
+--
+ALTER TABLE `idtypes`
+  ADD PRIMARY KEY (`idt_id`);
+
+--
 -- Indexes for table `trackedobjects`
 --
 ALTER TABLE `trackedobjects`
   ADD PRIMARY KEY (`air_id`) USING BTREE COMMENT 'Primary key',
-  ADD KEY `USERID` (`air_userid`);
+  ADD KEY `USERID` (`air_userid`),
+  ADD KEY `ACFTTYPIDX` (`air_actype`);
 
 --
 -- Indexes for table `users`
@@ -174,6 +200,16 @@ ALTER TABLE `trackedobjects`
 --
 ALTER TABLE `users`
   MODIFY `usr_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'User ID (autoincremented)';
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `trackedobjects`
+--
+ALTER TABLE `trackedobjects`
+  ADD CONSTRAINT `trackedobjects_ibfk_1` FOREIGN KEY (`air_actype`) REFERENCES `aircraftstypes` (`ac_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

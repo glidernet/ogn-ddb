@@ -8,6 +8,7 @@ $stmt= $dbh->query($sql0);
 $devtype = array();
 $devtyp  = array();
 $devt = array(array());
+$idtypes = array('1' => 'Internal', '2' => 'ICAO');
 $devt=$stmt->fetchAll();
 //var_dump($devt);
 foreach ($devt as $dt){
@@ -72,7 +73,10 @@ $sql1 = 'SELECT
         IF(!dev_notrack AND !dev_noident,air_acreg,"") AS registration,
         IF(!dev_notrack AND !dev_noident,air_accn,"") AS cn,
         IF(!dev_notrack,"Y","N") AS tracked, 
-        IF(!dev_noident,"Y","N") AS identified
+        IF(!dev_noident,"Y","N") AS identified,
+        dev_idtype AS device_idtype,
+        IF(!dev_active,"N","Y") AS device_active,
+        IF(!air_active,"N","Y") AS aircraft_active
         '.$actype.'
         FROM devices, aircraftstypes, trackedobjects 
         WHERE air_actype = ac_id and dev_flyobj = air_id 
@@ -85,6 +89,7 @@ $output['devices'] = array();
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $row['device_type'] = $devtype[$row['device_type']];
+    $row['device_idtype'] = $idtypes[$row['device_idtype']];
     $output['devices'][] = $row;
 }
 
@@ -113,7 +118,7 @@ if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCE
 	}
 } else {
     header('Content-Type: text/plain; charset="UTF-8"');
-    echo '#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED';
+    echo '#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED,IDTYPE,DEVACTIVE,ACFTACTIVE';
     if ($t) {
         echo ',AIRCRAFT_TYPE';
     }

@@ -1,0 +1,197 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The OGNDDB schema",
+    "description": "OGN Device Data Base structure.",
+    "default": {},
+    "examples": [
+        {
+            "devices": [
+                {
+                    "device_type": "F",
+                    "device_id": "000000",
+                    "aircraft_model": "HPH 304CZ-17",
+                    "registration": "OK-7777",
+                    "cn": "KN",
+                    "tracked": "Y",
+                    "identified": "Y",
+                    "device_idtype": "Internal",
+                    "device_active": "Y",
+                    "aircraft_active": "Y"
+                }
+            ]
+        }
+    ],
+    "required": [
+        "devices"
+    ],
+    "properties": {
+        "devices": {
+            "$id": "#/properties/devices",
+            "type": "array",
+            "title": "The devices schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": [],
+            "examples": [
+                [
+                    {
+                        "device_type": "F",
+                        "device_id": "000000",
+                        "aircraft_model": "HPH 304CZ-17",
+                        "registration": "OK-7777",
+                        "cn": "KN",
+                        "tracked": "Y",
+                        "identified": "Y",
+                        "device_idtype": "Internal",
+                        "device_active": "Y",
+                        "aircraft_active": "Y"
+                    }
+                ]
+            ],
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/devices/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/devices/items/anyOf/0",
+                        "type": "object",
+                        "title": "The first anyOf schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "default": {},
+                        "examples": [
+                            {
+                                "device_type": "F",
+                                "device_id": "000000",
+                                "aircraft_model": "HPH 304CZ-17",
+                                "registration": "OK-7777",
+                                "cn": "KN",
+                                "tracked": "Y",
+                                "identified": "Y",
+                                "device_idtype": "Internal",
+                                "device_active": "Y",
+                                "aircraft_active": "Y"
+                            }
+                        ],
+                        "required": [
+                            "device_type",
+                            "device_id",
+                            "aircraft_model",
+                            "registration",
+                            "cn",
+                            "tracked",
+                            "identified",
+                            "device_idtype",
+                            "device_active",
+                            "aircraft_active"
+                        ],
+                        "properties": {
+                            "device_type": {
+                                "$id": "#/properties/devices/items/anyOf/0/properties/device_type",
+                                "type": "string",
+                                "title": "The device_type schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "F"
+                                ]
+                            },
+                            "device_id": {
+                                "$id": "#/properties/devices/items/anyOf/0/properties/device_id",
+                                "type": "string",
+                                "title": "The device_id schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "000000"
+                                ]
+                            },
+                            "aircraft_model": {
+                                "$id": "#/properties/devices/items/anyOf/0/properties/aircraft_model",
+                                "type": "string",
+                                "title": "The aircraft_model schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "HPH 304CZ-17"
+                                ]
+                            },
+                            "registration": {
+                                "$id": "#/properties/devices/items/anyOf/0/properties/registration",
+                                "type": "string",
+                                "title": "The registration schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "OK-7777"
+                                ]
+                            },
+                            "cn": {
+                                "$id": "#/properties/devices/items/anyOf/0/properties/cn",
+                                "type": "string",
+                                "title": "The cn schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "KN"
+                                ]
+                            },
+                            "tracked": {
+                                "$id": "#/properties/devices/items/anyOf/0/properties/tracked",
+                                "type": "string",
+                                "title": "The tracked schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "Y"
+                                ]
+                            },
+                            "identified": {
+                                "$id": "#/properties/devices/items/anyOf/0/properties/identified",
+                                "type": "string",
+                                "title": "The identified schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "Y"
+                                ]
+                            },
+                            "device_idtype": {
+                                "$id": "#/properties/devices/items/anyOf/0/properties/device_idtype",
+                                "type": "string",
+                                "title": "The device_idtype schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "Internal"
+                                ]
+                            },
+                            "device_active": {
+                                "$id": "#/properties/devices/items/anyOf/0/properties/device_active",
+                                "type": "string",
+                                "title": "The device_active schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "Y"
+                                ]
+                            },
+                            "aircraft_active": {
+                                "$id": "#/properties/devices/items/anyOf/0/properties/aircraft_active",
+                                "type": "string",
+                                "title": "The aircraft_active schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "Y"
+                                ]
+                            }
+                        },
+                        "additionalProperties": true
+                    }
+                ]
+            }
+        }
+    },
+    "additionalProperties": true
+}

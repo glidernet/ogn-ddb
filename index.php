@@ -138,7 +138,7 @@ function fillinuserforgot()
 
 function fillindevice()
 {
-    global $lang,$error,$devid,$airid, $devtype,$acreg,$accn,$actype,$notrack,$noident,$active,$user,$twig;
+    global $lang,$error,$devid,$airid, $devtype,$acreg,$accn,$actype,$notrack,$noident,$active,$user,$idtype,$twig;
 array('', '', '');
 
     $dtypc = devicetypes();
@@ -172,6 +172,7 @@ array('', '', '');
         'airid' => $airid,
         'active' => $active,
         'devtype' => $devtype,
+        'idtype' => $idtype,
 
     );
     echo $twig->render('fillindevice.html.twig', $template_vars);
@@ -252,11 +253,13 @@ function devicelist()
     $req2->bindParam(':us', $_SESSION['user']);
     $req2->execute();
     $devtypes = devicetypes();
+    $idtypes = array( '1' => 'INTERNAL', '2' => 'ICAO');
     $template_vars = array(
         'devicelist' => $req2->fetchAll(),
         'url' => $url,
         'lang' => $lang,
         'devicetypes' => $devtypes,
+        'idtypes' => $idtypes,
 
     );
     echo $twig->render('devicelist.html.twig', $template_vars);
@@ -462,6 +465,7 @@ case 'updatedev':        			// update/create device
         $noident = $result['dev_noident'];
         $airid   = $result['dev_flyobj'];
         $active  = $result['dev_active'];
+        $idtype  = $result['dev_idtype'];
         fillindevice();
     } else {
         $error = $lang['error_devid'];
@@ -938,6 +942,11 @@ case 'createdev':        			// create device
     } else {
         $error = $lang['error_devtype'];
     }
+    if (isset($_REQUEST['idtype'])) {
+        $idtype = $_REQUEST['idtype'];
+    } else {
+        $error = $lang['error_idtype'];
+    }
     if (isset($_REQUEST['flyobj'])) {
         $flyobj = $_REQUEST['flyobj'];
     } else {
@@ -984,9 +993,10 @@ case 'createdev':        			// create device
     }
 
     $dbh = Database::connect();
-    $req = $dbh->prepare('select dev_id, dev_type, dev_userid from devices where dev_id=:de and dev_type =:dt');    // test if device is owned by another account
+    $req = $dbh->prepare('select dev_id, dev_type, dev_idtype, dev_userid from devices where dev_id=:de and dev_type =:dt and dev_idtype=:it');    // test if device is owned by another account
     $req->bindParam(':de', $devid);
     $req->bindParam(':dt', $devtype);
+    $req->bindParam(':it', $idtype);
     $req->execute();
 
     $upd = false;
@@ -1005,14 +1015,15 @@ case 'createdev':        			// create device
         fillindevice();
     } else {
         if ($upd) {
-            $ins = $dbh->prepare('UPDATE devices SET  dev_notrack=:nt, dev_noident=:ni, dev_flyobj=:fo, dev_active=:ac WHERE dev_id=:de AND dev_type=:dt AND dev_userid=:us');
+            $ins = $dbh->prepare('UPDATE devices SET  dev_idtype=:it, dev_notrack=:nt, dev_noident=:ni, dev_flyobj=:fo, dev_active=:ac WHERE dev_id=:de AND dev_type=:dt AND dev_userid=:us');
         } else {
-            $ins = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_userid, dev_notrack, dev_noident, dev_flyobj, dev_active  ) VALUES (:de, :dt,  :us, :nt, :ni, :fo, :ac)');
+            $ins = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_userid, dev_notrack, dev_noident, dev_flyobj, dev_active, dev_idtype ) VALUES (:de, :dt,  :us, :nt, :ni, :fo, :ac, :it)');
         }
         $act = (int)$active;
         $fly = (int)$flyobj;
         $ins->bindParam(':de', $devid);
         $ins->bindParam(':dt', $devtype);
+        $ins->bindParam(':it', $idtype);
         $ins->bindParam(':nt', $notrack);
         $ins->bindParam(':ni', $noident);
         $ins->bindParam(':ac', $act);

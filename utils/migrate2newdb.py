@@ -134,6 +134,10 @@ def build(conn1):		# build the JSON table with all the devices in a format compa
            identified='N'
         else:
            identified='Y'
+        if rowg1[8]==1:
+           idtype='INTERNAL'
+        else:
+           idtype='ICAO'
         r={			# entries on table
            "device_type":     devtype,  
            "device_id":       rowg1[0],
@@ -141,7 +145,8 @@ def build(conn1):		# build the JSON table with all the devices in a format compa
            "registration":    rowg2[2], 
            "cn":              rowg2[3], 
            "tracked":         tracked,  
-           "identified":      identified  
+           "identified":      identified, 
+           "device_idtype":   idtype  
           }
 
         download.append(r)
@@ -165,7 +170,8 @@ def buildcsv(conn1,csvfilename, prt=False):	# build the CSV file
            "registration":    " ",
            "cn":              " ",
            "tracked":         "Y",
-           "identified":      "Y"
+           "identified":      "Y",
+           "device_idtype":   1  
       }
     dd= r.keys()
     ddl=[]
@@ -206,12 +212,17 @@ def buildlastfix(lf,url,prt=False):	# build the lastfix table
     if prt:
        print(json.dumps(lastfix,indent=4))
     for lfix in lastfix:
+        if not "flarmId" in lfix:
+           break
+
         lf[lfix["flarmId"]]=lfix
-    return lf,lfix
+        lfixseen=lfix
+    return lf,lfixseen
 #
 # --------------------------------------------------------------------------------------------------- #
 #
 print ("\n\nOGN DDB migration utility:\n" )
+print (    "=========================:\n" )
 sqlcopyat="truncate `glidernet_devicesdb`.`aircraftstypes` ; \
 INSERT INTO `glidernet_devicesdb`.`aircraftstypes`(`ac_id`, `ac_type`, `ac_cat`) SELECT `ac_id`, `ac_type`, `ac_cat` FROM `glidernet_devicesdb_original`.`aircrafts`;"
 
@@ -256,6 +267,9 @@ cnterr=0				# counter of devices defined as Flarm but not in the Flarm range
 cntOK=0					# counter of devices defined as Flarm but it should be ICAO
 cnticao=[0,0,0]				# counter of ICAO devices
 cntICAO=0				# counter of ICAO devices 
+cntICAON=0				# counter of ICAO devices 
+cntICAOlf=0				# counter of ICAO devices 
+cntINT=0				# counter of ICAO devices 
 cntFLARM=0				# counter of FLARM devices
 cntOGNT=0				# counter of OGN trackers
 cntLF=0					# counter of LASTFIX corrected
@@ -278,8 +292,12 @@ while rowg2:				# go thru all the devices
          cntICAO += 1			# increase the counter
          cr=checkreg(dev_acreg, dev_id)
          cnticao[cr] += 1		# increas counter by error type 0, 1, 2
+         devtyp=2			# the device tyep is a Flarm
+         idtype=2 			# the ID Type is ICAO
+         cntICAON += 1			# increase the counter
          #if not cr:  print ("CRicao:", cr, dev_acreg, dev_id)
       if dev_type == 2:			# if Flarm type
+         devtyp=2			# the device tyep is a Flarm
          IDID="FLR"+dev_id		# ID for search
          cntFLARM += 1			# increase the counter
          cr=checkflarm(dev_id)		# check if it is in a flarm addr range
@@ -290,25 +308,56 @@ while rowg2:				# go thru all the devices
             if cr == 1:  		# if so ???
                #print ("CRicao+:", cr, dev_acreg, dev_id)
                cntOK += 1		# increase the counter
-               dev_type = 1		# convert to ICAO ID type
-         if IDID not in lastfix:	# try to see if in last fix
+               idtype=2 		# the ID Type is ICAO
+               cntICAON += 1		# increase the counter
+            else:
+               idtype=1			# address type is INTERNAL
+               cntINT +=1		# address type is INTERNAL
+         else:
+               idtype=1			# address type is INTERNAL
+               cntINT +=1		# address type is INTERNAL
+
+         if IDID not in lastfix and idtype != 2:	# try to see if in last fix
             TID = "ICA" + dev_id        # try as ICAOa
             if TID in lastfix:
-               dev_type = 1
                cntLF += 1		# increase the counter
+               idtype=2 		# the ID Type is ICAO
+               cntICAON += 1		# increase the counter
+               cntICAOlf += 1		# increase the counter
+               cntINT -=1			# address type is INTERNAL
       if dev_type == 3:			# if OGN tracker type
+         devtyp=3			# the device tyep is a OGNT
          IDID="OGN"+dev_id		# ID for search
          cntOGNT += 1			# increase the counter
+         cr=checkreg(dev_acreg, dev_id) # check if it is a ICAO addr 
+         if cr == 1:  			# if so ???
+               #print ("CRicao+:", cr, dev_acreg, dev_id)
+               cntOK += 1		# increase the counter
+               idtype=2 		# the ID Type is ICAO
+               cntICAON += 1		# increase the counter
+         else:
+               idtype=1			# address type is INTERNAL
+               cntINT +=1			# address type is INTERNAL
+         if IDID not in lastfix and idtype != 2:	# try to see if in last fix
+            TID = "ICA" + dev_id        # try as ICAOa
+            if TID in lastfix:
+               cntLF += 1		# increase the counter
+               idtype=2 		# the ID Type is ICAO
+               cntICAON += 1		# increase the counter
+               cntICAOlf += 1		# increase the counter
+               cntINT -=1			# address type is INTERNAL
       if checkfanet(dev_id):		# count FANET devices
          cntFANET += 1
          if prt:
             print ("FANET:", dev_acreg, dev_id, dev_type, dev_actype)
-         dev_type = 8			# set as FANET device
+         devtyp = 8			# set as FANET device
+         idtype=1 			# the ID Type is internal
       if checknaviter(dev_id):		# count NAVITER devices
          cntNAVITER += 1
          if prt:
             print ("NAVITER Reg:", dev_acreg, "ID:", dev_id, "DevType:", dev_type, "AcType:", dev_actype)
-         dev_type = 4			# set as NAVITER OUDIE device
+         devtyp = 4			# set as NAVITER OUDIE device
+         idtype=1 			# the ID Type is internal
 
       dev_accn 		= rowg2[4]	# competition ID 
       dev_userid 	= rowg2[5]	# Id of person registering the device 
@@ -317,7 +366,7 @@ while rowg2:				# go thru all the devices
       #print (dev_id, dev_type, dev_actype, dev_acreg, dev_accn, dev_userid, dev_notrack, dev_noident)
 					# convert that data in two tables: devices and aircraft objects
       inscmd1 = "insert into trackedobjects values ("+str(cnt)+"," + str(dev_actype) + ",'" + str(dev_acreg) + "','" + str(dev_accn) + "'," + str(dev_userid) +",1,'','','')"
-      inscmd2 = "insert into devices values ('" + str(dev_id) + "',0," + str(dev_type) + ","+str(cnt)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", 1)"
+      inscmd2 = "insert into devices values ('" + str(dev_id) + "',0," + str(devtyp) + ","+str(cnt)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", 1,"+str(idtype)+")"
       #print (inscmd1)
       curs1.execute(inscmd1)		# add data to the flying object table
       curs1.execute(inscmd2)		# add data to devices table
@@ -356,7 +405,9 @@ conn2.close()				# close origin database
 ICAOcnt = 0
 for i in cnticao:
     ICAOcnt += i 
-print ("Nerrs detected ... device assigned as Flarm but not in Flarm range: ", cnterr, "\nICAO IDs detected:", ICAOcnt, cnticao, "Wrong ICAO ID, OK ICAO ID, Unkown ICAOID\nFlarm that should be ICAO:", cntOK, "It matches the ICAO ID")
+print ("Nerrs detected ... device assigned as Flarm but not in Flarm range: ", cnterr, "\nICAO IDs detected:", ICAOcnt, cnticao, "Wrong ICAO ID, OK ICAO ID, Unkown ICAOID\nFlarm that should be ICAO:", cntOK, "It matches the ICAO ID", cntICAO)
 print ("\n\nNumber of ICAO devices:", cntICAO,"\nNumber of FLARM devices:", cntFLARM,"\nNumber of OGN trackers detected: ", cntOGNT, "\nTotal:", cntICAO+cntFLARM+cntOGNT)
 print ("\n\nNumber of FANET devices:", cntFANET, "\nNumber of Naviter devices:", cntNAVITER, "\nFlarms found in LASTFIX corrected:", cntLF)
 print ("\n\nNumber of devices seen registered: ", cntseen, "out of:", len(lastfix))
+print ("\n\nNumber of devices seen ICAO: ", cntICAON, "Internal:", cntINT,"Total:", cntICAON+cntINT)
+print ("\n\nNumber of ICAO orig:", cntICAO, "Flarms that should be ICAO", cntOK, "Corrected by lastfix:", cntICAOlf, "Total:", cntICAO+cntOK+cntICAOlf)

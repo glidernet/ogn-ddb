@@ -22,7 +22,7 @@ $languages['english'] = array (
     "input_createacft" => "Register a tracked object",
     "input_owner" => "I certify to be the owner of this device",
     "input_verif" => "To be sure you're a human being, please resolve this:",
-    "input_nbdevices" => "registered devices",
+    "input_nbdevices" => "registered tracked devices",
     "input_nbobjects" => "registered tracked objects",
     "input_notrack" => "I don't want this device to be tracked",
     "input_noident" => "I don't want this device to be identified",
@@ -38,6 +38,7 @@ $languages['english'] = array (
     "error_validation" => "Error validating your address, already validated?",
     "error_nodevice" => "No device recorded for this account",
     "error_devid" => "Device ID format incorrect",
+    "error_idtype" => "Device ID type incorrect",
     "error_devidlen" => "Device ID lenght incorrect",
     "error_airid" => "Tracked object ID format incorrect",
     "error_noairid" => "Missing tracked object ID",
@@ -71,6 +72,7 @@ $languages['english'] = array (
     "email_validated" => "Your account is validated, now you can login.",
     "table_devid" => "Device ID",
     "table_devtype" => "Device type",
+    "table_idtype" => "ID type",
     "table_flyobj" => "Tracked Object",
     "table_actype" => "Aircraft type",
     "table_acreg" => "Link to Regist.",
@@ -92,19 +94,20 @@ $languages['english'] = array (
     "login" => "Log in",
     "create_account" => "Create an account",
     "my_devices" => "My devices",
-    "add_device" => "Add device",
+    "add_device" => "Add Tracked device",
     "add_aircraft" => "Add Tracked Object",
     "change_password" => "Change password",
     "claim_ownership" => "Claim Ownership",
-    "full_participation" => "Full participation", //no checkboxes checked
+    "full_participation" => "Full participation", 				//no checkboxes checked
     "full_participation_description" => "<ul>
         <li>Tracking applications that use the OGN DDB will mark the position with aircraft identification</li>
-        <li>Aircraft registration and CN are published in the OGN Devices Database</li></ul>",
-    "anonymous_participation" => "Anonymous participation", //only noident checkbox checked
+        <li>Aircraft registration and CN are published in the OGN Devices Database</li>
+        <li>You need to create first a <b>Tracked Object</b> and later on link it with the <b>Tracked Device</b> </li></ul>",
+    "anonymous_participation" => "Anonymous participation", 			//only noident checkbox checked
     "anonymous_participation_description" => "<ul>
         <li>Tracking applications that use the OGN DDB will mark the position with an <em>anonymous</em> marker</li>
         <li>Aircraft registration and CN are <em>not</em> made public</li></ul>",
-    "no_participation" => "No participation", //notrack or both checkboxes checked
+    "no_participation" => "No participation", 					//notrack or both checkboxes checked
     "no_participation_description" => "<ul>
         <li>Tracking applications that use the OGN DDB will <em>not</em> mark your position</li>
         <li>Aircraft registration and CN are <em>not</em> made public.</li>

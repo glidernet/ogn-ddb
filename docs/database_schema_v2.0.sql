@@ -1,0 +1,1 @@
+glidernet_devicesdb.sql

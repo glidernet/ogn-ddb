@@ -1,4 +1,8 @@
 <?php
+//
+// this program handles the API download for the OGNDDB
+// Website: http://ddb.glidernet.org/download
+//
 
 include '../sql.php';
 $dbh = Database::connect();
@@ -13,7 +17,6 @@ $devt=$stmt->fetchAll();
 //var_dump($devt);
 foreach ($devt as $dt){
    $devtype[$dt['dvt_id']]=$dt['dvt_code'];
-   //var_dump($dt);
    $i=$dt['dvt_id'];
    $devtyp [$i]['dvt_id']      = $dt['dvt_id'];
    $devtyp [$i]['dvt_name']    = $dt['dvt_name'];
@@ -21,7 +24,6 @@ foreach ($devt as $dt){
    $devtyp [$i]['dvt_3ltcode'] = $dt['dvt_3ltcode'];
    $devtyp [$i]['dvt_idlen']   = $dt['dvt_idlen'];
 }
-//var_dump($devtyp);
 
 
 $t = !empty($_GET['t']);
@@ -102,7 +104,8 @@ if ($j == 2){
    $output['devtypes']=$devtyp;
 }
 if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] == 'application/json') {
-    // Allow from any origin
+    						// the case of output JSON
+    						// Allow from any origin
     header('Access-Control-Allow-Headers: Content-Type');
     header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
     header('Access-Control-Allow-Origin: *');
@@ -117,6 +120,7 @@ if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCE
 	exit;
 	}
 } else {
+    						// the case of output CSV
     header('Content-Type: text/plain; charset="UTF-8"');
     echo '#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED,IDTYPE,DEVACTIVE,ACFTACTIVE';
     if ($t) {

@@ -3,8 +3,10 @@
 include 'sql.php';
 
 //
-// Localisation TODO:
-// - aircraft types (see $catarray)
+// This program handles all the aspects of the OGN Device DataBase (OGNDDB)
+// Website: http://ddb.glidernet.orga
+//
+// Partially Rewritten by: Angel Casadoa Date: August 2020
 //
 
 require_once 'vendor/autoload.php';

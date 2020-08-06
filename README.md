@@ -40,9 +40,11 @@ aircraft_type   | `^[1-6]` (optional, with t flag)
 
 Example:
 ```
-#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED
-'F','0123BC','LS-4','X-0123','23','Y','Y'
-'F','DEADBE','DR-400','X-EABC','','N','N'
+#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED,IDTYPE,DEVACTIVE,ACFTACTIVE
+'F','000000','HPH 304CZ-17','OK-7777','KN','Y','Y','Internal','Y','Y'
+'F','000002','LS-6 18','OY-XRG','G2','Y','Y','Internal','Y','Y'
+'F','00000D','Ka-8','D-1749','W5','Y','Y','ICAO','Y','Y'
+'F','000010','Unknown','D-EEAC','AC','Y','Y','Internal','Y','Y'
 ```
 
 #### URL parameters
@@ -59,7 +61,17 @@ cn           | csv    | n/a     | select a comma separated list of callsigns
 
 ### /download/?j=1
 This returns all devices of the DDB in JSON. The output validates against the [ogn-ddb-schema-1.0.0](ogn-ddb-schema-1.0.0.json).
+Example:
+```
+{"devices":[
+{"device_type":"F","device_id":"000000","aircraft_model":"HPH 304CZ-17","registration":"OK-7777","cn":"KN","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y"},
+{"device_type":"F","device_id":"000002","aircraft_model":"LS-6 18","registration":"OY-XRG","cn":"G2","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y"},
+{"device_type":"F","device_id":"00000D","aircraft_model":"Ka-8","registration":"D-1749","cn":"W5","tracked":"Y","identified":"Y","device_idtype":"ICAO","device_active":"Y","aircraft_active":"Y"},
+{"device_type":"F","device_id":"000010","aircraft_model":"Unknown","registration":"D-EEAC","cn":"AC","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y"},
+....
+]}
 
+```
 ### /download/download-fln.php
 This returns the device database in a flarmnet-compatible format.
 

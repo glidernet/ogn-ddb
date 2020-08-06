@@ -60,7 +60,7 @@ cn           | csv    | n/a     | select a comma separated list of callsigns
 
 
 ### /download/?j=1
-This returns all devices of the DDB in JSON. The output validates against the [docs/ogn-ddb-schema-2.0](ogn-ddb-schema-2.0.json).
+This returns all devices of the DDB in JSON. The output validates against the [docs/ogn-ddb-schema-2.0](docs/ogn-ddb-schema-2.0.json).
 Example:
 ```
 {"devices":[

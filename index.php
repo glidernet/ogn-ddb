@@ -282,6 +282,8 @@ function aircraftlist()
     echo $twig->render('aircraftlist.html.twig', $template_vars);
 }
 
+// --------------------------------------------------------------------------------------- //
+
 if (isset($_REQUEST['action'])) {
     $action = $_REQUEST['action'];
 } else {
@@ -418,6 +420,7 @@ case 'a':        				// fill in create aircraft
         exit();
     } // test if user come from login page
     $_SESSION['aircraft'] = 'yes';
+    $airid=0;					// create the aircraft
     fillinaircraft();
     break;
 }
@@ -531,7 +534,7 @@ case 'updateacft':        			// update/create tracked object
     $req->bindParam(':de', $airid);
     $req->bindParam(':us', $_SESSION['user']);
     $req->execute();
-    if ($req->rowCount() == 1) {
+    if ($req->rowCount() == 1 or air_id == 0) {
         $result = $req->fetch();
         $req->closeCursor();
         $actype = $result['air_actype'];
@@ -1054,7 +1057,7 @@ case 'createdev':        			// create device
 case 'createacft':        			// create tracked object
 {
     fromhome();
-    $notrack = $noident = 0;
+    $airid = 0;
     if (!isset($_SESSION['login'])) {
         exit();
     } // test if user come from login page
@@ -1103,7 +1106,7 @@ case 'createacft':        			// create tracked object
     if (isset($_REQUEST['active'])) {
         $active = $_REQUEST['active'];
     } else {
-        $active=1;
+        $error = $lang['error_active'];
     }
 
     if (isset($_REQUEST['owner'])) {
@@ -1116,7 +1119,7 @@ case 'createacft':        			// create tracked object
 
 
     $dbh = Database::connect();
-    $req = $dbh->prepare('select air_id,air_userid from trackedobjects where air_id=:de');    // test if device is owned by another account
+    $req = $dbh->prepare('select air_id,air_userid from trackedobjects where air_id=:de');    // test if aircraft  is owned by another account
     $req->bindParam(':de', $airid);
     $req->execute();
 
@@ -1139,13 +1142,21 @@ case 'createacft':        			// create tracked object
             $acreg="R-".(string)$airid;
         }
         if ($upd) {
+            if ($airid == 0){
+                $error = $lang['error_airexists'];
+                fillinaircraft();
+            }
             $ins = $dbh->prepare('UPDATE trackedobjects SET air_actype=:dt,  air_acreg=:re, air_accn=:cn, air_active=:ac, air_SARphone=:ph, air_SARclub=:cl, air_Country=:co WHERE air_id=:de AND air_userid=:us');
         } else {
+            $airid=0;
             $ins = $dbh->prepare('INSERT INTO trackedobjects (air_id, air_actype, air_acreg, air_accn, air_userid, air_active, air_SARphone, air_SARclub, air_Country  ) VALUES (:de, :dt,  :re, :cn, :us, :ac, :ph, :cl, :co )');
             if ($airid == ''){
                $airid='0';
             }
         }
+
+
+
         $act=(int) $active;
         $ins->bindParam(':de', $airid);
         $ins->bindParam(':dt', $actype);

@@ -418,8 +418,8 @@ case 'a':        				// fill in create aircraft
     fromhome();
     if (!isset($_SESSION['login'])) {
         exit();
-    } // test if user come from login page
-    $_SESSION['aircraft'] = 'yes';
+    } 						// test if user come from login page
+    $_SESSION['acft'] = 'yes';
     $airid=0;					// create the aircraft
     fillinaircraft();
     break;
@@ -451,7 +451,7 @@ case 'updatedev':        			// update/create device
     fromhome();
     if (!isset($_SESSION['login'])) {
         exit();
-    } // test if user come from login page
+    } 						// test if user come from login page
     $_SESSION['dev'] = 'yes';
     if (isset($_REQUEST['devid'])) {
         $devid = $_REQUEST['devid'];
@@ -523,8 +523,8 @@ case 'updateacft':        			// update/create tracked object
     fromhome();
     if (!isset($_SESSION['login'])) {
         exit();
-    } // test if user come from login page
-    $_SESSION['dev'] = 'yes';
+    } 						// test if user come from login page
+    $_SESSION['acft'] = 'yes';
     if (isset($_REQUEST['airid'])) {
         $airid = $_REQUEST['airid'];
     }
@@ -560,8 +560,8 @@ case 'deleteacft':        			// delete tracked object
     fromhome();
     if (!isset($_SESSION['login'])) {
         exit();
-    } // test if user come from login page
-    $_SESSION['dev'] = 'yes';
+    } 						// test if user come from login page
+    $_SESSION['acft'] = 'yes';
     if (isset($_REQUEST['airid'])) {
         $airid = $_REQUEST['airid'];
     }
@@ -929,13 +929,13 @@ case 'createdev':        			// create device
     $notrack = $noident = 0;
     if (!isset($_SESSION['login'])) {
         exit();
-    } // test if user come from login page
+    } 						// test if user come from login page
     if (!isset($_SESSION['dev'])) {
         exit();
-    } // test if user come from fill in device page
+    } 						// test if user come from fill in device page
     if (!isset($_SESSION['user'])) {
         exit();
-    } // test if user id defined
+    } 						// test if user id defined
 
     if (isset($_REQUEST['devid'])) {
         $devid = $_REQUEST['devid'];
@@ -1060,13 +1060,13 @@ case 'createacft':        			// create tracked object
     $airid = 0;
     if (!isset($_SESSION['login'])) {
         exit();
-    } // test if user come from login page
-    if (!isset($_SESSION['dev'])) {
+    } 						// test if user come from login page
+    if (!isset($_SESSION['acft'])) {
         exit();
-    } // test if user come from fill in device page
+    } 						// test if user come from fill in device page
     if (!isset($_SESSION['user'])) {
         exit();
-    } // test if user id defined
+    } 						// test if user id defined
 
     if (isset($_REQUEST['airid'])) {
         $airid = $_REQUEST['airid'];

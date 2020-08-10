@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 05, 2020 at 11:15 AM
+-- Generation Time: Aug 10, 2020 at 01:49 PM
 -- Server version: 5.7.31-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.6
 
@@ -111,9 +111,9 @@ CREATE TABLE `trackedobjects` (
   `air_accn` varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Aircraft competition ID',
   `air_userid` mediumint(8) UNSIGNED NOT NULL COMMENT 'Link to user registering this aircraft',
   `air_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'A flag indicating if this plane is active or not',
-  `air_SARphone` varchar(16) CHARACTER SET utf16 NOT NULL COMMENT 'Phone in case of SAR needs',
+  `air_SARphone` varchar(16) CHARACTER SET utf16 DEFAULT NULL COMMENT 'Phone in case of SAR needs',
   `air_SARclub` varchar(32) CHARACTER SET utf8 NOT NULL COMMENT 'Name of the club for aircraft',
-  `air_Country` varchar(3) CHARACTER SET utf8 NOT NULL COMMENT 'Country of aircraft'
+  `air_Country` varchar(2) CHARACTER SET utf8 NOT NULL COMMENT 'Country of aircraft (ISOCODE)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='All the aircraft tracked';
 
 -- --------------------------------------------------------

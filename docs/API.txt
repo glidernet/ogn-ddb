@@ -1,0 +1,22 @@
+URL request:
+http://DDB.glidernet.org/API/V1/?action=add&login=john@acme.org&password=psw123456&device_id=757899&device_type=O&registration=EC-ACA&cn=AC&acftype=Discus
+
+Reply:
+{ 'NumberObjects':'18556', 'NumberDevices':'18545' ,'ValidUser' : 'john@acme.org' ,'Action': 'add' ,'DeviceId' : '757899', 'DeviceType' : '3', 'DeviceIdType' : '1' , 'Registration' : 'EC-ACA', 'cn' : 'AC','AircraftType' : '105' ,'FlyobjMsg' :' flyobj_inserted ', 'FlyobjID' : '22394' ,'DeviceID' :' 757899', 'DeviceMsg': 'device_inserted'}
+{
+    "NumberObjects": "18556",
+    "NumberDevices": "18545",
+    "ValidUser": "john@acme.org",
+    "Action": "add",
+    "DeviceId": "757899",
+    "DeviceType": "3",
+    "DeviceIdType": "1",
+    "Registration": "EC-ACA",
+    "cn": "AC",
+    "AircraftType": "105",
+    "FlyobjMsg": " flyobj_inserted ",
+    "FlyobjID": "22394",
+    "DeviceID": " 757899",
+    "DeviceMsg": "device_inserted"
+}
+

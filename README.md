@@ -28,9 +28,9 @@ Each line starting with `#` is a comment.
 Field           | Possible Values
 --------------- | -------------------------------
 device\_type    | `^[FIO]$`
-device\_id      | `^[A-F0-9]{6}$`
-from\_id        | `^[A-F0-9]{6}$`
-till\_id        | `^[A-F0-9]{6}$`
+device\_id      | `^[A-F0-9]{36}$`
+from\_id        | `^[A-F0-9]{36}$`
+till\_id        | `^[A-F0-9]{36}$`
 aircraft\_model | any string
 registration    | any string
 cn              | any string

@@ -24,7 +24,16 @@ $twig->addGlobal('nbobjects',$nbobjects);
 require_once 'language/english.php';
 
 $url = 'https://ddb.glidernet.org/';
+if (isset($_SERVER['HTTP_HOST'])) {
+     $url='https://'.$_SERVER['HTTP_HOST'];
+}
 $sender = 'contact@glidernet.org';
+
+function get_CCname($cc) {
+    $countrynames = json_decode(file_get_contents("http://country.io/names.json"), true);
+    $r = $countrynames[$cc];
+    return ($r);
+}
 
 function send_email($to, $subject, $message, $from = '')
 {
@@ -992,7 +1001,7 @@ case 'createdev':        			// create device
     }
 
 
-    $devtypesl=devicetypeslen($devtypesl);		// get the length of the ID for that kind of device type
+    $devtypesl=devicetypeslen();			// get the length of the ID for that kind of device type
     if (strlen($devid) > $devtypesl[(int)$devtype]) { 	// the length has to be lower or equal
         $error = $lang['error_devidlen'];
     }
@@ -1100,6 +1109,13 @@ case 'createacft':        			// create tracked object
     }
     if (isset($_REQUEST['country'])) {
         $country = $_REQUEST['country'];
+        if (strlen($country) == 2) {
+           $r=get_CCname(strtoupper($country));
+           if ($r=='')
+            {
+              $error = $lang['error_country'];
+            }
+           }
     } else {
         $error = $lang['error_country'];
     }
@@ -1173,6 +1189,8 @@ case 'createacft':        			// create tracked object
                 $error = $lang['flyobj_updated'];
             } else {
                 $error = $lang['flyobj_inserted'];
+                $req = $dbh->query('SELECT LAST_INSERT_ID(); ');
+                $airid = $req->fetchColumn();
             }
             devicelist();
             aircraftlist();

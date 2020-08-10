@@ -7,14 +7,13 @@
 include '../sql.php';
 $dbh = Database::connect();
 //$devtype = array(1 => 'I', 2 => 'F', 3 => 'O', 4 => 'N');
+$idtypes = array('0' => 'NoDef', '1' => 'Internal', '2' => 'ICAO');
 $sql0 = 'SELECT dvt_id, dvt_name, dvt_code, dvt_3ltcode, dvt_idlen FROM devtypes;';
 $stmt= $dbh->query($sql0);
-$devtype = array();
-$devtyp  = array();
-$devt = array(array());
-$idtypes = array('1' => 'Internal', '2' => 'ICAO');
+$devtype = array();		// single dimendional array with just the devtypes and names
+$devtyp  = array();		// two dimensional array with the devtypes table
+$devt = array(array());		// two dimensional array with the results from the query for the JSON file
 $devt=$stmt->fetchAll();
-//var_dump($devt);
 foreach ($devt as $dt){
    $devtype[$dt['dvt_id']]=$dt['dvt_code'];
    $i=$dt['dvt_id'];
@@ -102,6 +101,7 @@ if (!empty($_GET['j']))  {
 }
 if ($j == 2){
    $output['devtypes']=$devtyp;
+   $output['idtypes']=$idtypes;
 }
 if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] == 'application/json') {
     						// the case of output JSON

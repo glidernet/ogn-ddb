@@ -43,6 +43,7 @@ $languages['english'] = array (
     "error_idtype" => "Device ID type incorrect",
     "error_devidlen" => "Device ID lenght incorrect",
     "error_airid" => "Tracked object ID format incorrect",
+    "error_active" => "Error active",
     "error_noairid" => "Missing tracked object ID",
     "error_devtype" => "Device Type format incorrect",
     "error_flyobj" => "Tracked Object is incorrect",

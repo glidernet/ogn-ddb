@@ -118,6 +118,58 @@ function createdevice($devid, $dvct, $deviceidtype, $flyobj, $user)
 
 }
 
+function deldevice($devid, $dvct, $deviceidtype, $flyobj, $user)
+{
+
+     global $outputmsg;
+     if ($devid == 0) {
+        echo 'Error device invalid'.$devid;
+        return (-1);
+     }
+     $dbh = Database::connect();
+     $req = $dbh->prepare('select dev_id, dev_type, dev_idtype, dev_userid from devices where dev_id=:de and dev_type =:dt and dev_idtype=:it');    // test if device is owned 
+     $req->bindParam(':de', $devid);
+     $req->bindParam(':dt', $dvct);
+     $req->bindParam(':it', $deviceidtype);
+     $req->execute();
+
+     $upd = false;
+     if ($req->rowCount() == 1) {        	// if device already registred
+        $result = $req->fetch();
+        if ($result['dev_userid'] == $user) {	// and belongs to this user
+            $del = true;
+        }        				// if owned by the user then update
+        else {
+             echo 'Error device do not belong to this user';
+             exit();
+        }
+     }
+     else {
+             echo 'Error device do not exists';
+             exit();
+     }
+     $req->closeCursor();
+     if (!checkflyobj($flyobj, $user))  {	// check that the flyobject belongs to this user
+             echo 'Error object do not belong to this user';
+             exit();
+     }
+     $req = $dbh->prepare('DELETE FROM  devices WHERE dev_id=:de AND dev_type=:dt AND dev_userid=:us');
+     $req->bindParam(':de', $devid);
+     $req->bindParam(':dt', $dvct);
+     $req->bindParam(':us', $user);
+     if ($req->execute()) {    			// delete ok
+            $msg = 'Device Deleted';
+     } else {
+            $msg = ' Error deleting device';
+     }
+     $req->closeCursor();
+
+     Database::disconnect();
+     $outputmsg=$outputmsg.",'DeviceID' :' ".$devid."', 'DeviceMsg': '".$msg."' ";
+     return ($devid);
+
+}
+
 function createobj($airid, $acreg, $accn, $actype, $user)
 {
     global $outputmsg;
@@ -182,6 +234,50 @@ function createobj($airid, $acreg, $accn, $actype, $user)
 
 }
 
+function delobj($airid, $acreg, $accn, $actype, $user)
+{
+    global $outputmsg;
+    if ($airid == 0) {
+        echo 'Error object invalid'.$airid;
+        return (-1);
+    }
+    $dbh = Database::connect();
+    $req = $dbh->prepare('select air_id, air_userid from trackedobjects where air_id=:de');    // test if aircraft  is owned by another account
+    $req->bindParam(':de', $airid);
+    $req->execute();
+
+    if ($req->rowCount() == 1) {        // if device already registred
+            $result = $req->fetch();
+            if ($result['air_userid'] == $user) {
+                $del = true;
+            }        			// if owned by the user then update
+            else {
+                echo 'Error object belongs to other user'.$airid;
+                exit();
+            }
+    }
+    $req->closeCursor();
+
+    $req = $dbh->prepare('DELETE FROM  trackedobjects WHERE air_id=:de AND air_userid=:us');
+    $req->bindParam(':de', $airid);
+    $req->bindParam(':us', $user);
+
+    if ($req->execute()) {    	// delete  ok
+                $msg = 'flyobj_deleted ';
+    }
+
+    $req->closeCursor();			// now delete all the devices associated to this aircraft !!!
+    $del = $dbh->prepare('DELETE FROM devices where dev_flyobj=:id AND dev_userid=:us');
+    $del->bindParam(':id', $airid);
+    $del->bindParam(':us', $user);
+    $del->execute();
+    $req->closeCursor();			
+
+    $outputmsg=$outputmsg." ,'FlyobjMsg' :'".$msg."', 'FlyobjID' : '".$airid."' ";
+    Database::disconnect();
+    return ($airid);
+
+}
 // -------------------------------------------------------------------------------
 
 // Variables:
@@ -294,7 +390,7 @@ if (!empty($_GET['acftype'])) {
 $action=strtolower($action);
 $outputmsg=$outputmsg.",'Action': '".$action."' ";
 
-if ($action == 'add' or $action == 'device' ) 
+if ($action == 'add' or $action == 'device' or $action == 'deldevice') 
 {								// validate arguments
      if ($deviceid == ''){
         echo "Error Missing device_id";
@@ -342,7 +438,7 @@ if ($action == 'add' or $action == 'device' )
         
 }
 
-if ($action == 'add' or $action == 'object' ) 
+if ($action == 'add' or $action == 'object' or $action == 'delobject') 
 {
      if ($registration == ''){
         echo "Error Missing registration";
@@ -382,6 +478,15 @@ if ($action == 'object' ) 	// create or update a tracked object
 
 }
 
+if ($action == 'delobject' ) 	// delete a tracked object
+{
+     $flyobj=delobj($objectid,$registration, $cn, $acft, $user);
+     if ($flyobj < 0){
+         echo "Error deleting object: ".$flyobj;
+          }
+
+}
+
 if ($action == 'device' ) 	// create or update an updated device
 {
      if ($objectid == ''){
@@ -391,6 +496,19 @@ if ($action == 'device' ) 	// create or update an updated device
      $rc=createdevice($devid, $dvct, $deviceidtype, $objectid, $user);
      if ($rc < 0){
          echo "Error creating device: ".$rc;
+         }
+
+}
+
+if ($action == 'deldevice' ) 	// delete a device
+{
+     if ($objectid == ''){
+        echo "Error Missing objectid";
+        exit();
+     }
+     $rc=deldevice($devid, $dvct, $deviceidtype, $objectid, $user);
+     if ($rc < 0){
+         echo "Error deleing device: ".$rc;
          }
 
 }

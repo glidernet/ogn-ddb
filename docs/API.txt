@@ -16,7 +16,7 @@ Reply:
     "AircraftType": "105",
     "FlyobjMsg": " flyobj_inserted ",
     "FlyobjID": "22394",
-    "DeviceID": " 757899",
+    "DeviceID": "757899",
     "DeviceMsg": "device_inserted"
 }
 

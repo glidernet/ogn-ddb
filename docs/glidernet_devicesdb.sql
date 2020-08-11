@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 10, 2020 at 01:49 PM
+-- Generation Time: Aug 11, 2020 at 11:12 AM
 -- Server version: 5.7.31-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.6
 
@@ -27,6 +27,18 @@ USE `glidernet_devicesdb`;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `aircraftcat`
+--
+
+DROP TABLE IF EXISTS `aircraftcat`;
+CREATE TABLE `aircraftcat` (
+  `cat_id` tinyint(2) UNSIGNED NOT NULL COMMENT 'Aircraft category ID',
+  `cat_name` varchar(16) DEFAULT NULL COMMENT 'Aircraft cat name'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Aircraft category (glider, aircraft, ....)';
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `aircraftstypes`
 --
 
@@ -34,7 +46,7 @@ DROP TABLE IF EXISTS `aircraftstypes`;
 CREATE TABLE `aircraftstypes` (
   `ac_id` smallint(5) UNSIGNED NOT NULL COMMENT 'Acft ID (autoincremented)',
   `ac_type` varchar(32) CHARACTER SET utf32 COLLATE utf32_unicode_ci NOT NULL COMMENT 'Acft type(ASW20, ...)',
-  `ac_cat` tinyint(3) UNSIGNED NOT NULL DEFAULT '1' COMMENT 'Acft category(glider, towplane, ...)'
+  `ac_cat` tinyint(2) UNSIGNED NOT NULL DEFAULT '1' COMMENT 'Acft category(glider, towplane, ...)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -134,10 +146,18 @@ CREATE TABLE `users` (
 --
 
 --
+-- Indexes for table `aircraftcat`
+--
+ALTER TABLE `aircraftcat`
+  ADD PRIMARY KEY (`cat_id`),
+  ADD KEY `catidx` (`cat_name`);
+
+--
 -- Indexes for table `aircraftstypes`
 --
 ALTER TABLE `aircraftstypes`
-  ADD PRIMARY KEY (`ac_id`);
+  ADD PRIMARY KEY (`ac_id`),
+  ADD KEY `catidx` (`ac_cat`);
 
 --
 -- Indexes for table `devices`
@@ -178,6 +198,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `aircraftcat`
+--
+ALTER TABLE `aircraftcat`
+  MODIFY `cat_id` tinyint(2) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Aircraft category ID';
+
+--
 -- AUTO_INCREMENT for table `aircraftstypes`
 --
 ALTER TABLE `aircraftstypes`
@@ -204,6 +230,12 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `aircraftstypes`
+--
+ALTER TABLE `aircraftstypes`
+  ADD CONSTRAINT `aircraftstypes_ibfk_1` FOREIGN KEY (`ac_cat`) REFERENCES `aircraftcat` (`cat_id`);
 
 --
 -- Constraints for table `trackedobjects`

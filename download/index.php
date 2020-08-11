@@ -100,8 +100,16 @@ if (!empty($_GET['j']))  {
     $j=$_GET['j'];
 }
 if ($j == 2){
+   $sql0 = 'SELECT ac_id, ac_type, ac_cat  FROM aircraftstypes ORDER BY ac_id;';
+   $stmt= $dbh->query($sql0);
+   $airtyp=$stmt->fetchAll();
+   $output['aircrafttypes']=$airtyp;
    $output['devtypes']=$devtyp;
    $output['idtypes']=$idtypes;
+   $sql0 = 'SELECT cat_id, cat_name  FROM aircraftcat ORDER BY cat_id;';
+   $stmt= $dbh->query($sql0);
+   $aircat=$stmt->fetchAll();
+   $output['aircraftcat']=$aircat;
 }
 if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] == 'application/json') {
     						// the case of output JSON

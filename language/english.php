@@ -28,6 +28,7 @@ $languages['english'] = array (
     "input_notrack" => "I don't want this device to be tracked",
     "input_noident" => "I don't want this device to be identified",
     "input_active" => "I want this device to be active",
+    "input_activeobj" => "I want this tracked object to be active",
     "error_login" => "Address or password incorrect",
     "error_pwdontmatch" => "Passwords don't match",
     "error_pwtooshort" => "Password is too short (4 char mini)",

@@ -48,7 +48,7 @@ function send_email($to, $subject, $message, $from = '')
     return mail($to, $subject, $email_message, implode("\n", $headers), '-f'.$from);
 }
 
-function home()
+function home()				// display the initial home page
 {
     global $lang,$error,$user,$url,$twig;
 
@@ -74,12 +74,11 @@ function fromhome()
     exit();
 }
 
-function devicetypes()
+function devicetypes()			// get the device type table
 {
     $dbh = Database::connect();
-    $result = $dbh->query('SELECT * FROM devtypes');
+    $result = $dbh->query('SELECT * FROM devtypes ;');
     foreach ($result as $row) {
-
         $devtypes[$row['dvt_id']] = $row['dvt_name'];
     }
     return $devtypes;
@@ -193,20 +192,17 @@ array('', '', '');
 
 function fillinaircraft()
 {
-    global $lang,$error,$airid,$active,$acreg,$accn,$actype,$phone, $club, $country, $active, $twig;
+    global $lang,$error,$airid,$active,$acreg,$accn,$actype,$phone, $club, $country, $twig;
 
-    $catarray = array(
-        1 => 'Gliders/motoGliders',
-        2 => 'Planes',
-        3 => 'Ultralights',
-        4 => 'Helicoters',
-        5 => 'Drones/UAV',
-        6 => 'Others',
-    );
-
-    $aircraft = array();
     $dbh = Database::connect();
-    $result = $dbh->query('SELECT * FROM aircraftstypes ORDER BY ac_cat,ac_type');
+    $catarray = array();			// the aircraft category
+
+    $result = $dbh->query('SELECT cat_id, cat_name FROM aircraftcat ORDER BY cat_id ;');
+    foreach ($result as $row) {
+        $catarray[$row['cat_id']]=$row['cat_name'];
+    }
+    $aircraft = array();			// the aircraft table 
+    $result = $dbh->query('SELECT * FROM aircraftstypes ORDER BY ac_cat,ac_type ;');
     foreach ($result as $row) {
         $selected = ($row['ac_id'] == $actype) ? 'selected' : '';
 
@@ -369,7 +365,7 @@ case 'login':					// login
 
 case 'd':        				// disconnect
 {
-    session_destroy();
+    session_destroy();				// destroy the _SESSION values
     session_start();
     $_SESSION['home'] = 'yes';
     home();
@@ -969,7 +965,8 @@ case 'createdev':        			// create device
     if (isset($_REQUEST['active'])) {
         $active = $_REQUEST['active'];
     } else {
-        $error = $lang['error_active'];
+        $active=0;
+        //$error = $lang['error_active'];
     }
     if (isset($_REQUEST['notrack'])) {
         if ($_REQUEST['notrack'] == 'yes') {
@@ -1122,7 +1119,8 @@ case 'createacft':        			// create tracked object
     if (isset($_REQUEST['active'])) {
         $active = $_REQUEST['active'];
     } else {
-        $error = $lang['error_active'];
+        $active=0;
+        //$error = $lang['error_active'];
     }
 
     if (isset($_REQUEST['owner'])) {

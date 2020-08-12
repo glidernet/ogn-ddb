@@ -192,31 +192,29 @@ function createobj($airid, $acreg, $accn, $actype, $user)
         }
         $req->closeCursor();
     }
-
+    $acreg=str_replace("_",'-',$acreg);
+    if ($acreg == ' ' or $acreg == ''){
+        $acreg = 'R-'.$airid;
+    }
     if ($upd) {
-            $ins = $dbh->prepare('UPDATE trackedobjects SET air_actype=:dt,  air_acreg=:re, air_accn=:cn, air_active=:ac, air_SARphone=:ph, air_SARclub=:cl, air_Country=:co WHERE air_id=:de AND air_userid=:us');
+            $ins = $dbh->prepare('UPDATE trackedobjects SET air_actype=:dt,  air_acreg=:re, air_accn=:cn, air_active=:ac  WHERE air_id=:de AND air_userid=:us');
     } else {
             $airid=0;
             $ins = $dbh->prepare('INSERT INTO trackedobjects (air_id, air_actype , air_acreg, air_accn, air_userid, air_active, air_SARphone, air_SARclub, air_Country  ) VALUES (:de, :dt,  :re, :cn, :us, :ac, :ph, :cl, :co )');
-            if ($airid == ''){
-               $airid='0';
-            }
+            $phone='';
+            $club='';
+            $country='';
+            $ins->bindParam(':ph', $phone);
+            $ins->bindParam(':cl', $club);
+            $ins->bindParam(':co', $country);
     }
 
-
-
     $act=1;
-    $phone='';
-    $club='';
-    $country='';
     $ins->bindParam(':de', $airid);
     $ins->bindParam(':dt', $actype);
     $ins->bindParam(':re', $acreg);
     $ins->bindParam(':cn', $accn);
     $ins->bindParam(':ac', $act);
-    $ins->bindParam(':ph', $phone);
-    $ins->bindParam(':cl', $club);
-    $ins->bindParam(':co', $country);
     $ins->bindParam(':us', $user);
 
     if ($ins->execute()) {    	// insert ok, send email
@@ -529,6 +527,6 @@ if ($action == 'add' ) 		// create an object and a linked device
 }
 $outputmsg=$outputmsg."} ";
 $outputmsg=str_replace("'",'"',$outputmsg);
-echo $outputmsg;
+echo $outputmsg."\n";
 exit();
 ?>

@@ -1086,6 +1086,7 @@ case 'createacft':        			// create tracked object
     }
     if (isset($_REQUEST['acreg'])) {
         $acreg = $_REQUEST['acreg'];
+        $acreg = str_replace("_",'-',$acreg);
     } else {
         $error = $lang['error_acreg'];
     }

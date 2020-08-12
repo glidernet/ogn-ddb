@@ -1,0 +1,5 @@
+wget "http://DDB.glidernet.org/API/V1/?action=add&login=johndow@acme.com&password=123456&device_id=C307F0&registration=IGC-1&cn=1&acftype=UFO&device_type=O"
+sed 's/\" wget \"/wget /g' ogn* | sed 's/""",//g' | sed 's/,//g' | sed 's/$/"/g ' | sed 's/$/ \-a cmd.log \-O result.log/g' | sed 's/$/ \&\& cat result.log >>results.log/g' >cmd.sh 
+
+
+

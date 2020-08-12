@@ -9,85 +9,8 @@ import csv
 import urllib.request
 import urllib.error
 import urllib.parse
+from ddbfuncs import *
 
-def checkreg(reg, ICAOID):	# check if the registration matches the ICAO ID
-    ranges= [
-                {  "S": 0x008011, "E": 0x008fff, "R": "ZS-" },
-                {  "S": 0x390000, "E": 0x398000, "R": "F-G" },
-                {  "S": 0x398000, "E": 0x38FFFF, "R": "F-H" },
-                {  "S": 0x3C4421, "E": 0x3C8421, "R": "D-A" },
-                {  "S": 0x3C0001, "E": 0x3C8421, "R": "D-A" },
-                {  "S": 0x3C8421, "E": 0x3CC000, "R": "D-B" },
-                {  "S": 0x3C2001, "E": 0x3CC000, "R": "D-B" },
-                {  "S": 0x3CC000, "E": 0x3D04A8, "R": "D-C" },
-                {  "S": 0x3D04A8, "E": 0x3D4950, "R": "D-E" },
-                {  "S": 0x3D4950, "E": 0x3D8DF8, "R": "D-F" },
-                {  "S": 0x3D8DF8, "E": 0x3DD2A0, "R": "D-G" },
-                {  "S": 0x3DD2A0, "E": 0x3E1748, "R": "D-H" },
-                {  "S": 0x3E1748, "E": 0x3EFFFF, "R": "D-I" },
-                {  "S": 0x448421, "E": 0x44FFFF, "R": "OO-" },
-                {  "S": 0x458421, "E": 0x45FFFF, "R": "OY-" },
-                {  "S": 0x460000, "E": 0x468421, "R": "OH-" },
-                {  "S": 0x468421, "E": 0x46FFFF, "R": "SX-" },
-                {  "S": 0x490421, "E": 0x49FFFF, "R": "CS-" },
-                {  "S": 0x4A0421, "E": 0x4AFFFF, "R": "YR-" },
-                {  "S": 0x4B8421, "E": 0x4BFFFF, "R": "TC-" },
-                {  "S": 0x740421, "E": 0x74FFFF, "R": "JY-" },
-                {  "S": 0x760421, "E": 0x768421, "R": "AP-" },
-                {  "S": 0x768421, "E": 0x76FFFF, "R": "9V-" },
-                {  "S": 0x778421, "E": 0x77FFFF, "R": "YK-" },
-                {  "S": 0xC00001, "E": 0xC044A9, "R": "C-F" },
-                {  "S": 0xC044A9, "E": 0xC0FFFF, "R": "C-G" },
-                {  "S": 0xE01041, "E": 0xE0FFFF, "R": "LV-" },
-                {  "S": 0x3E0000, "E": 0x3EFFFF, "R": "D-" }
-    ]
-    for r in ranges:		# check for the registration is in the ranges assigned by country
-        #print ("R",r, r["S"], r["E"])
-        l=len(r["R"])
-        if reg[0:l] == r["R"]:
-           idicao=int('0x'+ICAOID, 16)
-           if idicao > r["S"] and idicao < r["E"]:
-              return (1)	# return TRUE if OK
-           else:
-              return (0)	# return FALSE if not in the range
-    return(2)			# return 2 if not found or UNKOWN 
-
-def checkflarm(flarmid):	# check if the flarm ID is in the ranges of the assigned by Flarm 
-    if flarmid[0] == 'D' or flarmid[0] == '1' or flarmid[0] == '2':
-       return(True)		# OK
-    else:
-       return(False)		# not OK
-
-def checkfanet(fanetid):	# check if the fanetid ID is in the ranges of the assigned by fanet
-    if fanetid[0] == 'E' and fanetid[1] == '0' :
-       return(True)		# OK
-    else:
-       return(False)		# not OK
-
-def checknaviter(navid):
-
-    IDID = "OGN" + navid	# try as OGN tracker
-    if IDID in lastfix:		# check if that ID has been seen
-       lf=lastfix[IDID]
-       if lf['station'].upper() == "NAVITER":
-            return(True)
-    IDID = "ICA" + navid	# try as ICAO id
-    if IDID in lastfix:		# check if that ID has been seen
-       lf=lastfix[IDID]
-       if lf['station'].upper() == "NAVITER":
-            return(True)
-    IDID = "FNT" + navid	# try as FANET device
-    if IDID in lastfix:		# check if that ID has been seen
-       lf=lastfix[IDID]
-       if lf['station'].upper() == "NAVITER":
-            return(True)
-    IDID = "FLR" + navid	# try as FLARM device
-    if IDID in lastfix:		# check if that ID has been seen
-       lf=lastfix[IDID]
-       if lf['station'].upper() == "NAVITER":
-            return(True)
-    return (False)
-       
 def repl (text, objid):		# replace the registration mistypes
     
     if len(text) == 0 or text[0] == " ":
@@ -193,31 +116,6 @@ def buildcsv(conn1,csvfilename, prt=False):	# build the CSV file
     csvfile.close()
     return
 
-def lastfixgetapidata(url):             # get the data from the API server
-
-    req = urllib.request.Request(url)   # build the request
-    req.add_header("Content-Type", "application/json")
-    req.add_header("Content-type", "application/x-www-form-urlencoded")
-    r = urllib.request.urlopen(req)     # open the url resource
-    js=r.read().decode('UTF-8')
-    j_obj = json.loads(js)              # convert from JSON
-    return j_obj      
-
-def buildlastfix(lf,url,prt=False):	# build the lastfix table
-    #fp=open("LASTFIX.json", 'r')
-    #results=json.load(fp)
-    #fp.close()
-    results=lastfixgetapidata(url+"/lastfix")
-    lastfix=results["lastfix"]
-    if prt:
-       print(json.dumps(lastfix,indent=4))
-    for lfix in lastfix:
-        if not "flarmId" in lfix:
-           break
-
-        lf[lfix["flarmId"]]=lfix
-        lfixseen=lfix
-    return lf,lfixseen
 #
 # --------------------------------------------------------------------------------------------------- #
 #
@@ -232,7 +130,7 @@ INSERT INTO `glidernet_devicesdb`.`users`(`usr_id`, `usr_adress`, `usr_pw`) SELE
 sqlcopytmpu="truncate `glidernet_devicesdb`.`tmpusers` ; \
 INSERT INTO `glidernet_devicesdb`.`tmpusers`(`tusr_adress`, `tusr_pw`, `tusr_validation`, `tusr_time`) SELECT `tusr_adress`, `tusr_pw`, `tusr_validation`, `tusr_time` FROM `glidernet_devicesdb_original`.`tmpusers`;"
 
-prt=False
+prt=True
 lastfix={}				# table with the last fix found
 url="http://glidertracking1.fai.org"
 url="http://localhost"
@@ -285,8 +183,12 @@ while rowg2:				# go thru all the devices
       dev_id 		= rowg2[0] 	# device ID
       dev_type 		= rowg2[1] 	# device type (ICAO, Flarm, OGNT, ...)
       cntdtype[dev_type] += 1		# increase the counter by device type
-      dev_actype 	= rowg2[2]	# aricraft type  
+      dev_actype 	= rowg2[2]	# aircraft type  
       dev_acreg 	= repl(rowg2[3],cnt)# aircraft registration like EC-xxx
+      dev_accn 		= rowg2[4]	# competition ID 
+      dev_userid 	= rowg2[5]	# Id of person registering the device 
+      dev_notrack 	= rowg2[6]	# no tract requested 
+      dev_noident 	= rowg2[7] 	# no identofication requested
       if dev_type == 1:			# if ICAO ID type
          IDID="ICA"+dev_id		# ID for search
          cntICAO += 1			# increase the counter
@@ -300,7 +202,7 @@ while rowg2:				# go thru all the devices
          devtyp=2			# the device tyep is a Flarm
          IDID="FLR"+dev_id		# ID for search
          cntFLARM += 1			# increase the counter
-         cr=checkflarm(dev_id)		# check if it is in a flarm addr range
+         cr=checkflarmint(dev_id)	# check if it is in a flarm addr range
          if not cr: 			# if it is not in a flarm range
             #print ("CRFlarm:", cr, dev_acreg, dev_id)
             cnterr += 1			# increase the error counter
@@ -317,14 +219,22 @@ while rowg2:				# go thru all the devices
                idtype=1			# address type is INTERNAL
                cntINT +=1		# address type is INTERNAL
 
-         if IDID not in lastfix and idtype != 2:	# try to see if in last fix
+         if IDID not in lastfix and idtype != 2: # try to see if in last fix
             TID = "ICA" + dev_id        # try as ICAOa
             if TID in lastfix:
                cntLF += 1		# increase the counter
                idtype=2 		# the ID Type is ICAO
                cntICAON += 1		# increase the counter
                cntICAOlf += 1		# increase the counter
-               cntINT -=1			# address type is INTERNAL
+               cntINT -=1		# address type is INTERNAL
+            else:
+               TID = "OGN" + dev_id     # try as OGN tracker
+               if TID in lastfix:
+                  if prt:
+                     print ("OGNT fixed by LastFix:",  dev_id, dev_acreg, dev_accn, dev_actype)
+                  cntLF += 1		# increase the counter
+                  idtype=1 		# the ID Type is internal
+                  devtyp=3		# the device tyep is a OGNT
       if dev_type == 3:			# if OGN tracker type
          devtyp=3			# the device tyep is a OGNT
          IDID="OGN"+dev_id		# ID for search
@@ -345,24 +255,20 @@ while rowg2:				# go thru all the devices
                idtype=2 		# the ID Type is ICAO
                cntICAON += 1		# increase the counter
                cntICAOlf += 1		# increase the counter
-               cntINT -=1			# address type is INTERNAL
-      if checkfanet(dev_id):		# count FANET devices
+               cntINT -=1		# address type is INTERNAL
+      if checkfanet(dev_id,lastfix,prt): # count FANET devices
          cntFANET += 1
          if prt:
             print ("FANET:", dev_acreg, dev_id, dev_type, dev_actype)
          devtyp = 8			# set as FANET device
          idtype=1 			# the ID Type is internal
-      if checknaviter(dev_id):		# count NAVITER devices
+      if checknaviter(dev_id,lastfix):		# count NAVITER devices
          cntNAVITER += 1
          if prt:
             print ("NAVITER Reg:", dev_acreg, "ID:", dev_id, "DevType:", dev_type, "AcType:", dev_actype)
          devtyp = 4			# set as NAVITER OUDIE device
          idtype=1 			# the ID Type is internal
 
-      dev_accn 		= rowg2[4]	# competition ID 
-      dev_userid 	= rowg2[5]	# Id of person registering the device 
-      dev_notrack 	= rowg2[6]	# no tract requested 
-      dev_noident 	= rowg2[7] 	# no identofication requested
       #print (dev_id, dev_type, dev_actype, dev_acreg, dev_accn, dev_userid, dev_notrack, dev_noident)
 					# convert that data in two tables: devices and aircraft objects
       inscmd1 = "insert into trackedobjects values ("+str(cnt)+"," + str(dev_actype) + ",'" + str(dev_acreg) + "','" + str(dev_accn) + "'," + str(dev_userid) +",1,'','','')"

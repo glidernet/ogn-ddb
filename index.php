@@ -4,7 +4,7 @@ include 'sql.php';
 
 //
 // This program handles all the aspects of the OGN Device DataBase (OGNDDB)
-// Website: http://ddb.glidernet.orga
+// Website: http://ddb.glidernet.org
 //
 // Partially Rewritten by: Angel Casadoa Date: August 2020
 //
@@ -285,6 +285,63 @@ function aircraftlist()
 
     );
     echo $twig->render('aircraftlist.html.twig', $template_vars);
+}
+
+// --------------------------------------------------------------------------------------- //
+
+function ICAOcheckreg($reg, $ICAOID)			// function to check if a registration and an ICAO ID matches
+
+{							// check if the registration matches the ICAO ID
+							// table with all the ICAO ID ranges by country
+	$ranges [] = array( "S"=> 0x008011, "E"=> 0x008fff, "R"=> "ZS-" );
+        $ranges [] = array( "S"=> 0x390000, "E"=> 0x398000, "R"=> "F-G" );
+        $ranges [] = array( "S"=> 0x398000, "E"=> 0x38FFFF, "R"=> "F-H" );
+        $ranges [] = array( "S"=> 0x3C4421, "E"=> 0x3C8421, "R"=> "D-A" );
+        $ranges [] = array( "S"=> 0x3C0001, "E"=> 0x3C8421, "R"=> "D-A" );
+        $ranges [] = array( "S"=> 0x3C8421, "E"=> 0x3CC000, "R"=> "D-B" );
+        $ranges [] = array( "S"=> 0x3C2001, "E"=> 0x3CC000, "R"=> "D-B" );
+        $ranges [] = array( "S"=> 0x3CC000, "E"=> 0x3D04A8, "R"=> "D-C" );
+        $ranges [] = array( "S"=> 0x3D04A8, "E"=> 0x3D4950, "R"=> "D-E" );
+        $ranges [] = array( "S"=> 0x3D4950, "E"=> 0x3D8DF8, "R"=> "D-F" );
+        $ranges [] = array( "S"=> 0x3D8DF8, "E"=> 0x3DD2A0, "R"=> "D-G" );
+        $ranges [] = array( "S"=> 0x3DD2A0, "E"=> 0x3E1748, "R"=> "D-H" );
+        $ranges [] = array( "S"=> 0x3E1748, "E"=> 0x3EFFFF, "R"=> "D-I" );
+        $ranges [] = array( "S"=> 0x448421, "E"=> 0x44FFFF, "R"=> "OO-" );
+        $ranges [] = array( "S"=> 0x458421, "E"=> 0x45FFFF, "R"=> "OY-" );
+        $ranges [] = array( "S"=> 0x460000, "E"=> 0x468421, "R"=> "OH-" );
+        $ranges [] = array( "S"=> 0x468421, "E"=> 0x46FFFF, "R"=> "SX-" );
+        $ranges [] = array( "S"=> 0x490421, "E"=> 0x49FFFF, "R"=> "CS-" );
+        $ranges [] = array( "S"=> 0x4A0421, "E"=> 0x4AFFFF, "R"=> "YR-" );
+        $ranges [] = array( "S"=> 0x4B8421, "E"=> 0x4BFFFF, "R"=> "TC-" );
+        $ranges [] = array( "S"=> 0x740421, "E"=> 0x74FFFF, "R"=> "JY-" );
+        $ranges [] = array( "S"=> 0x760421, "E"=> 0x768421, "R"=> "AP-" );
+        $ranges [] = array( "S"=> 0x768421, "E"=> 0x76FFFF, "R"=> "9V-" );
+        $ranges [] = array( "S"=> 0x778421, "E"=> 0x77FFFF, "R"=> "YK-" );
+        $ranges [] = array( "S"=> 0xC00001, "E"=> 0xC044A9, "R"=> "C-F" );
+        $ranges [] = array( "S"=> 0xC044A9, "E"=> 0xC0FFFF, "R"=> "C-G" );
+        $ranges [] = array( "S"=> 0xE01041, "E"=> 0xE0FFFF, "R"=> "LV-" );
+        $ranges [] = array( "S"=> 0x3E0000, "E"=> 0x3EFFFF, "R"=> "D-"  );
+        var_dump($reg, $ICAOID);	
+        foreach  ($ranges as $r) {              		// check for the registration is in the ranges assigned by country
+   
+           $l=strlen($r["R"]);					// get the lenght of the part of the initial part of the registration
+
+           $lr= substr($reg,0,$l);
+       
+           if ($lr == $r["R"]) {				// it is our country ???
+              $idicao=intval($ICAOID, 16);			// convert the string to a hex value
+              if ($idicao > $r["S"] and $idicao < $r["E"]) 	// if it is within the range ??
+                 {
+                 return (1);					// return TRUE if OK
+                 }
+              else 
+                 {
+                 return (0);					// return FALSE if not in the range
+ 	         }          
+           }
+        }
+    								// not in our table, so unkown
+        return(2);						// return 2 if not found or UNKOWN 
 }
 
 // --------------------------------------------------------------------------------------- //
@@ -636,6 +693,10 @@ case 'createuser':        			// create user
     if (filter_var($user, FILTER_VALIDATE_EMAIL) === false) {
         $error = $lang['error_emailformat'];
     }
+    $isp=strstr(strstr($user, "@"),".", True);
+    if ($isp == "@gmx" or $isp == "@web") {
+        $error = $lang['error_emailbadisp'];
+    }
 
     $dbh = Database::connect();
     $req = $dbh->prepare('select usr_adress from users where usr_adress=:us UNION ALL select tusr_adress from tmpusers where tusr_adress=:us');
@@ -776,6 +837,10 @@ case 'forgotpasswd':        			// forgot password
     }
     if (filter_var($user, FILTER_VALIDATE_EMAIL) === false) {
         $error = $lang['error_emailformat'];
+    }
+    $isp=strstr(strstr($user, "@"),".", True);
+    if ($isp == "@gmx" or $isp == "@web") {
+        $error = $lang['error_emailbadisp'];
     }
 
     $dbh = Database::connect();
@@ -942,7 +1007,7 @@ case 'createdev':        			// create device
         exit();
     } 						// test if user id defined
 
-    if (isset($_REQUEST['devid'])) {
+    if (isset($_REQUEST['devid'])) {		// device ID
         $devid = $_REQUEST['devid'];
     } else {
         $error = $lang['error_devid'];
@@ -952,7 +1017,7 @@ case 'createdev':        			// create device
     } else {
         $error = $lang['error_devtype'];
     }
-    if (isset($_REQUEST['idtype'])) {
+    if (isset($_REQUEST['idtype'])) {		// ID type ICAO or internal
         $idtype = $_REQUEST['idtype'];
     } else {
         $error = $lang['error_idtype'];
@@ -1004,6 +1069,22 @@ case 'createdev':        			// create device
     }
 
     $dbh = Database::connect();
+    if ($idtype == '2') {					// it is an ICAO ID ??
+        $req = $dbh->prepare('SELECT air_acreg FROM trackedobjects WHERE air_id =:fo');
+        $fly = (int) $flyobj;
+        $req->bindParam(':fo', $fly);			// get the registration
+        $req->execute();
+        $result = $req->fetch();
+        if ($result['air_acreg'] != ''){		// if provided
+            $t=$result['air_acreg'];
+            $r=ICAOcheckreg($result['air_acreg'], $devid); // CHECK
+            if ($r == 0) {				// if invalid DEVID for the ICAO range
+                $error = $lang['error_invalid_ICAO_ID'];
+                echo $error;
+                }
+            }
+    }
+
     $req = $dbh->prepare('select dev_id, dev_type, dev_idtype, dev_userid from devices where dev_id=:de and dev_type =:dt and dev_idtype=:it');    // test if device is owned by another account
     $req->bindParam(':de', $devid);
     $req->bindParam(':dt', $devtype);
@@ -1011,11 +1092,11 @@ case 'createdev':        			// create device
     $req->execute();
 
     $upd = false;
-    if ($req->rowCount() == 1) {        // if device already registred
+    if ($req->rowCount() == 1) {        		// if device already registred
         $result = $req->fetch();
         if ($result['dev_userid'] == $_SESSION['user']) {
             $upd = true;
-        }        			// if owned by the user then update
+        }        					// if owned by the user then update
         else {
             $error = $lang['error_devexists'];
         }
@@ -1040,7 +1121,7 @@ case 'createdev':        			// create device
         $ins->bindParam(':ac', $act);
         $ins->bindParam(':fo', $fly);
         $ins->bindParam(':us', $_SESSION['user']);
-        if ($ins->execute()) {    	// insert ok, send email
+        if ($ins->execute()) {    			// insert ok, send email
             if ($upd) {
                 $error = $lang['device_updated'];
             } else {

@@ -32,15 +32,21 @@ conn1 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBname)
 
 curs1 = conn1.cursor()			# cursor for devices destination			         
 curs2 = conn1.cursor()			# cursor for devices destination			         
-curs1.execute("select count(*) from devices;")
+curs1.execute("SELECT COUNT(*) FROM devices;")
 rowg = curs1.fetchone() 	
 print("\n\nOGNDDB devices", rowg[0])
-curs1.execute("select count(*) from trackedobjects;")
+curs1.execute("SELECT COUNT(*) FROM trackedobjects;")
 rowg = curs1.fetchone() 	
 print("OGNDDB trackedobjects", rowg[0])
-curs1.execute("select count(*) from users;")
+curs1.execute("SELECT COUNT(*) FROM users;")
 rowg = curs1.fetchone() 	
-print("OGNDDB users", rowg[0], "\n\n")
+print("OGNDDB users", rowg[0])
+curs1.execute("SELECT COUNT(*) FROM tmpusers;")
+rowg = curs1.fetchone() 	
+print("OGNDDB temp users", rowg[0])
+curs1.execute("SELECT COUNT(*) FROM tmpusers WHERE tusr_time < (unix_timestamp(NOW()) - 30*24*3600);")
+rowg = curs1.fetchone() 	
+print("OGNDDB temp users older than one month", rowg[0])
 
 cnt=0					# counter of records
 cnterr=0				# counter of devices defined as Flarm but not in the Flarm range
@@ -59,12 +65,13 @@ cntOGNTok = 0
 cntOGNTnotok = 0
 cntFANETok = 0
 cntFANETnotok = 0
+cntFLARM = 0
 cntOGNT = 0
 cntNAVI = 0
 cntUNKW = 0
 cntseen = 0
 
-print ("\n\nUsers with many devices registered:\n" )
+print ("\nUsers with many devices registered:" )
 curs1.execute("SELECT usr_id, usr_adress FROM users  ;")
 
 rowg = curs1.fetchone() 		# find number of devices on the original table	
@@ -117,21 +124,22 @@ while rowg:				# go thru all the user
       devtype 		= rowg[2] 	# device type
       devidtype		= rowg[3] 	# device ID type
       
-      if devtype == 1:			# FLarmICAO deprecateda
+      if devtype == 1:			# FLarmICAO deprecated now
          IDID='ICA'+devid
          if (checkreg(reg,devid)):
-             cntICAOok += 1
+             cntICAOok += 1		# should be 0
          else:
              cntICAOnotok += 1		# should be 0
 
-      elif devtype == 2:		# FLARM
+      elif devtype == 2:		# FLARM (both ICAO & INTERNAL) IDs
+         cntFLARM += 1 
          IDID='FLR'+devid
          r=checkreg(reg, devid)		# check if ID matches with registration ICAO check 
-         if (r==0):			# not OK
+         if (r==0):			# not OK the ID do not match the registration
              if checkflarmlf(devid,lastfix): # check first if we had seen on the network
                    cntFLARMok  +=1
              else:   
-                   cntFLARMnotok += 1	# probably wrong ID
+                   cntFLARMnotok += 1	# probably wrong ID or not seen yet
          elif (r == 1 and devidtype == 2): # OK reg and ICAO match
              cntFLARMok += 1
              cntFLARMICAOok += 1
@@ -143,7 +151,7 @@ while rowg:				# go thru all the user
                 if checkflarmlf(devid,lastfix): # check if last seen on the network
                    cntFLARMok  +=1	# Ok in that case
                 else:   
-                   cntFLARMnotok += 1	# probably wrong ID
+                   cntFLARMnotok += 1	# probably wrong ID or not seen yet
            
       elif devtype == 3:		# OGN tracker
          IDID='OGN'+devid
@@ -151,7 +159,7 @@ while rowg:				# go thru all the user
          if checkogntlf(devid,lastfix): # check if last seen on the network
                    cntOGNTok  +=1	# Ok in that case
          else:   
-                   cntOGNTnotok += 1	# probably wrong ID
+                   cntOGNTnotok += 1	# probably wrong ID or not seen
 
       elif devtype == 4:		# Naviter
          IDID='NAV'+devid
@@ -181,8 +189,8 @@ conn1.commit()				# commit the changes
 #
 print("Table DEVICES Records:", cntdev, \
  "\nDevices ICAO (deprecated) OK:", cntICAOok, ", Not OK", cntICAOnotok, \
- "\nFLARM OK:", cntFLARMok, "(of those ICAO ok:", cntFLARMICAOok, "), Not OK", cntFLARMnotok, \
- "\nOGN Trackers:", cntOGNT, "OGNT seen:", cntOGNTok, ", not seen:", cntOGNTnotok, \
+ "\nFlarms: ", cntFLARM, "FLARM OK:", cntFLARMok, "(of those ICAO ok:", cntFLARMICAOok, "), Not OK", cntFLARMnotok, \
+ "\nOGN Trackers:", cntOGNT, "OGNT seen and OK:", cntOGNTok, ", not seen:", cntOGNTnotok, \
  "\nFANET OK:", cntFANETok, ", Not OK", cntFANETnotok, \
  "\nNaviter devs:", cntNAVI, "\n\n")
 print("Total:", cntICAOok+cntICAOnotok+cntFLARMok+cntFLARMnotok+cntOGNT+cntFANETok+cntFANETnotok+cntNAVI,cntUNKW)

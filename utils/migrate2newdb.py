@@ -6,6 +6,7 @@ import MySQLdb                  # the SQL data base routines
 import json
 import os
 import csv
+import argparse
 import urllib.request
 import urllib.error
 import urllib.parse
@@ -121,6 +122,16 @@ def buildcsv(conn1,csvfilename, prt=False):	# build the CSV file
 #
 print ("\n\nOGN DDB migration utility:\n" )
 print (    "=========================:\n" )
+#----------------------aprslog.py start-----------------------#
+parser = argparse.ArgumentParser(description="OGN DDB migration utility")
+parser.add_argument('-p',  '--print',     required=False,
+                    dest='prt',   action='store', default=False)
+parser.add_argument('-t',  '--TRK',     required=False,
+                    dest='trk',   action='store', default=False)
+args = parser.parse_args()
+prt      = args.prt			# print on|off
+trk      = args.trk			# migrate trkdevices on|off
+
 sqlcopyat="truncate `glidernet_devicesdb`.`aircraftstypes` ; \
 INSERT INTO `glidernet_devicesdb`.`aircraftstypes`(`ac_id`, `ac_type`, `ac_cat`) SELECT `ac_id`, `ac_type`, `ac_cat` FROM `glidernet_devicesdb_original`.`aircrafts`;"
 
@@ -130,8 +141,6 @@ INSERT INTO `glidernet_devicesdb`.`users`(`usr_id`, `usr_adress`, `usr_pw`) SELE
 sqlcopytmpu="truncate `glidernet_devicesdb`.`tmpusers` ; \
 INSERT INTO `glidernet_devicesdb`.`tmpusers`(`tusr_adress`, `tusr_pw`, `tusr_validation`, `tusr_time`) SELECT `tusr_adress`, `tusr_pw`, `tusr_validation`, `tusr_time` FROM `glidernet_devicesdb_original`.`tmpusers`;"
 
-prt=False
-trk=True
 lastfix={}				# table with the last fix found
 url="http://glidertracking1.fai.org"
 url="http://localhost"
@@ -304,42 +313,30 @@ jsonfile.write(j)
 jsonfile.close()                       	# close the JSON file 
 c=buildcsv(conn1, "DEVICES.csv", prt=prt)
 
-# report results
-ICAOcnt = 0
-for i in cnticao:
-    ICAOcnt += i 
-print ("Nerrs detected ... device assigned as Flarm but not in Flarm range: ", cnterr, "\nICAO IDs detected:", ICAOcnt, cnticao, "Wrong ICAO ID, OK ICAO ID, Unkown ICAOID\nFlarm that should be ICAO:", cntOK, "It matches the ICAO ID", cntICAO)
-print ("\n\nNumber of ICAO devices:", cntICAO,"\nNumber of FLARM devices:", cntFLARM,"\nNumber of OGN trackers detected: ", cntOGNT, "\nTotal:", cntICAO+cntFLARM+cntOGNT)
-print ("\n\nNumber of FANET devices:", cntFANET, "\nNumber of Naviter devices:", cntNAVITER, "\nFlarms found in LASTFIX corrected:", cntLF)
-print ("\n\nNumber of devices seen registered: ", cntseen, "out of:", len(lastfix))
-print ("\n\nNumber of devices seen ICAO: ", cntICAON, "Internal:", cntINT,"Total:", cntICAON+cntINT)
-print ("\n\nNumber of ICAO orig:", cntICAO, "Flarms that should be ICAO", cntOK, "Corrected by lastfix:", cntICAOlf, "Total:", cntICAO+cntOK+cntICAOlf)
-prt=True
-
 # Migrate TRKDEVICES table to the new OGN DDB 
 
 if trk:
    DBname='APRSLOG'
    print("Migrating TRKDEVICES to OGN DDB\n")
    print("MySQL: Database:", DBname, DBnameDest)
-   conn1 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBname)
-   conn2 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBnameDest)
+   conn1 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBnameDest)
+   conn2 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBname)
    curs1 = conn1.cursor()		# cursor for trkdevices origin
    curs2 = conn2.cursor()		# cursor for trkdevices destination			       
-   curs2.execute("SELECT dvt_name, dvt_id FROM devtypes;")
-   devtypesl=curs2.fetchall()  
+   curs1.execute("SELECT dvt_name, dvt_id FROM devtypes;")
+   devtypesl=curs1.fetchall()  
    devtypes=[]
    for d in devtypesl:
        devtypes.append(d[0][0:4])
    #print (devtypes)
-   curs2.execute("SELECT ac_type, ac_id FROM aircraftstypes ;")
-   acfttypesl=curs2.fetchall()  
+   curs1.execute("SELECT ac_type, ac_id FROM aircraftstypes ;")
+   acfttypesl=curs1.fetchall()  
    acfttypes=[]
    for d in acfttypesl:
        acfttypes.append(d[0].upper().lstrip())
    #print (acfttypes)
-   curs1.execute("SELECT * FROM TRKDEVICES ORDER BY devicetype;")	# get all the devices on the original table
-   row = curs1.fetchone()		# one by one
+   curs2.execute("SELECT * FROM TRKDEVICES ORDER BY devicetype;")	# get all the devices on the original table
+   row = curs2.fetchone()		# one by one
 
    while row:				# go thru all the devices
 
@@ -357,7 +354,7 @@ if trk:
       else:
          devtyp=0
       if model in acfttypes:
-         dev_actype=acfttypes.index(model)
+         dev_actype=acfttypes.index(model)+1	# index +1 as zero do not exist
       else:
          dev_actype=362
          if model != '' and model != "NOMODEL":
@@ -367,57 +364,68 @@ if trk:
          dev_userid=99999
          dev_notrack=0
          dev_noident=0
-         #curs2.execute("SELECT air_id, air_userid FROM trackedobjects WHERE air_acreg = '"+dev_acreg+"' AND air_accn = '"+dev_accn+"';")
-         curs2.execute("SELECT air_id, air_userid FROM trackedobjects WHERE air_acreg = '"+dev_acreg+"' ;")
-         obj=curs2.fetchone()
+         #curs1.execute("SELECT air_id, air_userid FROM trackedobjects WHERE air_acreg = '"+dev_acreg+"' AND air_accn = '"+dev_accn+"';")
+         curs1.execute("SELECT air_id, air_userid FROM trackedobjects WHERE air_acreg = '"+dev_acreg+"' ;")
+         obj=curs1.fetchone()
          if obj == None:		# if no object with that registration and comp id
             inscmd1 = "insert into trackedobjects values ("+str(cnt)+"," + str(dev_actype) + ",'" + str(dev_acreg) + "','" + str(dev_accn) + "'," + str(dev_userid) +","+str(active)+",'','','')"
-            curs2.execute(inscmd1)	# add data to the flying object table
+            curs1.execute(inscmd1)	# add data to the flying object table
             inscmd2 = "insert into devices values ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(cnt)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", "+str(active)+","+str(idtype)+")"
-            curs2.execute(inscmd2)	# add data to devices table
+            curs1.execute(inscmd2)	# add data to devices table
             cnt += 1			# increase the counter
          else:				# just add the new device to the tracked object	
             airid=obj[0]
             dev_userid=obj[1]
             inscmd2 = "INSERT INTO devices VALUES ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(airid)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", 1,"+str(idtype)+")"
             #print("AirID1:", airid, dev_userid, dev_acreg, dev_accn, inscmd2)
-            curs2.execute(inscmd2)	# add data to devices table
+            curs1.execute(inscmd2)	# add data to devices table
       else:
-         if flarmid[0:3] == "ICA":
+         if flarmid[0:3] == "ICA" and devtyp == 2:
             idtype=2
          else:
             idtype=1
          flarmid=flarmid[3:]
          
          selcmd1="SELECT dev_flyobj, dev_userid FROM devices where dev_id = '"+str(flarmid)+"';"
-         curs2.execute(selcmd1)
-         obj=curs2.fetchone()
+         curs1.execute(selcmd1)
+         obj=curs1.fetchone()
          if obj == None:
             print ("Wrong Flarmid:", flarmid, selcmd1)
             print("Val:", dev_id, dev_psw, dev_accn, model, dev_acreg, active, actype, devtyp, flarmid)
-            row = curs1.fetchone()	# one by one
+            row = curs2.fetchone()	# one by one
             continue
          airid=obj[0]
          dev_userid=obj[1]
          
          inscmd2 = "INSERT INTO devices VALUES ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(airid)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", "+str(active)+","+str(idtype)+")"
          #print("AirID2:", airid, dev_userid, dev_acreg, dev_accn, inscmd2)
-         curs2.execute(inscmd2)		# add data to devices table
+         curs1.execute(inscmd2)		# add data to devices table
          conn1.commit()			# commit the changes
 
-      row = curs1.fetchone()		# one by one
+      row = curs2.fetchone()		# one by one
 # end of while
 
    conn1.commit()			# commit the changes
 print ("Regs: ", cnt-1)
-curs2.execute("SELECT count(*) FROM devices;")
-rowg = curs2.fetchone() 	
+curs1.execute("SELECT count(*) FROM devices;")
+rowg = curs1.fetchone() 	
 print("\n\nOGNDDB devices", rowg[0])
-curs2.execute("SELECT count(*) FROM trackedobjects;")
-rowg = curs2.fetchone() 	
-print("OGNDDB trackedobjects", rowg[0])
+curs1.execute("SELECT count(*) FROM trackedobjects;")
+rowg = curs1.fetchone() 	
+print("OGNDDB trackedobjects", rowg[0],"\n\n")
 conn1.commit()				# close destination database
 conn1.close()				# close destination database
 conn2.commit()				# close origin database
 conn2.close()				# close origin database
+# report results
+ICAOcnt = 0
+for i in cnticao:
+    ICAOcnt += i 
+print ("Nerrs detected ... device assigned as Flarm but not in Flarm range: ", cnterr, "\nICAO IDs detected:", ICAOcnt, cnticao, "Wrong ICAO ID, OK ICAO ID, Unkown ICAOID\nFlarm that should be ICAO:", cntOK, "It matches the ICAO ID", cntICAO)
+print ("\n\nNumber of ICAO devices:", cntICAO,"\nNumber of FLARM devices:", cntFLARM,"\nNumber of OGN trackers detected: ", cntOGNT, "\nTotal:", cntICAO+cntFLARM+cntOGNT)
+print ("\n\nNumber of FANET devices:", cntFANET, "\nNumber of Naviter devices:", cntNAVITER, "\nFlarms found in LASTFIX corrected:", cntLF)
+print ("\n\nNumber of devices seen registered: ", cntseen, "out of:", len(lastfix))
+print ("\n\nNumber of devices seen ICAO: ", cntICAON, "Internal:", cntINT,"Total:", cntICAON+cntINT)
+print ("\n\nNumber of ICAO orig:", cntICAO, "Flarms that should be ICAO", cntOK, "Corrected by lastfix:", cntICAOlf, "Total:", cntICAO+cntOK+cntICAOlf)
+
 # end of program

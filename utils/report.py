@@ -10,7 +10,8 @@ import argparse
 #
 # --------------------------------------------------------------------------------------------------- #
 #
-print ("\n\nOGN DDB report utility:\n" )
+print ("\n\nOGN DDB report utility:" )
+print (    "======================:\n" )
 parser = argparse.ArgumentParser(description="OGN DDB report utility program to check the health of the database")
 parser.add_argument('-p',  '--print',     required=False,
                     dest='prt',   action='store', default=False)
@@ -68,8 +69,13 @@ cntFANETnotok = 0
 cntFLARM = 0
 cntOGNT = 0
 cntNAVI = 0
+cntSPOT = 0
+cntSPID = 0
+cntINRE = 0
+cntLT24 = 0
 cntUNKW = 0
 cntseen = 0
+cntobjmany = 0
 
 print ("\nUsers with many devices registered:" )
 curs1.execute("SELECT usr_id, usr_adress FROM users  ;")
@@ -94,7 +100,9 @@ while rowg:				# go thru all the user
 # end of while
 
 print("Table USERS Records:", cnt, "Users with no devices", cnterr)
-print("Table USERS Records:", cnt, "Users with many (>30) devices", cntmany,"\n\n")
+print("                          Users with many (>30) devices", cntmany,"\n\n")
+
+print ("\nTrackedObjects with many devices registered:")
 
 curs1.execute("SELECT air_id FROM trackedobjects ;")
 rowg = curs1.fetchone() 		# find number of devices on the original table	
@@ -108,13 +116,15 @@ while rowg:				# go thru all the user
          cntzero += 1
       if count  > 1:
          cntnonzero += 1
+      if count > 2 and prt:
+         print ("FlyObj:", objid, "Count:", count)
       cntobj += 1				# increase the counter
       rowg = curs1.fetchone()		# next device
 # end of while
 
 
-print("Table FLYOBJ Records:", cntobj, "Trackedobject with no devices", cntzero)
-print("Table FLYOBJ Records:", cntobj, "Trackedobject with many (>1) devices", cntnonzero,"\n\n")
+print("Table FLYOBJ Records:",cntobj,"Trackedobject with no devices", cntzero)
+print("                            Trackedobject with many (>1) devices", cntnonzero,"\n\n")
 
 curs1.execute("SELECT dev_id, air_acreg, dev_type, dev_idtype FROM devices, trackedobjects WHERE dev_flyobj = air_id ;")
 rowg = curs1.fetchone() 		# find number of devices on the original table	
@@ -165,12 +175,28 @@ while rowg:				# go thru all the user
          IDID='NAV'+devid
          cntNAVI += 1 
 
+      elif devtype == 5:		# spot
+         IDID='SPO'+devid
+         cntSPOT += 1 
+
+      elif devtype == 6:		# spot
+         IDID='SPI'+devid
+         cntSPID += 1 
+
+      elif devtype == 7:		# spot
+         IDID='INR'+devid
+         cntINRE += 1 
+
       elif devtype == 8:
          IDID='FAN'+devid
          if (checkfanet(devid,lastfix)):
              cntFANETok += 1
          else:
              cntFANETnotok += 1
+      elif devtype == 9:		# spot
+         IDID='L24'+devid
+         cntLT24 += 1 
+
       else:
              cntUNKW +=1 
       if checkwithlastfix(lastfix, devid, devtype, devidtype):
@@ -192,8 +218,12 @@ print("Table DEVICES Records:", cntdev, \
  "\nFlarms: ", cntFLARM, "FLARM OK:", cntFLARMok, "(of those ICAO ok:", cntFLARMICAOok, "), Not OK", cntFLARMnotok, \
  "\nOGN Trackers:", cntOGNT, "OGNT seen and OK:", cntOGNTok, ", not seen:", cntOGNTnotok, \
  "\nFANET OK:", cntFANETok, ", Not OK", cntFANETnotok, \
+ "\nSPOT :", cntSPOT,  \
+ "\nSPIDER :", cntSPID,  \
+ "\nInReach :", cntINRE,  \
+ "\nLT24 :", cntLT24,  \
  "\nNaviter devs:", cntNAVI, "\n\n")
-print("Total:", cntICAOok+cntICAOnotok+cntFLARMok+cntFLARMnotok+cntOGNT+cntFANETok+cntFANETnotok+cntNAVI,cntUNKW)
+print("Total:", cntICAOok+cntICAOnotok+cntFLARMok+cntFLARMnotok+cntOGNT+cntFANETok+cntFANETnotok+cntNAVI+cntSPOT+cntSPID+cntINRE+cntLT24,"Unk:",cntUNKW)
 print ("\n\nNumber of devices seen registered: ", cntseen, "out of:", len(lastfix), "since: ", oldestdeviceseen['lastFixTx'])
 print ("\nNumber of devices seen properly registered: ", cntDEVok)
 

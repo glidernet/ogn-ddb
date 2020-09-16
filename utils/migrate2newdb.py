@@ -130,7 +130,8 @@ INSERT INTO `glidernet_devicesdb`.`users`(`usr_id`, `usr_adress`, `usr_pw`) SELE
 sqlcopytmpu="truncate `glidernet_devicesdb`.`tmpusers` ; \
 INSERT INTO `glidernet_devicesdb`.`tmpusers`(`tusr_adress`, `tusr_pw`, `tusr_validation`, `tusr_time`) SELECT `tusr_adress`, `tusr_pw`, `tusr_validation`, `tusr_time` FROM `glidernet_devicesdb_original`.`tmpusers`;"
 
-prt=True
+prt=False
+trk=True
 lastfix={}				# table with the last fix found
 url="http://glidertracking1.fai.org"
 url="http://localhost"
@@ -303,10 +304,6 @@ jsonfile.write(j)
 jsonfile.close()                       	# close the JSON file 
 c=buildcsv(conn1, "DEVICES.csv", prt=prt)
 
-conn1.commit()				# close destination database
-conn1.close()				# close destination database
-conn2.commit()				# close origin database
-conn2.close()				# close origin database
 # report results
 ICAOcnt = 0
 for i in cnticao:
@@ -317,3 +314,110 @@ print ("\n\nNumber of FANET devices:", cntFANET, "\nNumber of Naviter devices:",
 print ("\n\nNumber of devices seen registered: ", cntseen, "out of:", len(lastfix))
 print ("\n\nNumber of devices seen ICAO: ", cntICAON, "Internal:", cntINT,"Total:", cntICAON+cntINT)
 print ("\n\nNumber of ICAO orig:", cntICAO, "Flarms that should be ICAO", cntOK, "Corrected by lastfix:", cntICAOlf, "Total:", cntICAO+cntOK+cntICAOlf)
+prt=True
+
+# Migrate TRKDEVICES table to the new OGN DDB 
+
+if trk:
+   DBname='APRSLOG'
+   print("Migrating TRKDEVICES to OGN DDB\n")
+   print("MySQL: Database:", DBname, DBnameDest)
+   conn1 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBname)
+   conn2 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBnameDest)
+   curs1 = conn1.cursor()		# cursor for trkdevices origin
+   curs2 = conn2.cursor()		# cursor for trkdevices destination			       
+   curs2.execute("SELECT dvt_name, dvt_id FROM devtypes;")
+   devtypesl=curs2.fetchall()  
+   devtypes=[]
+   for d in devtypesl:
+       devtypes.append(d[0][0:4])
+   #print (devtypes)
+   curs2.execute("SELECT ac_type, ac_id FROM aircraftstypes ;")
+   acfttypesl=curs2.fetchall()  
+   acfttypes=[]
+   for d in acfttypesl:
+       acfttypes.append(d[0].upper().lstrip())
+   #print (acfttypes)
+   curs1.execute("SELECT * FROM TRKDEVICES ORDER BY devicetype;")	# get all the devices on the original table
+   row = curs1.fetchone()		# one by one
+
+   while row:				# go thru all the devices
+
+      dev_id 		= row[2] 	# device ID
+      dev_psw 		= row[3] 	# device password
+      dev_accn 		= row[4] 	# competition ID
+      model 		= row[5].upper().lstrip()# model 
+      dev_acreg		= row[6] 	# registration 
+      active 		= row[7] 	# active
+      actype		= row[8] 	# device type
+      flarmid 		= row[9] 	# Flarm ID
+      idtype		= 1		# by default type internal
+      if actype in devtypes:
+         devtyp=devtypes.index(actype)
+      else:
+         devtyp=0
+      if model in acfttypes:
+         dev_actype=acfttypes.index(model)
+      else:
+         dev_actype=362
+         if model != '' and model != "NOMODEL":
+            print("Val:", dev_id, dev_psw, dev_accn, model, dev_acreg, active, actype, devtyp, flarmid)
+
+      if flarmid == '' or flarmid == None:			# if FlarmID is provided
+         dev_userid=99999
+         dev_notrack=0
+         dev_noident=0
+         #curs2.execute("SELECT air_id, air_userid FROM trackedobjects WHERE air_acreg = '"+dev_acreg+"' AND air_accn = '"+dev_accn+"';")
+         curs2.execute("SELECT air_id, air_userid FROM trackedobjects WHERE air_acreg = '"+dev_acreg+"' ;")
+         obj=curs2.fetchone()
+         if obj == None:		# if no object with that registration and comp id
+            inscmd1 = "insert into trackedobjects values ("+str(cnt)+"," + str(dev_actype) + ",'" + str(dev_acreg) + "','" + str(dev_accn) + "'," + str(dev_userid) +","+str(active)+",'','','')"
+            curs2.execute(inscmd1)	# add data to the flying object table
+            inscmd2 = "insert into devices values ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(cnt)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", "+str(active)+","+str(idtype)+")"
+            curs2.execute(inscmd2)	# add data to devices table
+            cnt += 1			# increase the counter
+         else:				# just add the new device to the tracked object	
+            airid=obj[0]
+            dev_userid=obj[1]
+            inscmd2 = "INSERT INTO devices VALUES ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(airid)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", 1,"+str(idtype)+")"
+            #print("AirID1:", airid, dev_userid, dev_acreg, dev_accn, inscmd2)
+            curs2.execute(inscmd2)	# add data to devices table
+      else:
+         if flarmid[0:3] == "ICA":
+            idtype=2
+         else:
+            idtype=1
+         flarmid=flarmid[3:]
+         
+         selcmd1="SELECT dev_flyobj, dev_userid FROM devices where dev_id = '"+str(flarmid)+"';"
+         curs2.execute(selcmd1)
+         obj=curs2.fetchone()
+         if obj == None:
+            print ("Wrong Flarmid:", flarmid, selcmd1)
+            print("Val:", dev_id, dev_psw, dev_accn, model, dev_acreg, active, actype, devtyp, flarmid)
+            row = curs1.fetchone()	# one by one
+            continue
+         airid=obj[0]
+         dev_userid=obj[1]
+         
+         inscmd2 = "INSERT INTO devices VALUES ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(airid)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", "+str(active)+","+str(idtype)+")"
+         #print("AirID2:", airid, dev_userid, dev_acreg, dev_accn, inscmd2)
+         curs2.execute(inscmd2)		# add data to devices table
+         conn1.commit()			# commit the changes
+
+      row = curs1.fetchone()		# one by one
+# end of while
+
+   conn1.commit()			# commit the changes
+print ("Regs: ", cnt-1)
+curs2.execute("SELECT count(*) FROM devices;")
+rowg = curs2.fetchone() 	
+print("\n\nOGNDDB devices", rowg[0])
+curs2.execute("SELECT count(*) FROM trackedobjects;")
+rowg = curs2.fetchone() 	
+print("OGNDDB trackedobjects", rowg[0])
+conn1.commit()				# close destination database
+conn1.close()				# close destination database
+conn2.commit()				# close origin database
+conn2.close()				# close origin database
+# end of program

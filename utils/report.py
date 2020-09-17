@@ -51,12 +51,12 @@ print("OGNDDB temp users older than one month", rowg[0])
 
 cnt=0					# counter of records
 cnterr=0				# counter of devices defined as Flarm but not in the Flarm range
-cntmany=0				# counter of devices defined as Flarm but not in the Flarm range
-cntzero=0				# counter of devices defined as Flarm but not in the Flarm range
-cntnonzero=0				# counter of devices defined as Flarm but not in the Flarm range
+cntmany=0			# counter of devices defined as Flarm but not in the Flarm range
+cntzero=0			# counter of devices defined as Flarm but not in the Flarm range
+cntnonzero=0		# counter of devices defined as Flarm but not in the Flarm range
 cntobj=0
 cntdev=0
-cntDEVok=0				# counter for device seen in LASTFIX and are OK with registration
+cntDEVok=0			# counter for device seen in LASTFIX and are OK with registration
 cntICAOok = 0
 cntICAOnotok = 0
 cntFLARMok = 0
@@ -76,6 +76,8 @@ cntLT24 = 0
 cntUNKW = 0
 cntseen = 0
 cntobjmany = 0
+cntwICAO = 0
+cntwFLARM = 0
 
 print ("\nUsers with many devices registered:" )
 curs1.execute("SELECT usr_id, usr_adress FROM users  ;")
@@ -148,13 +150,25 @@ while rowg:				# go thru all the user
          if (r==0):			# not OK the ID do not match the registration
              if checkflarmlf(devid,lastfix): # check first if we had seen on the network
                    cntFLARMok  +=1
-             else:   
-                   cntFLARMnotok += 1	# probably wrong ID or not seen yet
+             else: 
+                   if not checkflarmint(devid): # check if within the Flarm interval
+
+                      cntFLARMnotok += 1	# probably wrong ID or not seen yet
+                      if devidtype == 2:  
+                         cntwICAO += 1
+                         if prt:
+                            print("Wrong ICAO  ID", devid, reg, devidtype)
+                      else:
+                         cntwFLARM += 1
+                         if prt:
+                            print("Wrong FLARM ID", devid, reg, devidtype)
+                   else:
+                      cntFLARMok  +=1
          elif (r == 1 and devidtype == 2): # OK reg and ICAO match
              cntFLARMok += 1
              cntFLARMICAOok += 1
          elif (r == 2):			# if unkown ??? may be a good flarm
-             #if=checkflarmint(devid)	# check the internal ID
+             
              if (checkflarmint(devid) and devidtype == 1): # flarm range and ID type Internal
                 cntFLARMok  +=1
              else:
@@ -179,21 +193,21 @@ while rowg:				# go thru all the user
          IDID='SPO'+devid
          cntSPOT += 1 
 
-      elif devtype == 6:		# spot
+      elif devtype == 6:		# Spider
          IDID='SPI'+devid
          cntSPID += 1 
 
-      elif devtype == 7:		# spot
+      elif devtype == 7:		# InReach
          IDID='INR'+devid
          cntINRE += 1 
 
-      elif devtype == 8:
+      elif devtype == 8:      # Fanet
          IDID='FAN'+devid
          if (checkfanet(devid,lastfix)):
              cntFANETok += 1
          else:
              cntFANETnotok += 1
-      elif devtype == 9:		# spot
+      elif devtype == 9:		# LT24
          IDID='L24'+devid
          cntLT24 += 1 
 
@@ -204,18 +218,20 @@ while rowg:				# go thru all the user
       if IDID in lastfix:
             cntseen += 1
 
-      cntdev += 1			# increase the counter
-      rowg = curs1.fetchone()		# next device
+      cntdev += 1			      # increase the counter
+      rowg = curs1.fetchone()	# next device
 # end of while
 
 
-conn1.commit()				# commit the changes
+conn1.commit()				      # commit the changes
 #
 # ------------- REPORTS ---------------------
 #
 print("Table DEVICES Records:", cntdev, \
  "\nDevices ICAO (deprecated) OK:", cntICAOok, ", Not OK", cntICAOnotok, \
- "\nFlarms: ", cntFLARM, "FLARM OK:", cntFLARMok, "(of those ICAO ok:", cntFLARMICAOok, "), Not OK", cntFLARMnotok, \
+ "\nFlarms: ", cntFLARM, "FLARM OK:", cntFLARMok, \
+ "\n(of those ICAO ok:", cntFLARMICAOok, "), Not OK", cntFLARMnotok, \
+ "\nFlarms: Wrong ICAO", cntwICAO, "Wrong Flarm ID", cntwFLARM, \
  "\nOGN Trackers:", cntOGNT, "OGNT seen and OK:", cntOGNTok, ", not seen:", cntOGNTnotok, \
  "\nFANET OK:", cntFANETok, ", Not OK", cntFANETnotok, \
  "\nSPOT :", cntSPOT,  \

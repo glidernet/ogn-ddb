@@ -132,6 +132,7 @@ args = parser.parse_args()
 prt      = args.prt			# print on|off
 trk      = args.trk			# migrate trkdevices on|off
 
+sqldropdb="DROP DATABASE IF EXISTS `glidernet_devicesdb` ; "
 sqlcopyat="truncate `glidernet_devicesdb`.`aircraftstypes` ; \
 INSERT INTO `glidernet_devicesdb`.`aircraftstypes`(`ac_id`, `ac_type`, `ac_cat`) SELECT `ac_id`, `ac_type`, `ac_cat` FROM `glidernet_devicesdb_original`.`aircrafts`;"
 
@@ -152,7 +153,29 @@ DBuser=config.DBuser
 DBpasswd=config.DBpasswd
 DBnameOrig='glidernet_devicesdb_original'
 DBnameDest='glidernet_devicesdb'
+DBfile="./glidernet_devicesdb.sql"
 print("MySQL: Database:", DBnameOrig, DBnameDest)
+conn  = MySQLdb.connect(user=DBuser, passwd=DBpasswd)
+curs  = conn.cursor()			# cursor for devices destination			    a
+curs.execute(sqldropdb)			# delete the DB
+lines=''
+for line in open(DBfile):
+    line=line.strip()
+    if prt:
+       print("DB: ", line)
+    if len(line) > 0 and line[0:2] != '--':
+       if line[-1] != ';':
+          lines += line
+       else:
+          if len(lines) == 0:
+             curs.execute(line)
+          else:
+             lines += line
+             curs.execute(lines)
+             lines=''
+             
+conn.close();     
+
 conn1 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBnameDest)
 conn2 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBnameOrig)
 

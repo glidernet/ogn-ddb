@@ -4,11 +4,8 @@ import urllib.error
 import urllib.parse
 import json
 
-def checkreg(reg, ICAOID):	# check if the registration matches the ICAO ID
-    ranges= [
+ranges= [
                 {  "S": 0x008011, "E": 0x008fff, "R": "ZS-" },
-                {  "S": 0x390000, "E": 0x398000, "R": "F-G" },
-                {  "S": 0x398000, "E": 0x38FFFF, "R": "F-H" },
                 {  "S": 0x3C4421, "E": 0x3C8421, "R": "D-A" },
                 {  "S": 0x3C0001, "E": 0x3C8421, "R": "D-A" },
                 {  "S": 0x3C8421, "E": 0x3CC000, "R": "D-B" },
@@ -33,8 +30,19 @@ def checkreg(reg, ICAOID):	# check if the registration matches the ICAO ID
                 {  "S": 0xC00001, "E": 0xC044A9, "R": "C-F" },
                 {  "S": 0xC044A9, "E": 0xC0FFFF, "R": "C-G" },
                 {  "S": 0xE01041, "E": 0xE0FFFF, "R": "LV-" },
-                {  "S": 0x3E0000, "E": 0x3EFFFF, "R": "D-" }
+                {  "S": 0x4B0000, "E": 0x4BFFFF, "R": "HB-" },
+                {  "S": 0x480000, "E": 0x487FFF, "R": "PH-" },
+                {  "S": 0x840000, "E": 0x87FFFF, "R": "JA-" },
+                {  "S": 0x340000, "E": 0x34FFFF, "R": "EC-" },
+                {  "S": 0x380000, "E": 0x3BFFFF, "R": "F-" },
+                {  "S": 0x300000, "E": 0x33FFFF, "R": "I-" },
+                {  "S": 0x400000, "E": 0x43FFFF, "R": "G-" },
+                {  "S": 0xA00000, "E": 0xAFFFFF, "R": "N-" },
+                {  "S": 0x3C0000, "E": 0x3FFFFF, "R": "D-" }
     ]
+def dumpICAOranges():
+    return(ranges)
+def checkreg(reg, ICAOID):	# check if the registration matches the ICAO ID
     for r in ranges:		# check for the registration is in the ranges assigned by country
         #print ("R",r, r["S"], r["E"])
         l=len(r["R"])

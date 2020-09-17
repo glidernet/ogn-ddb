@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 03, 2020 at 12:06 PM
+-- Generation Time: Sep 17, 2020 at 11:23 AM
 -- Server version: 5.7.31-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.6
 
@@ -21,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `glidernet_devicesdb`
 --
+CREATE DATABASE IF NOT EXISTS `glidernet_devicesdb` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `glidernet_devicesdb`;
 
 -- --------------------------------------------------------
 
@@ -33,6 +35,25 @@ CREATE TABLE `aircraftcat` (
   `cat_id` tinyint(2) UNSIGNED NOT NULL COMMENT 'Aircraft category ID',
   `cat_name` varchar(16) DEFAULT NULL COMMENT 'Aircraft cat name'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Aircraft category (glider, aircraft, ....)';
+
+--
+-- Truncate table before insert `aircraftcat`
+--
+
+TRUNCATE TABLE `aircraftcat`;
+--
+-- Dumping data for table `aircraftcat`
+--
+
+INSERT INTO `aircraftcat` (`cat_id`, `cat_name`) VALUES
+(5, 'Drones/UAV'),
+(1, 'Gliders'),
+(4, 'Helicopters'),
+(8, 'None'),
+(6, 'Other'),
+(7, 'Paragliders'),
+(2, 'Planes'),
+(3, 'Ultralights');
 
 -- --------------------------------------------------------
 
@@ -81,6 +102,27 @@ CREATE TABLE `devtypes` (
   `dvt_idlen` smallint(2) NOT NULL DEFAULT '6' COMMENT 'Length of this type of ID'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The type of device Flarm, OGNT, SPOT';
 
+--
+-- Truncate table before insert `devtypes`
+--
+
+TRUNCATE TABLE `devtypes`;
+--
+-- Dumping data for table `devtypes`
+--
+
+INSERT INTO `devtypes` (`dvt_id`, `dvt_name`, `dvt_code`, `dvt_3ltcode`, `dvt_idlen`) VALUES
+(0, 'NODEF', '0', 'RDN', 6),
+(1, 'FLRICAO', 'I', 'ICA', 6),
+(2, 'FLARM', 'F', 'FLR', 6),
+(3, 'OGNT', 'O', 'OGN', 6),
+(4, 'NAVITER', 'N', 'NAV', 6),
+(5, 'SPOT', 'S', 'SPO', 33),
+(6, 'SPIDER', 'P', 'SPI', 16),
+(7, 'INREACH', 'R', 'INR', 6),
+(8, 'FANET', 'T', 'FAN', 6),
+(9, 'LT24', 'L', 'L24', 16);
+
 -- --------------------------------------------------------
 
 --
@@ -92,6 +134,20 @@ CREATE TABLE `idtypes` (
   `idt_id` tinyint(1) NOT NULL,
   `idt_type` varchar(9) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='All the posible device types of ID: Internal, ICAO, etc.';
+
+--
+-- Truncate table before insert `idtypes`
+--
+
+TRUNCATE TABLE `idtypes`;
+--
+-- Dumping data for table `idtypes`
+--
+
+INSERT INTO `idtypes` (`idt_id`, `idt_type`) VALUES
+(0, 'UNDEF'),
+(1, 'INTERNAL'),
+(2, 'ICAO');
 
 -- --------------------------------------------------------
 
@@ -199,7 +255,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `aircraftcat`
 --
 ALTER TABLE `aircraftcat`
-  MODIFY `cat_id` tinyint(2) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Aircraft category ID';
+  MODIFY `cat_id` tinyint(2) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Aircraft category ID', AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `aircraftstypes`
@@ -211,7 +267,7 @@ ALTER TABLE `aircraftstypes`
 -- AUTO_INCREMENT for table `devtypes`
 --
 ALTER TABLE `devtypes`
-  MODIFY `dvt_id` tinyint(4) NOT NULL AUTO_INCREMENT COMMENT 'Device type identifier';
+  MODIFY `dvt_id` tinyint(4) NOT NULL AUTO_INCREMENT COMMENT 'Device type identifier', AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `trackedobjects`

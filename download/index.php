@@ -79,6 +79,7 @@ $sql1 = 'SELECT
         IF(!dev_active,"N","Y") AS device_active,
         IF(!air_active,"N","Y") AS aircraft_active
         '.$actype.'
+        , dev_uniqueid AS uniqueid
         FROM devices, aircraftstypes, trackedobjects 
         WHERE air_actype = ac_id and dev_flyobj = air_id 
         '.$filterstring.'
@@ -88,17 +89,38 @@ $stmt->execute($params);
 
 $output['devices'] = array();
 
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $row['device_type'] = $devtype[$row['device_type']];
-    $row['device_idtype'] = $idtypes[$row['device_idtype']];
-    $output['devices'][] = $row;
-}
-
-
 $j=0;
 if (!empty($_GET['j']))  {
     $j=$_GET['j'];
 }
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $dt   = $row['device_type'];
+    $dtt  = $devtype[$row['device_type']];
+    $row['device_type'] = $dtt;
+    $row['device_idtype'] = $idtypes[$row['device_idtype']];
+    if ($j>1)
+    {
+        if ($dtt == 'S' or $dtt == "P" or $dtt == "R" or $dtt == "L")
+           {
+           $idx=$row['uniqueid'];
+           $row['device_aprsid'] =  $devtyp[$dt]['dvt_3ltcode'].sprintf("%06d",$idx);
+           }
+        else
+           {
+           if ($row['device_idtype'] == 'ICAO')
+              {
+              $row['device_aprsid'] =  "ICA".$row['device_id'];
+              }
+           else
+              {
+              $row['device_aprsid'] =  $devtyp[$dt]['dvt_3ltcode'].$row['device_id'];
+              }
+           }
+    }
+    $output['devices'][] = $row;
+}
+
+
 if ($j == 2){
    $sql0 = 'SELECT ac_id, ac_type, ac_cat  FROM aircraftstypes ORDER BY ac_id;';
    $stmt= $dbh->query($sql0);
@@ -118,7 +140,15 @@ if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCE
     header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
-    $json = json_encode($output); 
+    if ($j != 1)
+    {
+        $json = json_encode($output,JSON_PRETTY_PRINT); 
+    }
+    else
+    {
+        $json = json_encode($output); 
+    }
+
     if ($json) 
 	echo $json; 
     else 

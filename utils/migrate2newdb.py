@@ -70,7 +70,8 @@ def build(conn1):		# build the JSON table with all the devices in a format compa
            "cn":              rowg2[3], 
            "tracked":         tracked,  
            "identified":      identified, 
-           "device_idtype":   idtype  
+           "device_idtype":   idtype, 
+           "uniqueid":        rowg1[9]  
           }
 
         download.append(r)
@@ -95,7 +96,8 @@ def buildcsv(conn1,csvfilename, prt=False):	# build the CSV file
            "cn":              " ",
            "tracked":         "Y",
            "identified":      "Y",
-           "device_idtype":   1  
+           "device_idtype":   1,  
+           "uniqueid":        1
       }
     dd= r.keys()
     ddl=[]
@@ -128,12 +130,18 @@ parser.add_argument('-p',  '--print',     required=False,
                     dest='prt',   action='store', default=False)
 parser.add_argument('-t',  '--TRK',     required=False,
                     dest='trk',   action='store', default=False)
+parser.add_argument('-o',  '--ORIGIN',     required=False,
+                    dest='origin',   action='store', default='')
+parser.add_argument('-d',  '--DEST',     required=False,
+                    dest='dest',   action='store', default='')
 args = parser.parse_args()
 prt      = args.prt			# print on|off
 trk      = args.trk			# migrate trkdevices on|off
+origin   = args.origin			# origin database
+dest     = args.dest			# destination database
 
-sqldropdb="DROP DATABASE IF EXISTS `glidernet_devicesdb` ; "
-sqlcopyat="truncate `glidernet_devicesdb`.`aircraftstypes` ; \
+sqldropdb  ="DROP DATABASE IF EXISTS `glidernet_devicesdb` ; "
+sqlcopyacft="truncate `glidernet_devicesdb`.`aircraftstypes` ; \
 INSERT INTO `glidernet_devicesdb`.`aircraftstypes`(`ac_id`, `ac_type`, `ac_cat`) SELECT `ac_id`, `ac_type`, `ac_cat` FROM `glidernet_devicesdb_original`.`aircrafts`;"
 
 sqlcopyusers="truncate `glidernet_devicesdb`.`users` ; \
@@ -153,41 +161,50 @@ DBuser=config.DBuser
 DBpasswd=config.DBpasswd
 DBnameOrig='glidernet_devicesdb_original'
 DBnameDest='glidernet_devicesdb'
-DBfile="./glidernet_devicesdb.sql"
+print ("OD", origin, dest)
+if origin == ' ':
+   DBnameOrig=origin
+if dest == ' ':
+   DBnameDest=dest
+DBfile="./glidernet_devicesdb.sql"	# schema file
 print("MySQL: Database:", DBnameOrig, DBnameDest)
-conn  = MySQLdb.connect(user=DBuser, passwd=DBpasswd)
-curs  = conn.cursor()			# cursor for devices destination			    a
-curs.execute(sqldropdb)			# delete the DB
+conn  = MySQLdb.connect(user=DBuser, passwd=DBpasswd) # connect for seting the new DB
+curs  = conn.cursor()			# cursor for devices destination
+curs.execute(sqldropdb)			# delete the DB ... just in case
 lines=''
-for line in open(DBfile):
+for line in open(DBfile):		# build the database from schema definition
     line=line.strip()
     if prt:
        print("DB: ", line)
-    if len(line) > 0 and line[0:2] != '--':
-       if line[-1] != ';':
-          lines += line
+    if len(line) > 0 and line[0:2] != '--': 	# ignore comment lines 
+
+       if line[-1] != ';':		# it is end of SQL line ???
+          lines += line			# add to the previous line
        else:
-          if len(lines) == 0:
+          if len(lines) == 0:		# if it is a single line
              curs.execute(line)
           else:
-             lines += line
+             lines += line		# add this line and execute the SQL command
              curs.execute(lines)
-             lines=''
+             lines=''			# just clear the line
              
-conn.close();     
+conn.close();				# close for the time being
 
+print("MySQL: New Database built:",DBnameDest, "From:", DBfile)
+					# connect both DBs
 conn1 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBnameDest)
 conn2 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBnameOrig)
 
 curs1 = conn1.cursor()			# cursor for devices destination			         
 curs2 = conn2.cursor()			# cursor devices origin         
-curs1.execute(sqlcopyat)		# copy aircraftstypes
+					# copy the tables that do not change aircraft, users, tempusers
+curs1.execute(sqlcopyacft)		# copy aircraftstypes
 curs1.execute(sqlcopyusers)		# copy users table
 curs1.execute(sqlcopytmpu)		# copy temp users table
 curs1.execute("truncate devices;")	# delete all records just in case
 curs1.execute("truncate trackedobjects;")
 conn1.commit()				# commit the changes
-oldestdeviceseen= oldestdeviceseen["lastFixTx"]
+oldestdeviceseen= oldestdeviceseen["lastFixTx"] #check on the LASTFIX table what is the oldest entry
 print ("Devices seen since:", oldestdeviceseen, cntlastfix, "By:", url)
 curs2.execute("select count(*) from devices;")
 rowg = curs2.fetchone() 		# find number of devices on the original table	
@@ -305,7 +322,7 @@ while rowg2:				# go thru all the devices
       #print (dev_id, dev_type, dev_actype, dev_acreg, dev_accn, dev_userid, dev_notrack, dev_noident)
 					# convert that data in two tables: devices and aircraft objects
       inscmd1 = "insert into trackedobjects values ("+str(cnt)+"," + str(dev_actype) + ",'" + str(dev_acreg) + "','" + str(dev_accn) + "'," + str(dev_userid) +",1,'','','')"
-      inscmd2 = "insert into devices values ('" + str(dev_id) + "',0," + str(devtyp) + ","+str(cnt)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", 1,"+str(idtype)+")"
+      inscmd2 = "insert into devices values ('" + str(dev_id) + "',0," + str(devtyp) + ","+str(cnt)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", 1,"+str(idtype)+",'0')"
       #print (inscmd1)
       curs1.execute(inscmd1)		# add data to the flying object table
       curs1.execute(inscmd2)		# add data to devices table

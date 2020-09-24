@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 17, 2020 at 11:23 AM
+-- Generation Time: Sep 24, 2020 at 05:22 PM
 -- Server version: 5.7.31-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.6
 
@@ -36,11 +36,6 @@ CREATE TABLE `aircraftcat` (
   `cat_name` varchar(16) DEFAULT NULL COMMENT 'Aircraft cat name'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Aircraft category (glider, aircraft, ....)';
 
---
--- Truncate table before insert `aircraftcat`
---
-
-TRUNCATE TABLE `aircraftcat`;
 --
 -- Dumping data for table `aircraftcat`
 --
@@ -84,7 +79,8 @@ CREATE TABLE `devices` (
   `dev_notrack` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'If device does not want to be tracked',
   `dev_noident` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'If device does not want to be identified',
   `dev_active` tinyint(1) DEFAULT '1' COMMENT 'A flag indicating if active or not in',
-  `dev_idtype` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'ID adress type (INTERNA; ICAO; ...)'
+  `dev_idtype` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'ID adress type (INTERNA; ICAO; ...)',
+  `dev_uniqueid` mediumint(8) NOT NULL COMMENT 'Unique device ID'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='All thr tracking devices in use';
 
 -- --------------------------------------------------------
@@ -102,11 +98,6 @@ CREATE TABLE `devtypes` (
   `dvt_idlen` smallint(2) NOT NULL DEFAULT '6' COMMENT 'Length of this type of ID'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The type of device Flarm, OGNT, SPOT';
 
---
--- Truncate table before insert `devtypes`
---
-
-TRUNCATE TABLE `devtypes`;
 --
 -- Dumping data for table `devtypes`
 --
@@ -135,11 +126,6 @@ CREATE TABLE `idtypes` (
   `idt_type` varchar(9) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='All the posible device types of ID: Internal, ICAO, etc.';
 
---
--- Truncate table before insert `idtypes`
---
-
-TRUNCATE TABLE `idtypes`;
 --
 -- Dumping data for table `idtypes`
 --
@@ -218,6 +204,7 @@ ALTER TABLE `aircraftstypes`
 --
 ALTER TABLE `devices`
   ADD PRIMARY KEY (`dev_id`,`dev_type`,`dev_idtype`) USING BTREE,
+  ADD UNIQUE KEY `devunique` (`dev_uniqueid`),
   ADD KEY `dev_id` (`dev_id`) USING BTREE,
   ADD KEY `USERID` (`dev_userid`);
 
@@ -262,6 +249,12 @@ ALTER TABLE `aircraftcat`
 --
 ALTER TABLE `aircraftstypes`
   MODIFY `ac_id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Acft ID (autoincremented)';
+
+--
+-- AUTO_INCREMENT for table `devices`
+--
+ALTER TABLE `devices`
+  MODIFY `dev_uniqueid` mediumint(8) NOT NULL AUTO_INCREMENT COMMENT 'Unique device ID';
 
 --
 -- AUTO_INCREMENT for table `devtypes`

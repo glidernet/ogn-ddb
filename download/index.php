@@ -98,7 +98,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $dtt  = $devtype[$row['device_type']];
     $row['device_type'] = $dtt;
     $row['device_idtype'] = $idtypes[$row['device_idtype']];
-    if ($j>1)
+    if ($j>0)
     {
         if ($dtt == 'S' or $dtt == "P" or $dtt == "R" or $dtt == "L")
            {
@@ -121,7 +121,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 }
 
 
-if ($j == 2){
+if ($j > 1){
    $sql0 = 'SELECT ac_id, ac_type, ac_cat  FROM aircraftstypes ORDER BY ac_id;';
    $stmt= $dbh->query($sql0);
    $airtyp=$stmt->fetchAll();
@@ -140,7 +140,7 @@ if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCE
     header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
-    if ($j != 1)
+    if ($j == 3)
     {
         $json = json_encode($output,JSON_PRETTY_PRINT); 
     }

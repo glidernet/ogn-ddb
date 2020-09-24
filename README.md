@@ -61,6 +61,10 @@ cn           | csv    | n/a     | select a comma separated list of callsigns
 
 ### /download/?j=1
 This returns all devices of the DDB in JSON. The output validates against the [ogn-ddb-schema-2.0](docs/ogn-ddb-schema-2.0.json).
+### /download/?j=2
+Adds the aircraft tablas well
+### /download/?j=3
+Print the JSON on a pretty-print format
 Example:
 ```
 {"devices":[

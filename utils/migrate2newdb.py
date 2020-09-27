@@ -122,8 +122,9 @@ def buildcsv(conn1,csvfilename, prt=False):	# build the CSV file
 #
 # --------------------------------------------------------------------------------------------------- #
 #
-print ("\n\nOGN DDB migration utility:\n" )
-print (    "=========================:\n" )
+pgmver="2.0"
+print ("\n\nOGN DDB migration utility",pgmver,":\n" )
+print (    "==============================:\n" )
 #----------------------aprslog.py start-----------------------#
 parser = argparse.ArgumentParser(description="OGN DDB migration utility")
 parser.add_argument('-p',  '--print',     required=False,
@@ -161,7 +162,6 @@ DBuser=config.DBuser
 DBpasswd=config.DBpasswd
 DBnameOrig='glidernet_devicesdb_original'
 DBnameDest='glidernet_devicesdb'
-print ("OD", origin, dest)
 if origin == ' ':
    DBnameOrig=origin
 if dest == ' ':
@@ -410,13 +410,13 @@ if trk:
          if obj == None:		# if no object with that registration and comp id
             inscmd1 = "insert into trackedobjects values ("+str(cnt)+"," + str(dev_actype) + ",'" + str(dev_acreg) + "','" + str(dev_accn) + "'," + str(dev_userid) +","+str(active)+",'','','')"
             curs1.execute(inscmd1)	# add data to the flying object table
-            inscmd2 = "insert into devices values ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(cnt)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", "+str(active)+","+str(idtype)+")"
+            inscmd2 = "insert into devices values ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(cnt)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", "+str(active)+","+str(idtype)+",'0')"
             curs1.execute(inscmd2)	# add data to devices table
             cnt += 1			# increase the counter
          else:				# just add the new device to the tracked object	
             airid=obj[0]
             dev_userid=obj[1]
-            inscmd2 = "INSERT INTO devices VALUES ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(airid)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", 1,"+str(idtype)+")"
+            inscmd2 = "INSERT INTO devices VALUES ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(airid)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", 1,"+str(idtype)+",'0')"
             #print("AirID1:", airid, dev_userid, dev_acreg, dev_accn, inscmd2)
             curs1.execute(inscmd2)	# add data to devices table
       else:
@@ -437,7 +437,7 @@ if trk:
          airid=obj[0]
          dev_userid=obj[1]
          
-         inscmd2 = "INSERT INTO devices VALUES ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(airid)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", "+str(active)+","+str(idtype)+")"
+         inscmd2 = "INSERT INTO devices VALUES ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(airid)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", "+str(active)+","+str(idtype)+",'0')"
          #print("AirID2:", airid, dev_userid, dev_acreg, dev_accn, inscmd2)
          curs1.execute(inscmd2)		# add data to devices table
          conn1.commit()			# commit the changes

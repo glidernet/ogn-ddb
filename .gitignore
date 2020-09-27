@@ -10,4 +10,6 @@ sslink.sh
 utils/DEVICES.csv
 utils/DEVICES.json
 utils/glidernet_devicesdb.orig.sql
-
+docs/ogn.sh
+docs/result*
+docs/cmd.log

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 11, 2020 at 11:12 AM
+-- Generation Time: Sep 24, 2020 at 05:22 PM
 -- Server version: 5.7.31-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.6
 
@@ -36,6 +36,20 @@ CREATE TABLE `aircraftcat` (
   `cat_name` varchar(16) DEFAULT NULL COMMENT 'Aircraft cat name'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Aircraft category (glider, aircraft, ....)';
 
+--
+-- Dumping data for table `aircraftcat`
+--
+
+INSERT INTO `aircraftcat` (`cat_id`, `cat_name`) VALUES
+(5, 'Drones/UAV'),
+(1, 'Gliders'),
+(4, 'Helicopters'),
+(8, 'None'),
+(6, 'Other'),
+(7, 'Paragliders'),
+(2, 'Planes'),
+(3, 'Ultralights');
+
 -- --------------------------------------------------------
 
 --
@@ -46,7 +60,7 @@ DROP TABLE IF EXISTS `aircraftstypes`;
 CREATE TABLE `aircraftstypes` (
   `ac_id` smallint(5) UNSIGNED NOT NULL COMMENT 'Acft ID (autoincremented)',
   `ac_type` varchar(32) CHARACTER SET utf32 COLLATE utf32_unicode_ci NOT NULL COMMENT 'Acft type(ASW20, ...)',
-  `ac_cat` tinyint(2) UNSIGNED NOT NULL DEFAULT '1' COMMENT 'Acft category(glider, towplane, ...)'
+  `ac_cat` tinyint(2) UNSIGNED DEFAULT '1' COMMENT 'Acft category(glider, towplane, ...)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -65,7 +79,8 @@ CREATE TABLE `devices` (
   `dev_notrack` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'If device does not want to be tracked',
   `dev_noident` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'If device does not want to be identified',
   `dev_active` tinyint(1) DEFAULT '1' COMMENT 'A flag indicating if active or not in',
-  `dev_idtype` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'ID adress type (INTERNA; ICAO; ...)'
+  `dev_idtype` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'ID adress type (INTERNA; ICAO; ...)',
+  `dev_uniqueid` mediumint(8) NOT NULL COMMENT 'Unique device ID'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='All thr tracking devices in use';
 
 -- --------------------------------------------------------
@@ -83,6 +98,22 @@ CREATE TABLE `devtypes` (
   `dvt_idlen` smallint(2) NOT NULL DEFAULT '6' COMMENT 'Length of this type of ID'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The type of device Flarm, OGNT, SPOT';
 
+--
+-- Dumping data for table `devtypes`
+--
+
+INSERT INTO `devtypes` (`dvt_id`, `dvt_name`, `dvt_code`, `dvt_3ltcode`, `dvt_idlen`) VALUES
+(0, 'NODEF', '0', 'RDN', 6),
+(1, 'FLRICAO', 'I', 'ICA', 6),
+(2, 'FLARM', 'F', 'FLR', 6),
+(3, 'OGNT', 'O', 'OGN', 6),
+(4, 'NAVITER', 'N', 'NAV', 6),
+(5, 'SPOT', 'S', 'SPO', 33),
+(6, 'SPIDER', 'P', 'SPI', 16),
+(7, 'INREACH', 'R', 'INR', 6),
+(8, 'FANET', 'T', 'FAN', 6),
+(9, 'LT24', 'L', 'L24', 16);
+
 -- --------------------------------------------------------
 
 --
@@ -94,6 +125,15 @@ CREATE TABLE `idtypes` (
   `idt_id` tinyint(1) NOT NULL,
   `idt_type` varchar(9) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='All the posible device types of ID: Internal, ICAO, etc.';
+
+--
+-- Dumping data for table `idtypes`
+--
+
+INSERT INTO `idtypes` (`idt_id`, `idt_type`) VALUES
+(0, 'UNDEF'),
+(1, 'INTERNAL'),
+(2, 'ICAO');
 
 -- --------------------------------------------------------
 
@@ -163,7 +203,8 @@ ALTER TABLE `aircraftstypes`
 -- Indexes for table `devices`
 --
 ALTER TABLE `devices`
-  ADD PRIMARY KEY (`dev_id`,`dev_type`) USING BTREE,
+  ADD PRIMARY KEY (`dev_id`,`dev_type`,`dev_idtype`) USING BTREE,
+  ADD UNIQUE KEY `devunique` (`dev_uniqueid`),
   ADD KEY `dev_id` (`dev_id`) USING BTREE,
   ADD KEY `USERID` (`dev_userid`);
 
@@ -201,7 +242,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `aircraftcat`
 --
 ALTER TABLE `aircraftcat`
-  MODIFY `cat_id` tinyint(2) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Aircraft category ID';
+  MODIFY `cat_id` tinyint(2) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Aircraft category ID', AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `aircraftstypes`
@@ -210,10 +251,16 @@ ALTER TABLE `aircraftstypes`
   MODIFY `ac_id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Acft ID (autoincremented)';
 
 --
+-- AUTO_INCREMENT for table `devices`
+--
+ALTER TABLE `devices`
+  MODIFY `dev_uniqueid` mediumint(8) NOT NULL AUTO_INCREMENT COMMENT 'Unique device ID';
+
+--
 -- AUTO_INCREMENT for table `devtypes`
 --
 ALTER TABLE `devtypes`
-  MODIFY `dvt_id` tinyint(4) NOT NULL AUTO_INCREMENT COMMENT 'Device type identifier';
+  MODIFY `dvt_id` tinyint(4) NOT NULL AUTO_INCREMENT COMMENT 'Device type identifier', AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `trackedobjects`
@@ -236,12 +283,6 @@ ALTER TABLE `users`
 --
 ALTER TABLE `aircraftstypes`
   ADD CONSTRAINT `aircraftstypes_ibfk_1` FOREIGN KEY (`ac_cat`) REFERENCES `aircraftcat` (`cat_id`);
-
---
--- Constraints for table `trackedobjects`
---
-ALTER TABLE `trackedobjects`
-  ADD CONSTRAINT `trackedobjects_ibfk_1` FOREIGN KEY (`air_actype`) REFERENCES `aircraftstypes` (`ac_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

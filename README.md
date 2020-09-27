@@ -68,10 +68,15 @@ Print the JSON on a pretty-print format
 Example:
 ```
 {"devices":[
-{"device_type":"F","device_id":"000000","aircraft_model":"HPH 304CZ-17","registration":"OK-7777","cn":"KN","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y"},
-{"device_type":"F","device_id":"000002","aircraft_model":"LS-6 18","registration":"OY-XRG","cn":"G2","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y"},
-{"device_type":"F","device_id":"00000D","aircraft_model":"Ka-8","registration":"D-1749","cn":"W5","tracked":"Y","identified":"Y","device_idtype":"ICAO","device_active":"Y","aircraft_active":"Y"},
-{"device_type":"F","device_id":"000010","aircraft_model":"Unknown","registration":"D-EEAC","cn":"AC","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y"},
+{"device_type":"O","device_id":"000000","aircraft_model":"HPH 304CZ-17","registration":"OK-7777","cn":"KN","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y","uniqueid":"1","device_aprsid":"OGN000000"},
+{"device_type":"F","device_id":"000002","aircraft_model":"LS-6 18","registration":"OY-XRG","cn":"G2","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y","uniqueid":"2","device_aprsid":"FLR000002"},
+{"device_type":"F","device_id":"000010","aircraft_model":"Unknown","registration":"D-EEAC","cn":"AC","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y","uniqueid":"3","device_aprsid":"FLR000010"},
+{"device_type":"F","device_id":"000011","aircraft_model":"Skylane Airlony","registration":"D-MTEW","cn":"EW","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y","uniqueid":"4","device_aprsid":"FLR000011"},
+{"device_type":"F","device_id":"000013","aircraft_model":"PA-28","registration":"D-EZIP","cn":"IP","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y","uniqueid":"5","device_aprsid":"FLR000013"},
+{"device_type":"O","device_id":"000015","aircraft_model":"Paraglider","registration":"36445","cn":"","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y","uniqueid":"6","device_aprsid":"OGN000015"},
+{"device_type":"F","device_id":"0000FD","aircraft_model":"Taurus","registration":"F-JRDN","cn":"DN","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y","uniqueid":"7","device_aprsid":"FLR0000FD"},
+{"device_type":"F","device_id":"000114","aircraft_model":"","registration":"","cn":"","tracked":"N","identified":"N","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y","uniqueid":"8","device_aprsid":"FLR000114"},
+{"device_type":"O","device_id":"000146","aircraft_model":"Paraglider","registration":"000146","cn":"","tracked":"Y","identified":"Y","device_idtype":"Internal","device_active":"Y","aircraft_active":"Y","uniqueid":"9","device_aprsid":"OGN000146"},
 ....
 ]}
 
@@ -82,3 +87,4 @@ This returns the device database in a flarmnet-compatible format.
 ## ToDo
 - finish multi languages management
 - document accurate meaning of `tracked` and `identified`
+- document the API as described on the docs directory

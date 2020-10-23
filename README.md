@@ -85,8 +85,8 @@ Example:
 This returns the device database in a flarmnet-compatible format.
 
 ### /API/V1/?action=
-Invoke the OGN DDB thru an API:
--Example:
+Invoke the OGN DDB thru an API --- 
+ See this example:
 ```
 URL request:
 http://DDB.glidernet.org/API/V1/?action=add&login=john@acme.org&password=psw123456&device_id=757899&device_type=O&registration=EC-ACA&cn=AC&acftype=Discus

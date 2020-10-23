@@ -150,6 +150,50 @@ function fillinuserforgot()
     echo $twig->render('fillinuserforgot.html.twig', $template_vars);
 }
 
+
+function fillindevair()
+{
+    global $lang,$error,$devid,$airid, $devtype,$acreg,$accn,$actype,$notrack,$noident,$active,$user,$idtype,$twig;
+array('', '', '');
+
+    $dtypc = devicetypes();
+    $dtypc[$devtype] = 'selected';
+
+    $aircraft = array();
+    $flyobjs = array();
+    $dbh = Database::connect();
+    $result = $dbh->query('SELECT * FROM aircraftstypes ORDER BY ac_cat,ac_type');
+    foreach ($result as $row) {
+        $selected = ($row['ac_id'] == $actype) ? 'selected' : '';
+
+        $aircraft[$row['ac_cat']][] = array(
+            'id' => $row['ac_id'],
+            'type' => $row['ac_type'],
+            'selected' => $selected,
+        );
+    }
+
+    Database::disconnect();
+    $flyobjs=getflyobj($user);
+    $template_vars = array(
+        'aircrafts' => $aircraft,
+        'flyobjs' => $flyobjs,
+        'lang' => $lang,
+        'error' => $error,
+        'dtypc' => $dtypc,
+        'cnotrack' => ($notrack) ? 'checked' : '',
+        'cnoident' => ($noident) ? 'checked' : '',
+        'devid' => $devid,
+        'airid' => $airid,
+        'active' => $active,
+        'devtype' => $devtype,
+        'idtype' => $idtype,
+
+    );
+    echo $twig->render('fillindevair.html.twig', $template_vars);
+    aircraftlist();				// display the aircrafts
+}
+
 function fillindevice()
 {
     global $lang,$error,$devid,$airid, $devtype,$acreg,$accn,$actype,$notrack,$noident,$active,$user,$idtype,$twig;
@@ -436,6 +480,19 @@ case 'aircraftlist':        			// display device list
     devicelist();
     aircraftlist();
     Database::disconnect();
+    break;
+}
+
+
+case 'da':        				// fill in create device and aircraft
+{
+    fromhome();
+    if (!isset($_SESSION['login'])) {
+        exit();
+    } // test if user come from login page
+    $_SESSION['devair'] = 'yes';
+    $devtype = 2;        			// default type is Flarm
+    fillindevair();
     break;
 }
 
@@ -985,6 +1042,7 @@ case 'createdev':        			// create device
 
     if (isset($_REQUEST['devid'])) {		// device ID
         $devid = $_REQUEST['devid'];
+        $devid = strtoupper($devid);
     } else {
         $error = $lang['error_devid'];
     }
@@ -1045,7 +1103,7 @@ case 'createdev':        			// create device
     }
 
     $dbh = Database::connect();
-    if ($idtype == '2') {					// it is an ICAO ID ??
+    if ($idtype == '2') {				// it is an ICAO ID ??
         $req = $dbh->prepare('SELECT air_acreg FROM trackedobjects WHERE air_id =:fo');
         $fly = (int) $flyobj;
         $req->bindParam(':fo', $fly);			// get the registration
@@ -1229,6 +1287,8 @@ case 'createacft':        			// create tracked object
 
 
 
+        $acreg = strtoupper($acreg);
+        $accn  = strtoupper($accn);
         $act=(int) $active;
         $ins->bindParam(':de', $airid);
         $ins->bindParam(':dt', $actype);
@@ -1260,6 +1320,197 @@ case 'createacft':        			// create tracked object
     Database::disconnect();
     break;
 }
+
+
+
+case 'createdevair':        // create device and object/aircraft
+{
+    fromhome();
+    $notrack = $noident = 0;
+    if (!isset($_SESSION['login'])) {
+        exit();
+    } // test if user come from login page
+    if (!isset($_SESSION['devair'])) {
+        exit();
+    } // test if user come from fill in device page
+    if (!isset($_SESSION['user'])) {
+        exit();
+    } // test if user id defined
+
+    if (isset($_REQUEST['devid'])) {
+        $devid = $_REQUEST['devid'];
+        $devid = strtoupper($devid);
+    } else {
+        $error = $lang['error_devid'];
+    }
+    if (isset($_REQUEST['devtype'])) {
+        $devtype = $_REQUEST['devtype'];
+    } else {
+        $error = $lang['error_devtype'];
+    }
+    if (isset($_REQUEST['idtype'])) {		// ID type ICAO or internal
+        $idtype = $_REQUEST['idtype'];
+    } else {
+        $error = $lang['error_idtype'];
+    }
+    if (isset($_REQUEST['actype'])) {
+        $actype = $_REQUEST['actype'];
+    } else {
+        $error = $lang['error_actype'];
+    }
+    if (isset($_REQUEST['acreg'])) {
+        $acreg = $_REQUEST['acreg'];
+    } else {
+        $error = $lang['error_acreg'];
+    }
+    if (isset($_REQUEST['accn'])) {
+        $accn = $_REQUEST['accn'];
+    } else {
+        $error = $lang['error_accn'];
+    }
+    if (isset($_REQUEST['notrack'])) {
+        if ($_REQUEST['notrack'] == 'yes') {
+            $notrack = 1;
+        }
+    }
+    if (isset($_REQUEST['noident'])) {
+        if ($_REQUEST['noident'] == 'yes') {
+            $noident = 1;
+        }
+    }
+
+    if (isset($_REQUEST['owner'])) {
+        if ($_REQUEST['owner'] != 'yes') {
+            $error = $lang['error_owner'];
+        }
+    } else {
+        $error = $lang['error_owner'];
+    }
+
+    $devid = strtoupper($devid);
+    if (preg_match(' /[A-F0-9]{6}/ ', $devid)) {
+    } // ok
+    else {
+        $error = $lang['error_devid'];
+    }
+
+    // Only allow alpha numeric characters and '.', '_', '-', ' ' in register/cn
+    $acreg = trim(preg_replace('/[^A-Za-z0-9._ -]/', '', $acreg));
+    $accn =  trim(preg_replace('/[^A-Za-z0-9._ -]/', '', $accn));
+
+    if (strlen($devid) != 6) {
+        $error = $lang['error_devid'];
+    }
+    if (strlen($acreg) > 7) {
+        $error = $lang['error_acreg'];
+    }
+    if (strlen($accn) > 3) {
+        $error = $lang['error_accn'];
+    }
+    if ($devtype < 1 or $devtype > 3) {
+        $error = $lang['error_devtype'];
+    }
+
+    $dbh = Database::connect();
+    $req = $dbh->prepare('select dev_id,dev_userid from devices where dev_id=:de');    // test if device is owned by another account
+    $req->bindParam(':de', $devid);
+    $req->execute();
+
+    $upd = false;
+    if ($req->rowCount() == 1) {        // if device already registred
+        $result = $req->fetch();
+        if ($result['dev_userid'] == $_SESSION['user']) {
+            $upd = true;
+        }        // if owned by the user then update
+        else {
+            $error = $lang['error_devexists'];
+        }
+    }
+    $req->closeCursor();
+    $act = 1; 
+    $phone = '';
+    $club = '';
+    $country = '';
+    $devid = strtoupper($devid);
+    $acreg = strtoupper($acreg);
+    $accn  = strtoupper($accn);
+    if ($acreg != ''){
+            $r=ICAOcheckreg($acreg, $devid); 		// CHECK
+            if ($r == 0) {				// if invalid DEVID for the ICAO range
+                $error = $lang['error_invalid_ICAO_ID'];
+                echo $error;
+                }
+    }
+    if ($error != '') {
+        fillindevair();
+    } else {
+        if ($upd) {
+            #ins = $dbh->prepare('UPDATE devices SET dev_type=:dt, dev_actype=:ty, dev_acreg=:re, dev_accn=:cn, dev_notrack=:nt, dev_noident=:ni WHERE dev_id=:de AND dev_userid=:us');
+            $insd = $dbh->prepare('UPDATE devices SET dev_idtype=:it, dev_notrack=:nt, dev_noident=:ni, dev_flyobj=:fo, dev_active=:ac WHERE dev_id=:de AND dev_type=:dt AND dev_userid=:us');
+            $inso = $dbh->prepare('UPDATE trackedobjects SET air_actype=:at,  air_acreg=:re, air_accn=:cn, air_active=:ac, air_SARphone=:ph, air_SARclub=:cl, air_Country=:co WHERE air_id=:ai AND air_userid=:us');
+        } else {
+            #ins = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_actype, dev_acreg, dev_accn, dev_userid, dev_notrack, dev_noident) VALUES (:de, :dt, :ty, :re, :cn, :us, :nt, :ni)');
+            $insd = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_userid, dev_notrack, dev_noident, dev_flyobj, dev_active, dev_idtype ) VALUES (:de, :dt,  :us, :nt, :ni, :fo, :ac, :it)');
+            $airid=0;
+            $inso = $dbh->prepare('INSERT INTO trackedobjects (air_id, air_actype, air_acreg, air_accn, air_userid, air_active, air_SARphone, air_SARclub, air_Country  ) VALUES (:ai, :at,  :re, :cn, :us, :ac, :ph, :cl, :co )');
+        }
+// --------------------------------------------------------------------//
+        $inso->bindParam(':ai', $airid);
+        $inso->bindParam(':at', $actype);
+        $inso->bindParam(':re', $acreg);
+        $inso->bindParam(':cn', $accn);
+        $inso->bindParam(':ac', $act);
+        $inso->bindParam(':ph', $phone);
+        $inso->bindParam(':cl', $club);
+        $inso->bindParam(':co', $country);
+        $inso->bindParam(':us', $_SESSION['user']);
+// --------------------------------------------------------------------//
+        if ($inso->execute()) {                                 // insert first the fly object
+            if ($upd) {
+                $error = $lang['flyobj_updated'];
+            } else {
+                $error = $lang['flyobj_inserted'];
+                $req = $dbh->query('SELECT LAST_INSERT_ID(); '); // get now what is the flyobject ID
+                $airid = $req->fetchColumn();
+            }
+            $inso->closeCursor();
+            var_dump($devid);
+            var_dump($devtype);
+            var_dump($notrack);
+            var_dump($noident);
+            var_dump($airid);
+            var_dump($act);
+            var_dump($idtype);
+// --------------------------------------------------------------------//
+            $insd->bindParam(':de', $devid);
+            $insd->bindParam(':dt', $devtype);
+            $insd->bindParam(':nt', $notrack);
+            $insd->bindParam(':ni', $noident);
+            $insd->bindParam(':fo', $airid);			// bind it to the new device
+            $insd->bindParam(':ac', $act);
+            $insd->bindParam(':it', $idtype);
+            $insd->bindParam(':us', $_SESSION['user']);
+// --------------------------------------------------------------------//
+            if ($insd->execute()) {                             // insert the device ok
+                if ($upd) {
+                    $error = $lang['device_updated'];
+                } else {
+                    $error = $lang['device_inserted'];
+            }
+            devicelist();
+            aircraftlist();
+        } else {
+            $error = $lang['error_insert_device'];
+            fillindevair();
+            }
+        $insd->closeCursor();
+        }
+    }
+
+    Database::disconnect();
+    break;
+}
+
 
 default:
 {

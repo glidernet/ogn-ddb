@@ -3,20 +3,21 @@
 {% block content %}
 
     <form action="/" enctype="multipart/form-data" method="post" xmlns="http://www.w3.org/1999/html">
-        <input type="hidden" name="action" value="createdev">
-        <h3>{{ lang.input_createdev }}</h3>
+        <input type="hidden" name="action" value="createdevair">
+        <h3>{{ lang.input_createdevair }}</h3>
         {% if error!="" %}<b style="color:red">{{ error }}</b>{% endif %}
         <div class="row">
             <div class="one-half column">
                 <label>{{ lang.table_devtype }}</label>
                 <select class="u-full-width" id="devtype" name="devtype" >
-                        <option value="2" {{ dtypc[2] }}>Flarm </option>
-                        <option value="3" {{ dtypc[3] }}>OGN Tracker</option>
-                        <option value="4" {{ dtypc[4] }}>NAVITER</option>
-                        <option value="5" {{ dtypc[5] }}>SPOT</option>
-                        <option value="6" {{ dtypc[6] }}>SPIDER</option>
-                        <option value="7" {{ dtypc[7] }}>INREACH</option>
-                        <option value="8" {{ dtypc[8] }}>FANET</option>
+                    <option value="2" {{ dtypc[2] }}>Flarm</option>
+                    <option value="3" {{ dtypc[3] }}>OGN</option>
+                    <option value="4" {{ dtypc[4] }}>NAVITER</option>
+                    <option value="5" {{ dtypc[5] }}>SPOT</option>
+                    <option value="6" {{ dtypc[6] }}>SPIDER</option>
+                    <option value="7" {{ dtypc[7] }}>INREACH</option>
+                    <option value="8" {{ dtypc[8] }}>FANET</option>
+
                 </select>
             </div>
             <div class="one-half column">
@@ -26,20 +27,39 @@
                         <option value="2" {{ dtypc[3] }}>ICAO ID</option>
                 </select>
             </div>
+
             <div class="one-half column">
                 <label>{{ lang.table_devid }}</label>
-                <input type="text" name="devid" value="{{ devid }}" size="25" maxlength="36" class="u-full-width">
+                <input type="text" name="devid" value="{{ devid }}" size="25" maxlength="6" class="u-full-width">
             </div>
-            <div class="one-half column">
-                <label>{{ lang.table_flyobj }}</label>
-                <select class="u-full-width" id="flyobj" name="flyobj" >
-                        {% for fo,val in flyobjs %}
-                        <option value={{ val }} {{ val }} > {{ val }} </option>
-                        {% endfor %}
-                </select>
         </div>
         <div class="row">
-            <div class="clearfix"></div>
+            <div class="one-half column">
+                <label>{{ lang.table_actype }}</label>
+                <select name="actype" class="u-full-width">
+                    {% for category,aircraft in aircrafts %}
+                    <optgroup label="{{ catarray[category] }}">
+                        {% for ac in aircraft %}
+                        <option value="{{ ac.id }}" {{ ac.selected }}>{{ ac.type }} </option>
+                        {% endfor %}
+                    </optgroup>
+                print(data)
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="one-half column">
+                <label>{{ lang.table_acreg2 }}</label>
+                <input type="text" name="acreg" value="{{ acreg }}" maxlength="7" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_accn2 }}</label>
+                <input type="text" name="accn" value="{{ accn }}"  maxlength="3" class="u-full-width">
+            </div>
+        </div>
+
+        <div class="row">
             <div class="one-half column">
                 <label>
                     <input type="checkbox" id="noident" name="noident" value="yes" {{ cnoident }} onclick="participationDescription()">
@@ -50,12 +70,6 @@
                 <label>
                     <input type="checkbox" id="notrack" name="notrack" value="yes" {{ cnotrack }} onclick="participationDescription()">
                     {{ lang.input_notrack }}
-                </label>
-            </div>
-            <div class="one-half column">
-                <label>
-                    <input type="checkbox" id="active" name="active" value="1" onclick="participationDescription()">
-                    {{ lang.input_active }}
                 </label>
             </div>
         </div>
@@ -96,10 +110,9 @@
 {% endblock %}
 {% block sidebar %}
     <a href="/?a=deviceslist" class="button u-full-width" >{{ lang.my_devices }}</a>
-    <a href="/?a=da" class="button u-full-width button-primary" >{{ lang.add_devair }}</a>
-    <a href="#"     class="button u-full-width button-primary" >{{ lang.add_device }}</a>
+    <a href="#" class="button u-full-width button-primary" >{{ lang.add_devair }}</a>
+    <a href="/?a=n" class="button u-full-width button-primary" >{{ lang.add_device }}</a>
     <a href="/?a=a" class="button u-full-width button-primary" >{{ lang.add_aircraft }}</a>
-    <a href="/?a=o" class="button u-full-width" >{{ lang.claim_ownership }}</a>
     <a href="/?a=p" class="button u-full-width" >{{ lang.change_password }}</a>
     {# <a href="#" class="button u-full-width" >Preferences</a> #}
     <a href="/?a=d" class="button u-full-width" >{{ lang.disconnect }}</a>

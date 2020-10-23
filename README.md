@@ -85,8 +85,8 @@ Example:
 This returns the device database in a flarmnet-compatible format.
 
 ### /API/V1/?action=
-Invoke the OGN DDB thru an API
-Example:
+Invoke the OGN DDB thru an API:
+-Example:
 ```
 URL request:
 http://DDB.glidernet.org/API/V1/?action=add&login=john@acme.org&password=psw123456&device_id=757899&device_type=O&registration=EC-ACA&cn=AC&acftype=Discus
@@ -111,22 +111,25 @@ Reply:
 }
 
 ```
-Parameters:
-action=add		Add an object and a devicea
-acction=object		Add just an registered flying object
-action=delobject	Delete an object
-action=device		Add a registered device
-action=deldevice	Delete a device
+```
+API Parameters:
+
+action=add		Add a registered object and a registered device, at once
+action=object		Add just an registered flying object
+action=delobject	Delete a registered object
+action=device		Add just a registered device and link it with an already registered object
+action=deldevice	Delete a registered device
 
 login=			The email ID of the user
 password=		The user password
-device_id		The device id 
-device_type		The device type (F for Flarm, O for OGNtractker, etc, ...)
-deviceidtype		The device ID type (1 for internal, 2 for ICAO)
-registration		The country registration of the registered object (like EC-ACA)
-cn			The competition ID (like AC)
-acftype			The aircarft type of the registered object (Like Janus ... you can obtain all the types from the JSON output ?j=3)
+device_id=		The device id 
+device_type=		The device type (F for Flarm, O for OGNtractker, etc, ...)
+deviceidtype=		The device ID type (1 for internal, 2 for ICAO)
+registration=		The country registration of the registered object (like EC-ACA)
+cn=			The competition ID (like AC)
+acftype=		The aircarft type of the registered object (Like Janus ... you can obtain all the types from the JSON output ?j=3)
 
+```
 ## ToDo
 - finish multi languages management
 - document accurate meaning of `tracked` and `identified`

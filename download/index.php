@@ -67,39 +67,56 @@ if (count($filter)) {
     $filterstring = '';
 }
 
-$sql1 = 'SELECT 
+$j=0;
+if (!empty($_GET['j']))  {
+    $j=$_GET['j'];
+}
+if ($j > 1){
+   $sql1 = 'SELECT 
         dev_type AS device_type,
         dev_id AS device_id,
         IF(!dev_notrack AND !dev_noident,ac_type,"" ) AS aircraft_model,
         IF(!dev_notrack AND !dev_noident,air_acreg,"") AS registration,
         IF(!dev_notrack AND !dev_noident,air_accn,"") AS cn,
         IF(!dev_notrack,"Y","N") AS tracked, 
-        IF(!dev_noident,"Y","N") AS identified,
-        dev_idtype AS device_idtype,
-        IF(!dev_active,"N","Y") AS device_active,
-        IF(!air_active,"N","Y") AS aircraft_active
+        IF(!dev_noident,"Y","N") AS identified
         '.$actype.'
-        , dev_uniqueid AS uniqueid
+        , dev_idtype AS device_idtype,
+        dev_uniqueid AS uniqueid
         FROM devices, aircraftstypes, trackedobjects 
         WHERE air_actype = ac_id and dev_flyobj = air_id 
         '.$filterstring.'
         ORDER BY dev_id ASC;';
+    }
+else {
+   $sql1 = 'SELECT 
+        dev_type AS device_type,
+        dev_id AS device_id,
+        IF(!dev_notrack AND !dev_noident,ac_type,"" ) AS aircraft_model,
+        IF(!dev_notrack AND !dev_noident,air_acreg,"") AS registration,
+        IF(!dev_notrack AND !dev_noident,air_accn,"") AS cn,
+        IF(!dev_notrack,"Y","N") AS tracked, 
+        IF(!dev_noident,"Y","N") AS identified
+        '.$actype.'
+        , dev_idtype AS device_idtype
+        FROM devices, aircraftstypes, trackedobjects 
+        WHERE air_actype = ac_id and dev_flyobj = air_id 
+        '.$filterstring.'
+        ORDER BY dev_id ASC;';
+    }
 $stmt = $dbh->prepare($sql1);
 $stmt->execute($params);
 
 $output['devices'] = array();
 
-$j=0;
-if (!empty($_GET['j']))  {
-    $j=$_GET['j'];
-}
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $dt   = $row['device_type'];
     $dtt  = $devtype[$row['device_type']];
     $row['device_type'] = $dtt;
-    $row['device_idtype'] = $idtypes[$row['device_idtype']];
+    
     if ($j>0)
     {
+        $row['device_idtype'] = $idtypes[$row['device_idtype']];
         if ($dtt == 'S' or $dtt == "P" or $dtt == "R" or $dtt == "L")
            {
            $idx=$row['uniqueid'];
@@ -117,6 +134,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
               }
            }
     }
+    
     $output['devices'][] = $row;
 }
 
@@ -160,12 +178,17 @@ if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCE
 } else {
     						// the case of output CSV
     header('Content-Type: text/plain; charset="UTF-8"');
-    echo '#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED,IDTYPE,DEVACTIVE,ACFTACTIVE';
+    echo '#DEVICE_TYPE,DEVICE_ID,AIRCRAFT_MODEL,REGISTRATION,CN,TRACKED,IDENTIFIED';
     if ($t) {
         echo ',AIRCRAFT_TYPE';
     }
     echo "\r\n";
     foreach ($output['devices'] as $row) {
+        if (   $row['device_idtype'] == 2)
+           {
+               $row['device_type'] = 'I';
+           }
+        unset ($row['device_idtype']);
         echo "'";
         echo implode("','", $row);
         echo "'\r\n";

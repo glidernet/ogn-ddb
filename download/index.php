@@ -184,6 +184,9 @@ if (!empty($_GET['j']) || !empty($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCE
     }
     echo "\r\n";
     foreach ($output['devices'] as $row) {
+        if (   $row['device_type'] != 'F' and $row['device_type'] != 'o') {
+           continue;
+           }
         if (   $row['device_idtype'] == 2)
            {
                $row['device_type'] = 'I';

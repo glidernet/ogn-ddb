@@ -7,6 +7,7 @@ utils/config.py
 utils/__pycache__
 sscommit.sh
 sslink.sh
+utils/ogn.sh
 utils/DEVICES.csv
 utils/DEVICES.json
 utils/glidernet_devicesdb.orig.sql

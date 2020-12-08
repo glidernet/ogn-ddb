@@ -132,7 +132,7 @@ def buildlastfix(lf,url,prt=False):	# build the lastfix table
     #fp=open("LASTFIX.json", 'r')
     #results=json.load(fp)
     #fp.close()
-    results=lastfixgetapidata(url+"/lastfix")
+    results=lastfixgetapidata(url+"/lastfix.php")
     lastfix=results["lastfix"]
     if prt:
        print(json.dumps(lastfix,indent=4))

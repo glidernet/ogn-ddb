@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/bin/python3
 ######################################################################
 # This program migrate the current OGN DDB to the new format
 ######################################################################
@@ -205,7 +205,7 @@ curs1.execute("truncate devices;")	# delete all records just in case
 curs1.execute("truncate trackedobjects;")
 conn1.commit()				# commit the changes
 oldestdeviceseen= oldestdeviceseen["lastFixTx"] #check on the LASTFIX table what is the oldest entry
-print ("Devices seen since:", oldestdeviceseen, cntlastfix, "By:", url)
+print ("Devices seen since:", oldestdeviceseen, cntlastfix, " devices ... By:", url)
 curs2.execute("select count(*) from devices;")
 rowg = curs2.fetchone() 		# find number of devices on the original table	
 print("DevicesDB Original", rowg[0])	# report number of devices origin
@@ -356,6 +356,7 @@ c=buildcsv(conn1, "DEVICES.csv", prt=prt)
 # Migrate TRKDEVICES table to the new OGN DDB 
 
 if trk:
+   cntrk=0
    DBname='APRSLOG'
    print("Migrating TRKDEVICES to OGN DDB\n")
    print("MySQL: Database:", DBname, DBnameDest)
@@ -375,11 +376,17 @@ if trk:
    for d in acfttypesl:
        acfttypes.append(d[0].upper().lstrip())
    #print (acfttypes)
-   curs2.execute("SELECT * FROM TRKDEVICES ORDER BY devicetype;")	# get all the devices on the original table
-   row = curs2.fetchone()		# one by one
+   sqlcmd="SELECT * FROM TRKDEVICES ORDER BY devicetype ; "		# get all the devices on the original table
+   try:
+      curs2.execute(sqlcmd)	
+   except Exception as e:
+      print ("TRK:", e)
+      exit(-1)
 
+   row = curs2.fetchone()		# one by one
    while row:				# go thru all the devices
 
+      cntrk += 1			# counter
       dev_id 		= row[2] 	# device ID
       dev_psw 		= row[3] 	# device password
       dev_accn 		= row[4] 	# competition ID
@@ -446,7 +453,10 @@ if trk:
 # end of while
 
    conn1.commit()			# commit the changes
-print ("Regs: ", cnt-1)
+   print ("TRK devices added:", cntrk, "\n")
+else:
+   print ("Regs objects: ", cnt-1)
+# ------ end of IF TRK --------------- #
 curs1.execute("SELECT count(*) FROM devices;")
 rowg = curs1.fetchone() 	
 print("\n\nOGNDDB devices", rowg[0])
@@ -464,7 +474,7 @@ for i in cnticao:
 print ("Nerrs detected ... device assigned as Flarm but not in Flarm range: ", cnterr, "\nICAO IDs detected:", ICAOcnt, cnticao, "Wrong ICAO ID, OK ICAO ID, Unkown ICAOID\nFlarm that should be ICAO:", cntOK, "It matches the ICAO ID", cntICAO)
 print ("\n\nNumber of ICAO devices:", cntICAO,"\nNumber of FLARM devices:", cntFLARM,"\nNumber of OGN trackers detected: ", cntOGNT, "\nTotal:", cntICAO+cntFLARM+cntOGNT)
 print ("\n\nNumber of FANET devices:", cntFANET, "\nNumber of Naviter devices:", cntNAVITER, "\nFlarms found in LASTFIX corrected:", cntLF)
-print ("\n\nNumber of devices seen registered: ", cntseen, "out of:", len(lastfix))
+print ("\n\nNumber of devices seen registered: ", cntseen, "out of:", len(lastfix), "seen by LASTFIX")
 print ("\n\nNumber of devices seen ICAO: ", cntICAON, "Internal:", cntINT,"Total:", cntICAON+cntINT)
 print ("\n\nNumber of ICAO orig:", cntICAO, "Flarms that should be ICAO", cntOK, "Corrected by lastfix:", cntICAOlf, "Total:", cntICAO+cntOK+cntICAOlf)
 

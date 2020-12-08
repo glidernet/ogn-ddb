@@ -1,0 +1,79 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+
+    <form action="/" enctype="multipart/form-data" method="post" xmlns="http://www.w3.org/1999/html">
+        <input type="hidden" name="action" value="createacft">
+        <h3>{{ lang.input_createacft }}</h3>
+        {% if error!="" %}<b style="color:red">{{ error }}</b>{% endif %}
+        <div class="row">
+            <div class="one-half column">
+                <label>{{ lang.table_actype }}</label>
+                <select name="actype" class="u-full-width">
+                    {% for category,aircraft in aircrafts %}
+                    <optgroup label="{{ catarray[category] }}">
+                        {% for ac in aircraft %}
+                        <option value="{{ ac.id }}" {{ ac.selected }}>{{ ac.type }} </option>
+                        {% endfor %}
+                    </optgroup>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="one-half column">
+                <label>{{ lang.table_acreg2 }}</label>
+                <input type="text" name="acreg" value="{{ acreg }}" maxlength="7" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_accn2 }}</label>
+                <input type="text" name="accn" value="{{ accn }}"  maxlength="3" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_flyobjzero }}</label>
+                <input type="text" name="airid" value="{{ airid }}"   maxlength="5" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_phone }}</label>
+                <input type="text" name="phone" value="{{ phone }}"  maxlength="16" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_club }}</label>
+                <input type="text" name="club" value="{{ club }}"  maxlength="32" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_country }}</label>
+                <input type="text" name="country" value="{{ country }}"  maxlength="2" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <label>
+                    <input type="checkbox" id="active" name="active" value="1" >
+                    {{ lang.input_activeobj }}
+                </label>
+            </div>
+        </div>
+
+
+        <label><input type="checkbox" name="owner" value="yes">
+            {{ lang.input_ownerflyobj }}
+        </label>
+        <div class="row">
+            <div class="one-half column">
+                <input type="submit" value="{{ lang.input_submit }}" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <a class="button u-full-width" href="/?a=aircraftlist" >{{ lang.input_cancel }}</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+{% block sidebar %}
+    <a href="/?a=deviceslist" class="button u-full-width" >{{ lang.my_devices }}</a>
+    <a href="/?a=da" class="button u-full-width button-primary" >{{ lang.add_devair }}</a>
+    <a href="/?a=n" class="button u-full-width button-primary" >{{ lang.add_device }}</a>
+    <a href="/?a=a" class="button u-full-width button-primary" >{{ lang.add_aircraft }}</a>
+    <a href="/?a=o" class="button u-full-width" >{{ lang.claim_ownership }}</a>
+    <a href="/?a=p" class="button u-full-width" >{{ lang.change_password }}</a>
+    {# <a href="#" class="button u-full-width" >Preferences</a> #}
+    <a href="/?a=d" class="button u-full-width" >{{ lang.disconnect }}</a>
+{% endblock %}

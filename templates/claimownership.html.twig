@@ -1,0 +1,40 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    <form action="/" enctype="multipart/form-data" method="post">
+        <input type="hidden" name="action" value="claimownership">
+        <h3>{{ lang.claim_ownership }}</h3>
+        {% if error!="" %}<b style="color:red">{{ error }}</b>{% endif %}
+        <div class="row">
+
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_devid }}</label>
+                <input type="text" name="devid" value="{{ devid }}" size="25" maxlength="36" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_acreg2 }}</label>
+                <input type="text" name="acreg" value="{{ acreg }}" maxlength="7" class="u-full-width">
+            </div>
+            <div class="one-half column">
+                <label>{{ lang.table_accn2 }}</label>
+                <input type="text" name="accn" value="{{ accn }}"  maxlength="3" class="u-full-width">
+            </div>
+
+
+            <div class="">&nbsp;</div>
+            <input type="submit" value="{{ lang.input_submit }}">
+	</div>
+    </form>
+{% endblock %}
+
+{% block sidebar %}
+    <a href="?a=deviceslist" class="button u-full-width" >{{ lang.my_devices }}</a>
+    <a href="?a=da" class="button u-full-width" >{{ lang.add_devair }}</a>
+    <a href="?a=n" class="button u-full-width" >{{ lang.add_device }}</a>
+    <a href="?a=a" class="button u-full-width" >{{ lang.add_aircraft }}</a>
+    <a href="/?a=o" class="button u-full-width" >{{ lang.claim_ownership }}</a>
+    <a href="#" class="button u-full-width button-primary" >{{ lang.change_password }}</a>
+    {# <a href="#" class="button u-full-width" >Preferences</a> #}
+    <a href="/?a=d" class="button u-full-width" >{{ lang.disconnect }}</a>
+{% endblock %}

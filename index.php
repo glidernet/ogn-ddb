@@ -3,8 +3,10 @@
 include 'sql.php';
 
 //
-// Localisation TODO:
-// - aircraft types (see $catarray)
+// This program handles all the aspects of the OGN Device DataBase (OGNDDB)
+// Website: http://ddb.glidernet.org
+//
+// Partially Rewritten by: Angel Casadoa Date: August 2020
 //
 
 require_once 'vendor/autoload.php';
@@ -15,11 +17,27 @@ $dbh = Database::connect();
 $req = $dbh->query('SELECT count(dev_id) FROM devices ');
 $nbdevices = $req->fetchColumn();
 $twig->addGlobal('nbdevices',$nbdevices);
+$req = $dbh->query('SELECT count(air_id) FROM trackedobjects ');
+$nbobjects = $req->fetchColumn();
+$twig->addGlobal('nbobjects',$nbobjects);
 
 require_once 'language/english.php';
 
 $url = 'https://ddb.glidernet.org/';
+if (isset($_SERVER['HTTP_HOST'])) {
+     $url='https://'.$_SERVER['HTTP_HOST'];
+}
 $sender = 'contact@glidernet.org';
+exec ("python3 ./utils/getICAOranges.py", $json);
+global $ranges;
+$ranges=json_decode( $json[0], $assoc = True, $depth = 512, $options = 0 );
+//var_dump($ranges);
+
+function get_CCname($cc) {
+    $countrynames = json_decode(file_get_contents("http://country.io/names.json"), true);
+    $r = $countrynames[$cc];
+    return ($r);
+}
 
 function send_email($to, $subject, $message, $from = '')
 {
@@ -34,7 +52,7 @@ function send_email($to, $subject, $message, $from = '')
     return mail($to, $subject, $email_message, implode("\n", $headers), '-f'.$from);
 }
 
-function home()
+function home()				// display the initial home page
 {
     global $lang,$error,$user,$url,$twig;
 
@@ -58,6 +76,42 @@ function fromhome()
     $_SESSION['home'] = 'yes';
     home();
     exit();
+}
+
+function devicetypes()			// get the device type table
+{
+    $dbh = Database::connect();
+    $result = $dbh->query('SELECT * FROM devtypes ;');
+    foreach ($result as $row) {
+        $devtypes[$row['dvt_id']] = $row['dvt_name'];
+    }
+    return $devtypes;
+}
+
+
+function devicetypeslen()
+{
+    $dbh = Database::connect();
+    $result = $dbh->query('SELECT * FROM devtypes');
+    foreach ($result as $row) {
+
+        $devtypeslen[$row['dvt_id']] = (int) $row['dvt_idlen'];
+    }
+    return $devtypeslen;
+}
+
+function getflyobj($user)
+{
+    $user=$_SESSION['user'];
+    $flyobj = array();
+    $dbh = Database::connect();
+    $cmd ='SELECT air_id FROM trackedobjects where air_userid = '.$user.';';
+    $fly = $dbh->query($cmd) ;    // get data
+    
+    foreach ($fly as $fo){
+        array_push($flyobj, $fo['air_id']); 
+    }
+    return $flyobj;
 }
 
 function fillinuser()
@@ -96,25 +150,107 @@ function fillinuserforgot()
     echo $twig->render('fillinuserforgot.html.twig', $template_vars);
 }
 
-function fillindevice()
+
+function fillindevair()
 {
-    global $lang,$error,$devid,$devtype,$acreg,$accn,$actype,$notrack,$noident,$twig;
+    global $lang,$error,$devid,$airid, $devtype,$acreg,$accn,$actype,$notrack,$noident,$active,$user,$idtype,$twig;
+array('', '', '');
 
-    $catarray = array(
-        1 => 'Gliders/motoGliders',
-        2 => 'Planes',
-        3 => 'Ultralights',
-        4 => 'Helicoters',
-        5 => 'Drones/UAV',
-        6 => 'Others',
-    );
-
-    $dtypc = array('', '', '');
+    $dtypc = devicetypes();
     $dtypc[$devtype] = 'selected';
 
     $aircraft = array();
+    $flyobjs = array();
     $dbh = Database::connect();
-    $result = $dbh->query('SELECT * FROM aircrafts ORDER BY ac_cat,ac_type');
+    $result = $dbh->query('SELECT * FROM aircraftstypes ORDER BY ac_cat,ac_type');
+    foreach ($result as $row) {
+        $selected = ($row['ac_id'] == $actype) ? 'selected' : '';
+
+        $aircraft[$row['ac_cat']][] = array(
+            'id' => $row['ac_id'],
+            'type' => $row['ac_type'],
+            'selected' => $selected,
+        );
+    }
+
+    Database::disconnect();
+    $flyobjs=getflyobj($user);
+    $template_vars = array(
+        'aircrafts' => $aircraft,
+        'flyobjs' => $flyobjs,
+        'lang' => $lang,
+        'error' => $error,
+        'dtypc' => $dtypc,
+        'cnotrack' => ($notrack) ? 'checked' : '',
+        'cnoident' => ($noident) ? 'checked' : '',
+        'devid' => $devid,
+        'airid' => $airid,
+        'active' => $active,
+        'devtype' => $devtype,
+        'idtype' => $idtype,
+
+    );
+    echo $twig->render('fillindevair.html.twig', $template_vars);
+    aircraftlist();				// display the aircrafts
+}
+
+function fillindevice()
+{
+    global $lang,$error,$devid,$airid, $devtype,$acreg,$accn,$actype,$notrack,$noident,$active,$user,$idtype,$twig;
+array('', '', '');
+
+    $dtypc = devicetypes();
+    $dtypc[$devtype] = 'selected';
+
+    $aircraft = array();
+    $flyobjs = array();
+    $dbh = Database::connect();
+    $result = $dbh->query('SELECT * FROM aircraftstypes ORDER BY ac_cat,ac_type');
+    foreach ($result as $row) {
+        $selected = ($row['ac_id'] == $actype) ? 'selected' : '';
+
+        $aircraft[$row['ac_cat']][] = array(
+            'id' => $row['ac_id'],
+            'type' => $row['ac_type'],
+            'selected' => $selected,
+        );
+    }
+
+    Database::disconnect();
+    $flyobjs=getflyobj($user);
+    $template_vars = array(
+        'aircrafts' => $aircraft,
+        'flyobjs' => $flyobjs,
+        'lang' => $lang,
+        'error' => $error,
+        'dtypc' => $dtypc,
+        'cnotrack' => ($notrack) ? 'checked' : '',
+        'cnoident' => ($noident) ? 'checked' : '',
+        'devid' => $devid,
+        'airid' => $airid,
+        'active' => $active,
+        'devtype' => $devtype,
+        'idtype' => $idtype,
+
+    );
+    echo $twig->render('fillindevice.html.twig', $template_vars);
+    aircraftlist();				// display the aircrafts
+}
+
+
+function fillinaircraft()
+{
+    global $lang,$error,$airid,$active,$acreg,$accn,$actype,$phone, $club, $country, $twig;
+
+    $dbh = Database::connect();
+    $catarray = array();			// the aircraft category
+
+    $result = $dbh->query('SELECT cat_id, cat_name FROM aircraftcat ORDER BY cat_id ;');
+    foreach ($result as $row) {
+        $catarray[$row['cat_id']]=$row['cat_name'];
+    }
+    $aircraft = array();			// the aircraft table 
+    $result = $dbh->query('SELECT * FROM aircraftstypes ORDER BY ac_cat,ac_type ;');
     foreach ($result as $row) {
         $selected = ($row['ac_id'] == $actype) ? 'selected' : '';
 
@@ -127,22 +263,24 @@ function fillindevice()
 
     Database::disconnect();
 
+    $active = (int)$active;
     $template_vars = array(
         'aircrafts' => $aircraft,
         'lang' => $lang,
         'error' => $error,
-        'dtypc' => $dtypc,
-        'catarray' => $catarray,
-        'cnotrack' => ($notrack) ? 'checked' : '',
-        'cnoident' => ($noident) ? 'checked' : '',
-        'devid' => $devid,
+        'airid' => $airid,
         'acreg' => $acreg,
         'accn' => $accn,
+        'active' => $active,
+        'catarray' => $catarray,
+        'phone' => $phone,
+        'club' => $club,
+        'country' => $country,
 
     );
-    echo $twig->render('fillindevice.html.twig', $template_vars);
+    echo $twig->render('fillinaircraft.html.twig', $template_vars);
+    aircraftlist();				// display the aircrafts
 }
-
 function changepassword()
 {
     global $lang,$error,$twig;
@@ -153,21 +291,80 @@ function changepassword()
     echo $twig->render('changepassword.html.twig', $template_vars);
 }
 
+function claimownership()
+{
+    global $lang,$error,$twig;
+
+    $template_vars = array(
+        'lang' => $lang,
+    );
+    echo $twig->render('claimownership.html.twig', $template_vars);
+}
+
 function devicelist()
 {
     global $dbh,$lang,$error,$url,$twig;
-    $req2 = $dbh->prepare('SELECT * FROM devices,aircrafts where dev_userid=:us AND dev_actype=ac_id ORDER BY dev_id ASC');
+    $req2 = $dbh->prepare('SELECT * FROM devices, trackedobjects where dev_userid=:us and dev_flyobj = air_id ORDER BY dev_id ASC');
     $req2->bindParam(':us', $_SESSION['user']);
     $req2->execute();
+    $devtypes = devicetypes();
+    $idtypes = array( '1' => 'INTERNAL', '2' => 'ICAO');
     $template_vars = array(
         'devicelist' => $req2->fetchAll(),
         'url' => $url,
         'lang' => $lang,
-        'devicetypes' => array(1 => 'ICAO', 2 => 'Flarm', 3 => 'OGN'),
+        'devicetypes' => $devtypes,
+        'idtypes' => $idtypes,
 
     );
     echo $twig->render('devicelist.html.twig', $template_vars);
 }
+
+function aircraftlist()
+{
+    global $dbh,$lang,$error,$url,$twig;
+    $req2 = $dbh->prepare('SELECT * FROM trackedobjects, aircraftstypes where air_userid=:us and air_actype = ac_id ORDER BY air_id ASC');
+    $req2->bindParam(':us', $_SESSION['user']);
+    $req2->execute();
+    $template_vars = array(
+        'aircraftlist' => $req2->fetchAll(),
+        'url' => $url,
+        'lang' => $lang,
+
+    );
+    echo $twig->render('aircraftlist.html.twig', $template_vars);
+}
+
+// --------------------------------------------------------------------------------------- //
+
+function ICAOcheckreg($reg, $ICAOID)				// function to check if a registration and an ICAO ID matches
+
+{								// check if the registration matches the ICAO ID
+	global $ranges;						// table with all the ICAO ID ranges by country
+        //var_dump($reg, $ICAOID);	
+        foreach  ($ranges as $r) {              		// check for the registration is in the ranges assigned by country
+   
+           $l=strlen($r["R"]);					// get the lenght of the part of the initial part of the registration
+
+           $lr= substr($reg,0,$l);
+       
+           if ($lr == $r["R"]) {				// it is our country ???
+              $idicao=intval($ICAOID, 16);			// convert the string to a hex value
+              if ($idicao > $r["S"] and $idicao < $r["E"]) 	// if it is within the range ??
+                 {
+                 return (1);					// return TRUE if OK
+                 }
+              else 
+                 {
+                 return (0);					// return FALSE if not in the range
+ 	         }          
+           }
+        }
+    								// not in our table, so unkown
+        return(2);						// return 2 if not found or UNKOWN 
+}
+
+// --------------------------------------------------------------------------------------- //
 
 if (isset($_REQUEST['action'])) {
     $action = $_REQUEST['action'];
@@ -209,7 +406,7 @@ if (isset($_GET['l'])) {
 $error = $user = '';
 
 switch (strtolower($action)) {
-case 'login':
+case 'login':					// login
 {
     fromhome();
 
@@ -234,6 +431,7 @@ case 'login':
         $_SESSION['login'] = 'yes';
 
         devicelist();
+        aircraftlist();
     } else {
         $error = $lang['error_login'];
         home();
@@ -242,67 +440,113 @@ case 'login':
     break;
 }
 
-case 'd':        // disconnect
+case 'd':        				// disconnect
 {
-    session_destroy();
+    session_destroy();				// destroy the _SESSION values
     session_start();
     $_SESSION['home'] = 'yes';
     home();
     break;
 }
 
-case 'u':        // fill in create user
+case 'u':        				// fill in create user
 {
     fromhome();
     fillinuser();
     break;
 }
 
-case 'forgot':    // forgot the password
+case 'forgot':    				// forgot the password
 {
     fromhome();
     fillinuserforgot();
     break;
 }
 
-case 'deviceslist':        // display device list
+case 'deviceslist':        			// display device list
 {
     fromhome();
     $dbh = Database::connect();
     devicelist();
+    aircraftlist();
     Database::disconnect();
     break;
 }
 
-case 'n':        // fill in create device
+case 'aircraftlist':        			// display device list
+{
+    fromhome();
+    $dbh = Database::connect();
+    devicelist();
+    aircraftlist();
+    Database::disconnect();
+    break;
+}
+
+
+case 'da':        				// fill in create device and aircraft
+{
+    fromhome();
+    if (!isset($_SESSION['login'])) {
+        exit();
+    } // test if user come from login page
+    $_SESSION['devair'] = 'yes';
+    $devtype = 2;        			// default type is Flarm
+    fillindevair();
+    break;
+}
+
+case 'n':        				// fill in create device
 {
     fromhome();
     if (!isset($_SESSION['login'])) {
         exit();
     } // test if user come from login page
     $_SESSION['dev'] = 'yes';
-    $devtype = 2;        // default type is Flarm
+    $devtype = 2;        			// default type is Flarm
     fillindevice();
     break;
 }
 
-case 'p':        // fill in change password
+case 'a':        				// fill in create aircraft
 {
     fromhome();
     if (!isset($_SESSION['login'])) {
         exit();
-    } // test if user come from login page
+    } 						// test if user come from login page
+    $_SESSION['acft'] = 'yes';
+    $airid=0;					// create the aircraft
+    fillinaircraft();
+    break;
+}
+
+case 'o':        				// claimownership
+{
+    fromhome();
+    if (!isset($_SESSION['login'])) {
+        exit();
+    } 						// test if user come from login page
+    claimownership();
+    break;
+}
+
+case 'p':        				// fill in change password
+{
+    fromhome();
+    if (!isset($_SESSION['login'])) {
+        exit();
+    } 						// test if user come from login page
     changepassword();
     break;
 }
 
-case 'updatedev':        // update/create device
+case 'updatedev':        			// update/create device
 {
 
     fromhome();
     if (!isset($_SESSION['login'])) {
         exit();
-    } // test if user come from login page
+    } 						// test if user come from login page
     $_SESSION['dev'] = 'yes';
     if (isset($_REQUEST['devid'])) {
         $devid = $_REQUEST['devid'];
@@ -317,15 +561,16 @@ case 'updatedev':        // update/create device
         $result = $req->fetch();
         $req->closeCursor();
         $devtype = $result['dev_type'];
-        $actype = $result['dev_actype'];
-        $acreg = $result['dev_acreg'];
-        $accn = $result['dev_accn'];
         $notrack = $result['dev_notrack'];
         $noident = $result['dev_noident'];
+        $airid   = $result['dev_flyobj'];
+        $active  = $result['dev_active'];
+        $idtype  = $result['dev_idtype'];
         fillindevice();
     } else {
         $error = $lang['error_devid'];
         devicelist();
+        aircraftlist();
     }
 
     Database::disconnect();
@@ -357,6 +602,7 @@ case 'deletedev':        // delete device
 
         $error = $lang['device_deleted'];
         devicelist();
+        aircraftlist();
     } else {
         $error = $lang['error_devid'];
         fillindevice();
@@ -365,7 +611,86 @@ case 'deletedev':        // delete device
     break;
 }
 
-case 'createuser':        // create user
+
+case 'updateacft':        			// update/create tracked object
+{
+
+    fromhome();
+    if (!isset($_SESSION['login'])) {
+        exit();
+    } 						// test if user come from login page
+    $_SESSION['acft'] = 'yes';
+    if (isset($_REQUEST['airid'])) {
+        $airid = $_REQUEST['airid'];
+    }
+    $dbh = Database::connect();
+
+    $req = $dbh->prepare('select * from trackedobjects where air_id=:de AND air_userid=:us');
+    $req->bindParam(':de', $airid);
+    $req->bindParam(':us', $_SESSION['user']);
+    $req->execute();
+    if ($req->rowCount() == 1 or air_id == 0) {
+        $result = $req->fetch();
+        $req->closeCursor();
+        $actype = $result['air_actype'];
+        $acreg = $result['air_acreg'];
+        $accn = $result['air_accn'];
+        $active = $result['air_active'];
+        $phone = $result['air_SARphone'];
+        $club = $result['air_SARclub'];
+        $country = $result['air_Country'];
+        fillinaircraft();
+    } else {
+        $error = $lang['error_airid'];
+        devicelist();
+        aircraftlist();
+    }
+
+    Database::disconnect();
+    break;
+}
+
+case 'deleteacft':        			// delete tracked object
+{
+    fromhome();
+    if (!isset($_SESSION['login'])) {
+        exit();
+    } 						// test if user come from login page
+    $_SESSION['acft'] = 'yes';
+    if (isset($_REQUEST['airid'])) {
+        $airid = $_REQUEST['airid'];
+    }
+    $dbh = Database::connect();
+    $req = $dbh->prepare('select * from trackedobjects where air_id=:id AND air_userid=:us');
+    $req->bindParam(':id', $airid);
+    $req->bindParam(':us', $_SESSION['user']);
+    $req->execute();
+
+    if ($req->rowCount() == 1) {
+        $req->closeCursor();
+        $del = $dbh->prepare('DELETE FROM trackedobjects where air_id=:id AND air_userid=:us');
+        $del->bindParam(':id', $airid);
+        $del->bindParam(':us', $_SESSION['user']);
+        $del->execute();
+
+        $error = $lang['flyobj_deleted'];
+        $req->closeCursor();			// now delete all the devices associated to this aircraft !!!
+        $del = $dbh->prepare('DELETE FROM devices where dev_flyobj=:id AND dev_userid=:us');
+        $del->bindParam(':id', $airid);
+        $del->bindParam(':us', $_SESSION['user']);
+        $del->execute();
+
+        devicelist();
+        aircraftlist();
+    } else {
+        $error = $lang['error_airid'];
+        fillinaircraft();
+    }
+    Database::disconnect();
+    break;
+}
+
+case 'createuser':        			// create user
 {
     fromhome();
     if (isset($_POST['user'])) {
@@ -400,6 +725,10 @@ case 'createuser':        // create user
     }
     if (filter_var($user, FILTER_VALIDATE_EMAIL) === false) {
         $error = $lang['error_emailformat'];
+    }
+    $isp=strstr(strstr($user, "@"),".", True);
+    if ($isp == "@gmx" or $isp == "@web") {
+        $error = $lang['error_emailbadisp'];
     }
 
     $dbh = Database::connect();
@@ -446,7 +775,67 @@ case 'createuser':        // create user
     break;
 }
 
-case 'forgotpasswd':        // forgot password
+case 'claimownership':			// claim the ownership of a device
+{
+    fromhome();
+    if (isset($_POST['user'])) {
+        $user = $_POST['user'];
+    }
+    if (isset($_POST['devid'])) {
+        $devid = $_POST['devid'];
+    } else {
+        $devid = '';
+    }
+    if (isset($_POST['acreg'])) {
+        $acreg = $_POST['acreg'];
+    } else {
+        $acreg = '';
+    }
+    if (isset($_POST['accn'])) {
+        $accn = $_POST['accn'];
+    } else {
+        $accn = '';
+    }
+
+    $devid = strtoupper($devid);
+    $acreg = strtoupper($acreg);
+    $accn  = strtoupper($accn);
+
+    $dbh = Database::connect();		// it has to match the DEVICE ID + REGISTRATION + CN
+    $req = $dbh->prepare('select usr_adress from users, devices, trackedobjects  where dev_id=:di and dev_flyobj = air_id and air_userid = usr_id and air_acreg=:rg and air_accn =:cn ; ');
+    $req->bindParam(':di', $devid);
+    $req->bindParam(':rg', $acreg);
+    $req->bindParam(':cn', $accn);
+    $req->execute();
+
+    if ($req->rowCount() == 0) {
+        $error = $lang['error_devicedoesnotexists'];
+        claimownership();
+        Database::disconnect();
+        break;
+    } else {
+        $touser=$req->fetchColumn();
+        $msg = $twig->render('email-claimownership-request.html.twig', 
+               array('lang' => $lang, 
+                     'devid' => $devid,
+                     'acreg' => $acreg,
+                     'accn' => $accn,
+                     'touser' => $touser,
+               ));
+        if (send_email($touser, $lang['email_claimsubject'], $msg, $sender)) {
+                // email sent
+                echo $twig->render('emailsent.html.twig', array('lang' => $lang));
+        } else {
+                $error = $lang['email_not_sent'];
+            }
+    }
+    $req->closeCursor();
+
+    Database::disconnect();
+    devicelist();
+    break;
+}
+case 'forgotpasswd':        			// forgot password
 {
     fromhome();
     if (isset($_POST['user'])) {
@@ -481,6 +870,10 @@ case 'forgotpasswd':        // forgot password
     }
     if (filter_var($user, FILTER_VALIDATE_EMAIL) === false) {
         $error = $lang['error_emailformat'];
+    }
+    $isp=strstr(strstr($user, "@"),".", True);
+    if ($isp == "@gmx" or $isp == "@web") {
+        $error = $lang['error_emailbadisp'];
     }
 
     $dbh = Database::connect();
@@ -527,7 +920,7 @@ case 'forgotpasswd':        // forgot password
     break;
 }
 
-case 'changepass':        // change pass
+case 'changepass':        			// change pass
 {
     fromhome();
     if (!isset($_SESSION['user'])) {
@@ -564,25 +957,26 @@ case 'changepass':        // change pass
         $ins->closeCursor();
     }
 
-    Database::disconnect();
     devicelist();
+    aircraftlist();
+    Database::disconnect();
     break;
 }
 
-case 'validuser':        // user validation from email
+case 'validuser':        			// user validation from email
 {
     $dbh = Database::connect();
     $req = $dbh->prepare('select * from tmpusers where tusr_validation=:vl');
     $req->bindParam(':vl', $validcode);
     $req->execute();
-    if ($req->rowCount() == 1) {        // tmpuser user found
+    if ($req->rowCount() == 1) {        	// tmpuser user found
         $result = $req->fetch();
         $req->closeCursor();
         $ins = $dbh->prepare('INSERT INTO users (usr_adress, usr_pw) VALUES (:us, :pw)');
         $ins->bindParam(':us', $result['tusr_adress']);
         $ins->bindParam(':pw', $result['tusr_pw']);
 
-        if ($ins->execute()) {    // insert ok, delete tmpuser
+        if ($ins->execute()) {    		// insert ok, delete tmpuser
             $ins->closeCursor();
             $del = $dbh->prepare('DELETE FROM tmpusers where tusr_validation=:vl');
             $del->bindParam(':vl', $validcode);
@@ -600,13 +994,13 @@ case 'validuser':        // user validation from email
     break;
 }
 
-case 'validpasswd':        // password validation from email
+case 'validpasswd':        			// password validation from email
 {
     $dbh = Database::connect();
     $req = $dbh->prepare('select * from tmpusers where tusr_validation=:vl');
     $req->bindParam(':vl', $validcode);
     $req->execute();
-    if ($req->rowCount() == 1) {        // tmpuser user found
+    if ($req->rowCount() == 1) {        	// tmpuser user found
         $result = $req->fetch();
         $req->closeCursor();
 
@@ -614,7 +1008,7 @@ case 'validpasswd':        // password validation from email
         $ins->bindParam(':us', $result['tusr_adress']);
         $ins->bindParam(':pw', $result['tusr_pw']);
 
-        if ($ins->execute()) {    // insert ok, delete tmpuser
+        if ($ins->execute()) {    		// insert ok, delete tmpuser
             $ins->closeCursor();
             $del = $dbh->prepare('DELETE FROM tmpusers where tusr_validation=:vl');
             $del->bindParam(':vl', $validcode);
@@ -632,14 +1026,311 @@ case 'validpasswd':        // password validation from email
     break;
 }
 
-case 'createdev':        // create device
+case 'createdev':        			// create device
+{
+    fromhome();
+    $notrack = $noident = 0;
+    if (!isset($_SESSION['login'])) {
+        exit();
+    } 						// test if user come from login page
+    if (!isset($_SESSION['dev'])) {
+        exit();
+    } 						// test if user come from fill in device page
+    if (!isset($_SESSION['user'])) {
+        exit();
+    } 						// test if user id defined
+
+    if (isset($_REQUEST['devid'])) {		// device ID
+        $devid = $_REQUEST['devid'];
+        $devid = strtoupper($devid);
+    } else {
+        $error = $lang['error_devid'];
+    }
+    if (isset($_REQUEST['devtype'])) {
+        $devtype = $_REQUEST['devtype'];
+    } else {
+        $error = $lang['error_devtype'];
+    }
+    if (isset($_REQUEST['idtype'])) {		// ID type ICAO or internal
+        $idtype = $_REQUEST['idtype'];
+    } else {
+        $error = $lang['error_idtype'];
+    }
+    if (isset($_REQUEST['flyobj'])) {
+        $flyobj = $_REQUEST['flyobj'];
+    } else {
+        $error = $lang['error_flyobj'];
+    }
+    if (isset($_REQUEST['active'])) {
+        $active = $_REQUEST['active'];
+    } else {
+        $active=0;
+        //$error = $lang['error_active'];
+    }
+    if (isset($_REQUEST['notrack'])) {
+        if ($_REQUEST['notrack'] == 'yes') {
+            $notrack = 1;
+        }
+    }
+    if (isset($_REQUEST['noident'])) {
+        if ($_REQUEST['noident'] == 'yes') {
+            $noident = 1;
+        }
+    }
+
+    if (isset($_REQUEST['owner'])) {
+        if ($_REQUEST['owner'] != 'yes') {
+            $error = $lang['error_owner'];
+        }
+    } else {
+        $error = $lang['error_owner'];
+    }
+
+    if ($flyobj == ''){
+        $error = $lang['error_flyobj'];
+    }
+    $devid = strtoupper($devid);
+    if (preg_match(' /[A-F0-9]/ ', $devid)) {
+    } // ok
+    else {
+        $error = $lang['error_devid'];
+    }
+
+
+    $devtypesl=devicetypeslen();			// get the length of the ID for that kind of device type
+    if (strlen($devid) > $devtypesl[(int)$devtype]) { 	// the length has to be lower or equal
+        $error = $lang['error_devidlen'];
+    }
+
+    $dbh = Database::connect();
+    if ($idtype == '2') {				// it is an ICAO ID ??
+        $req = $dbh->prepare('SELECT air_acreg FROM trackedobjects WHERE air_id =:fo');
+        $fly = (int) $flyobj;
+        $req->bindParam(':fo', $fly);			// get the registration
+        $req->execute();
+        $result = $req->fetch();
+        if ($result['air_acreg'] != ''){		// if provided
+            $t=$result['air_acreg'];
+            $r=ICAOcheckreg($result['air_acreg'], $devid); // CHECK
+            if ($r == 0) {				// if invalid DEVID for the ICAO range
+                $error = $lang['error_invalid_ICAO_ID'];
+                echo $error;
+                }
+            }
+    }
+
+    $req = $dbh->prepare('select dev_id, dev_type, dev_idtype, dev_userid from devices where dev_id=:de and dev_type =:dt and dev_idtype=:it');    // test if device is owned by another account
+    $req->bindParam(':de', $devid);
+    $req->bindParam(':dt', $devtype);
+    $req->bindParam(':it', $idtype);
+    $req->execute();
+
+    $upd = false;
+    if ($req->rowCount() == 1) {        		// if device already registred
+        $result = $req->fetch();
+        if ($result['dev_userid'] == $_SESSION['user']) {
+            $upd = true;
+        }        					// if owned by the user then update
+        else {
+            $error = $lang['error_devexists'];
+        }
+    }
+    $req->closeCursor();
+
+    if ($error != '') {
+        fillindevice();
+    } else {
+        if ($upd) {
+            $ins = $dbh->prepare('UPDATE devices SET  dev_idtype=:it, dev_notrack=:nt, dev_noident=:ni, dev_flyobj=:fo, dev_active=:ac WHERE dev_id=:de AND dev_type=:dt AND dev_userid=:us');
+        } else {
+            $ins = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_userid, dev_notrack, dev_noident, dev_flyobj, dev_active, dev_idtype ) VALUES (:de, :dt,  :us, :nt, :ni, :fo, :ac, :it)');
+        }
+        $act = (int)$active;
+        $fly = (int)$flyobj;
+        $ins->bindParam(':de', $devid);
+        $ins->bindParam(':dt', $devtype);
+        $ins->bindParam(':it', $idtype);
+        $ins->bindParam(':nt', $notrack);
+        $ins->bindParam(':ni', $noident);
+        $ins->bindParam(':ac', $act);
+        $ins->bindParam(':fo', $fly);
+        $ins->bindParam(':us', $_SESSION['user']);
+        if ($ins->execute()) {    			// insert ok, send email
+            if ($upd) {
+                $error = $lang['device_updated'];
+            } else {
+                $error = $lang['device_inserted'];
+            }
+            devicelist();
+            aircraftlist();
+        } else {
+            $error = $lang['error_insert_device'];
+            fillindevice();
+        }
+        $ins->closeCursor();
+    }
+
+    Database::disconnect();
+    break;
+}
+
+
+case 'createacft':        			// create tracked object
+{
+    fromhome();
+    $airid = 0;
+    if (!isset($_SESSION['login'])) {
+        exit();
+    } 						// test if user come from login page
+    if (!isset($_SESSION['acft'])) {
+        exit();
+    } 						// test if user come from fill in device page
+    if (!isset($_SESSION['user'])) {
+        exit();
+    } 						// test if user id defined
+
+    if (isset($_REQUEST['airid'])) {
+        $airid = $_REQUEST['airid'];
+    } else {
+        $error = $lang['error_noairid'];
+    }
+    if (isset($_REQUEST['actype'])) {
+        $actype = $_REQUEST['actype'];
+    } else {
+        $error = $lang['error_actype'];
+    }
+    if (isset($_REQUEST['acreg'])) {
+        $acreg = $_REQUEST['acreg'];
+        $acreg = str_replace("_",'-',$acreg);
+    } else {
+        $error = $lang['error_acreg'];
+    }
+    if (isset($_REQUEST['accn'])) {
+        $accn = $_REQUEST['accn'];
+    } else {
+        $error = $lang['error_accn'];
+    }
+    if (isset($_REQUEST['phone'])) {
+        $phone = $_REQUEST['phone'];
+    } else {
+        $error = $lang['error_phone'];
+    }
+    if (isset($_REQUEST['club'])) {
+        $club = $_REQUEST['club'];
+    } else {
+        $error = $lang['error_club'];
+    }
+    if (isset($_REQUEST['country'])) {
+        $country = $_REQUEST['country'];
+        if (strlen($country) == 2) {
+           $r=get_CCname(strtoupper($country));
+           if ($r=='')
+            {
+              $error = $lang['error_country'];
+            }
+           }
+    } else {
+        $error = $lang['error_country'];
+    }
+    if (isset($_REQUEST['active'])) {
+        $active = $_REQUEST['active'];
+    } else {
+        $active=0;
+        //$error = $lang['error_active'];
+    }
+
+    if (isset($_REQUEST['owner'])) {
+        if ($_REQUEST['owner'] != 'yes') {
+            $error = $lang['error_owner'];
+        }
+    } else {
+        $error = $lang['error_owner'];
+    }
+
+
+    $dbh = Database::connect();
+    $req = $dbh->prepare('select air_id,air_userid from trackedobjects where air_id=:de');    // test if aircraft  is owned by another account
+    $req->bindParam(':de', $airid);
+    $req->execute();
+
+    $upd = false;
+    if ($req->rowCount() == 1) {        // if device already registred
+        $result = $req->fetch();
+        if ($result['air_userid'] == $_SESSION['user']) {
+            $upd = true;
+        }        			// if owned by the user then update
+        else {
+            $error = $lang['error_airexists'];
+        }
+    }
+    $req->closeCursor();
+
+    if ($error != '') {
+        fillinaircraft();
+    } else {
+        if ($acreg ==''){
+            $acreg="R-".(string)$airid;
+        }
+        if ($upd) {
+            if ($airid == 0){
+                $error = $lang['error_airexists'];
+                fillinaircraft();
+            }
+            $ins = $dbh->prepare('UPDATE trackedobjects SET air_actype=:dt,  air_acreg=:re, air_accn=:cn, air_active=:ac, air_SARphone=:ph, air_SARclub=:cl, air_Country=:co WHERE air_id=:de AND air_userid=:us');
+        } else {
+            $airid=0;
+            $ins = $dbh->prepare('INSERT INTO trackedobjects (air_id, air_actype, air_acreg, air_accn, air_userid, air_active, air_SARphone, air_SARclub, air_Country  ) VALUES (:de, :dt,  :re, :cn, :us, :ac, :ph, :cl, :co )');
+            if ($airid == ''){
+               $airid='0';
+            }
+        }
+
+
+
+        $acreg = strtoupper($acreg);
+        $accn  = strtoupper($accn);
+        $act=(int) $active;
+        $ins->bindParam(':de', $airid);
+        $ins->bindParam(':dt', $actype);
+        $ins->bindParam(':re', $acreg);
+        $ins->bindParam(':cn', $accn);
+        $ins->bindParam(':ac', $act);
+        $ins->bindParam(':ph', $phone);
+        $ins->bindParam(':cl', $club);
+        $ins->bindParam(':co', $country);
+        $ins->bindParam(':us', $_SESSION['user']);
+
+        if ($ins->execute()) {    	// insert ok, send email
+            if ($upd) {
+                $error = $lang['flyobj_updated'];
+            } else {
+                $error = $lang['flyobj_inserted'];
+                $req = $dbh->query('SELECT LAST_INSERT_ID(); ');
+                $airid = $req->fetchColumn();
+            }
+            devicelist();
+            aircraftlist();
+        } else {
+            $error = $lang['error_insert_flyobj'];
+            fillinaircraft();
+        }
+        $ins->closeCursor();
+    }
+
+    Database::disconnect();
+    break;
+}
+
+
+
+case 'createdevair':        // create device and object/aircraft
 {
     fromhome();
     $notrack = $noident = 0;
     if (!isset($_SESSION['login'])) {
         exit();
     } // test if user come from login page
-    if (!isset($_SESSION['dev'])) {
+    if (!isset($_SESSION['devair'])) {
         exit();
     } // test if user come from fill in device page
     if (!isset($_SESSION['user'])) {
@@ -648,6 +1339,7 @@ case 'createdev':        // create device
 
     if (isset($_REQUEST['devid'])) {
         $devid = $_REQUEST['devid'];
+        $devid = strtoupper($devid);
     } else {
         $error = $lang['error_devid'];
     }
@@ -655,6 +1347,11 @@ case 'createdev':        // create device
         $devtype = $_REQUEST['devtype'];
     } else {
         $error = $lang['error_devtype'];
+    }
+    if (isset($_REQUEST['idtype'])) {		// ID type ICAO or internal
+        $idtype = $_REQUEST['idtype'];
+    } else {
+        $error = $lang['error_idtype'];
     }
     if (isset($_REQUEST['actype'])) {
         $actype = $_REQUEST['actype'];
@@ -730,41 +1427,90 @@ case 'createdev':        // create device
         }
     }
     $req->closeCursor();
-
+    $act = 1; 
+    $phone = '';
+    $club = '';
+    $country = '';
+    $devid = strtoupper($devid);
+    $acreg = strtoupper($acreg);
+    $accn  = strtoupper($accn);
+    if ($acreg != ''){
+            $r=ICAOcheckreg($acreg, $devid); 		// CHECK
+            if ($r == 0) {				// if invalid DEVID for the ICAO range
+                $error = $lang['error_invalid_ICAO_ID'];
+                echo $error;
+                }
+    }
     if ($error != '') {
-        fillindevice();
+        fillindevair();
     } else {
         if ($upd) {
-            $ins = $dbh->prepare('UPDATE devices SET dev_type=:dt, dev_actype=:ty, dev_acreg=:re, dev_accn=:cn, dev_notrack=:nt, dev_noident=:ni WHERE dev_id=:de AND dev_userid=:us');
+            #ins = $dbh->prepare('UPDATE devices SET dev_type=:dt, dev_actype=:ty, dev_acreg=:re, dev_accn=:cn, dev_notrack=:nt, dev_noident=:ni WHERE dev_id=:de AND dev_userid=:us');
+            $insd = $dbh->prepare('UPDATE devices SET dev_idtype=:it, dev_notrack=:nt, dev_noident=:ni, dev_flyobj=:fo, dev_active=:ac WHERE dev_id=:de AND dev_type=:dt AND dev_userid=:us');
+            $inso = $dbh->prepare('UPDATE trackedobjects SET air_actype=:at,  air_acreg=:re, air_accn=:cn, air_active=:ac, air_SARphone=:ph, air_SARclub=:cl, air_Country=:co WHERE air_id=:ai AND air_userid=:us');
         } else {
-            $ins = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_actype, dev_acreg, dev_accn, dev_userid, dev_notrack, dev_noident) VALUES (:de, :dt, :ty, :re, :cn, :us, :nt, :ni)');
+            #ins = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_actype, dev_acreg, dev_accn, dev_userid, dev_notrack, dev_noident) VALUES (:de, :dt, :ty, :re, :cn, :us, :nt, :ni)');
+            $insd = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_userid, dev_notrack, dev_noident, dev_flyobj, dev_active, dev_idtype ) VALUES (:de, :dt,  :us, :nt, :ni, :fo, :ac, :it)');
+            $airid=0;
+            $inso = $dbh->prepare('INSERT INTO trackedobjects (air_id, air_actype, air_acreg, air_accn, air_userid, air_active, air_SARphone, air_SARclub, air_Country  ) VALUES (:ai, :at,  :re, :cn, :us, :ac, :ph, :cl, :co )');
         }
-        $ins->bindParam(':de', $devid);
-        $ins->bindParam(':dt', $devtype);
-        $ins->bindParam(':ty', $actype);
-        $ins->bindParam(':re', $acreg);
-        $ins->bindParam(':cn', $accn);
-        $ins->bindParam(':nt', $notrack);
-        $ins->bindParam(':ni', $noident);
-        $ins->bindParam(':us', $_SESSION['user']);
-
-        if ($ins->execute()) {    // insert ok, send email
+// --------------------------------------------------------------------//
+        $inso->bindParam(':ai', $airid);
+        $inso->bindParam(':at', $actype);
+        $inso->bindParam(':re', $acreg);
+        $inso->bindParam(':cn', $accn);
+        $inso->bindParam(':ac', $act);
+        $inso->bindParam(':ph', $phone);
+        $inso->bindParam(':cl', $club);
+        $inso->bindParam(':co', $country);
+        $inso->bindParam(':us', $_SESSION['user']);
+// --------------------------------------------------------------------//
+        if ($inso->execute()) {                                 // insert first the fly object
             if ($upd) {
-                $error = $lang['device_updated'];
+                $error = $lang['flyobj_updated'];
             } else {
-                $error = $lang['device_inserted'];
+                $error = $lang['flyobj_inserted'];
+                $req = $dbh->query('SELECT LAST_INSERT_ID(); '); // get now what is the flyobject ID
+                $airid = $req->fetchColumn();
+            }
+            $inso->closeCursor();
+            var_dump($devid);
+            var_dump($devtype);
+            var_dump($notrack);
+            var_dump($noident);
+            var_dump($airid);
+            var_dump($act);
+            var_dump($idtype);
+// --------------------------------------------------------------------//
+            $insd->bindParam(':de', $devid);
+            $insd->bindParam(':dt', $devtype);
+            $insd->bindParam(':nt', $notrack);
+            $insd->bindParam(':ni', $noident);
+            $insd->bindParam(':fo', $airid);			// bind it to the new device
+            $insd->bindParam(':ac', $act);
+            $insd->bindParam(':it', $idtype);
+            $insd->bindParam(':us', $_SESSION['user']);
+// --------------------------------------------------------------------//
+            if ($insd->execute()) {                             // insert the device ok
+                if ($upd) {
+                    $error = $lang['device_updated'];
+                } else {
+                    $error = $lang['device_inserted'];
             }
             devicelist();
+            aircraftlist();
         } else {
             $error = $lang['error_insert_device'];
-            fillindevice();
+            fillindevair();
+            }
+        $insd->closeCursor();
         }
-        $ins->closeCursor();
     }
 
     Database::disconnect();
     break;
 }
+
 
 default:
 {

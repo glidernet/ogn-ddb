@@ -17,15 +17,16 @@ if (!empty($_GET['device_id'])) {
     $params = array_merge($params, $regs);
 }
 if (!empty($_GET['from_id'])) {
-    $fromid = $_GET['from_id'];
-    $filter[] = 'dev_id >= ":fromid"';
+    $filter[] = 'dev_id >= ?';
+    array_push($params, $_GET['from_id']);
 }
 if (!empty($_GET['till_id'])) {
-    $tillid = $_GET['till_id'];
     if (!empty($_GET['from_id'])) {
-      $filter[count($filter)-1] .= ' AND dev_id <= ":tillid"';
+      $filter[count($filter)-1] .= ' AND dev_id <= ?';
+      array_push($params, $_GET['till_id']);
     } else {
-      $filter[] = 'dev_id <= ":tillid"';
+      $filter[] = 'dev_id <= ?';
+      array_push($params, $_GET['till_id']);
     }
 }
 if (!empty($_GET['registration'])) {
@@ -62,15 +63,7 @@ $sql = 'SELECT
     ON dev_actype = ac_id
     '.$filterstring.'
     ORDER BY dev_id ASC';
-
 $stmt = $dbh->prepare($sql);
-if (!empty($_GET['from_id'])) {
-    $stmt->bindParam('fromid', $_GET['from_id'], PDO::PARAM_STR, 12);
-}
-if (!empty($_GET['till_id'])) {
-     $stmt->bindParam('tillid', $_GET['till_id'], PDO::PARAM_STR, 12);
-}
-
 $stmt->execute($params);
 
 $output['devices'] = array();

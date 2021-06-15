@@ -104,17 +104,17 @@ $languages['german'] = array (
         <li>Luftfahrzeugkennung und Muster werden <em>nicht</em> veröffentlicht.</li>
         <li>Im Notfall kann Ihr Luftfahrzeug <em>nicht</em> mit Hilfe des OGN geortet werden.</li>
         <li>Sie tragen <em>nicht</em> zu einer Verbesserung des Verkehrslagebildes für Piloten, Flugleiter am Boden und die offiziellen Lotsen (ATC) bei.</li>
-        <li>Die von Ihrem FLARM ausgestrahlten Funksignale werden von OGN-Bodenstationen <em>nicht</em> verarbeitet, sofern diese den sogenannten &quot;Whitelist-Filter&quot; verwenden.</li>        
+        <li>Die von Ihrem FLARM ausgestrahlten Funksignale werden von OGN-Bodenstationen <em>nicht</em> verarbeitet, sofern diese den sogenannten &quot;Whitelist-Filter&quot; verwenden.</li>
         </ul>",
     "welcome_text" => "<p>
-        Hier können Sie Ihr Segelflugzeug, Schleppflugzeug oder ein anderes mit FLARM bzw. OGN-Tracker ausgestattetes Luftfahrzeug 
+        Hier können Sie Ihr Segelflugzeug, Schleppflugzeug oder ein anderes mit FLARM bzw. OGN-Tracker ausgestattetes Luftfahrzeug
         registrieren und die Nutzung der Positionsdaten durch das Open Glider Network konfigurieren.<br><br>
         Die Registrierung bietet Ihnen folgende Vorteile:
         <ul>
-            <li>Sie können beeinflussen, ob und wie Ihr Luftfahrzeug auf <a href='http://live.glidernet.org'>live.glidernet.org</a> und in anderen OGN Anwendungen und Diensten erscheint.</li>
+            <li>Sie können beeinflussen, ob und wie Ihr Luftfahrzeug auf <a href='https://live.glidernet.org'>live.glidernet.org</a> und in anderen OGN Anwendungen und Diensten erscheint.</li>
             <li>Ihr Luftfahrzeug kann im Notfall schnell mit Hilfe des OGN geortet und gefunden werden (SAR).</li>
             <li>Sie tragen zu einer Verbesserung des Verkehrslagebildes für Piloten, Flugleiter am Boden und die offiziellen Lotsen (ATC) bei.</li>
         </ul>
-        Alle Daten des OGN sind frei und öffentlich unter der <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> Lizenz verfügbar.
+        Alle Daten des OGN sind frei und öffentlich unter der <a href='https://opendatacommons.org/licenses/by/summary/'>ODC-BY</a> Lizenz verfügbar.
         </p>",
 );

@@ -1,9 +1,9 @@
 # ogn-ddb: OGN Devices DataBase
 
-Offical server at <http://ddb.glidernet.org>.
+Offical server at <https://ddb.glidernet.org>.
 
 ## Installation
-This project uses the PHP template engine [Twig](http://twig.sensiolabs.org), available via [Composer](https://getcomposer.org/).
+This project uses the PHP template engine [Twig](https://twig.symfony.com/), available via [Composer](https://getcomposer.org/).
 
 1. Download and install [Composer](https://getcomposer.org/download/)
 
@@ -50,7 +50,7 @@ parameter    | values | default | effect
 ------------ | -------|---------|---------------------------------------------------------------
 t            | 0/1    | 0       | show field `aircraft_type` if set to 1
 j            | 0/1    | 0       | forces JSON output when set to 1 (regardless of accept header)
-device\_id   | csv    | n/a     | select a comma separated list of device ID's              
+device\_id   | csv    | n/a     | select a comma separated list of device ID's
 from\_id     | id     | n/a     | select list of device ID's starting from this provided ID
 till\_id     | id     | n/a     | select list of device ID's until this provided ID
 registration | csv    | n/a     | select a comma separated list of registrations

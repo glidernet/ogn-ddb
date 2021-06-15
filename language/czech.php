@@ -89,10 +89,10 @@ $languages['czech'] = array (
         do Open Glider Network (OGN). Registrace má řadu výhod:
         <ul>
             <li>Můžete ovlivnit jak bude vaše letadlo zobrazeno na
-                <a href='http://live.glidernet.org'>live.glidernet.org</a> a v jiných sledovacích aplikacích a webech</li>
+                <a href='https://live.glidernet.org'>live.glidernet.org</a> a v jiných sledovacích aplikacích a webech</li>
             <li>V případě nouze - SAR, zvýšíte šanci na rychlé nalezení vašeho letadla</li>
             <li>Přispějete k přehledu letového provozu mezi ostatními piloty a ATC</li>
         </ul>
-        Data jsou volně k dispozici po licencí <a href='http://opendatacommons.org/licenses/by/summary/'>ODC-BY</a>.
+        Data jsou volně k dispozici po licencí <a href='https://opendatacommons.org/licenses/by/summary/'>ODC-BY</a>.
         </p>",
 );

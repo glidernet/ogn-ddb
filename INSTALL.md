@@ -22,7 +22,7 @@
 
 4. Access your local ogn-ddb instance at [192.168.33.10](http://192.168.33.10)
 
-5. (optional, for email debugging) Run [MailCatcher](http://mailcatcher.me/), accessible at [192.168.33.10](http://192.168.33.10:1080)
+5. (optional, for email debugging) Run [MailCatcher](https://mailcatcher.me/), accessible at [192.168.33.10](http://192.168.33.10:1080)
    ```
    vagrant@scotchbox:~$ mailcatcher --http-ip=0.0.0.0
    ```

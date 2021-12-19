@@ -75,7 +75,7 @@ function createdevice($devid, $dvct, $deviceidtype, $flyobj, $user)
             $upd = true;
         }        				// if owned by the user then update
         else {
-             echo 'Error device exists';
+             echo 'Error device exists: '.$devid."\n\n";
              exit();
         }
      }
@@ -145,7 +145,7 @@ function deldevice($devid, $dvct, $deviceidtype, $flyobj, $user)
         }
      }
      else {
-             echo 'Error device do not exists';
+             echo 'Error device do not exists: '.$devid."\n\n";
              exit();
      }
      $req->closeCursor();
@@ -186,7 +186,7 @@ function createobj($airid, $acreg, $accn, $actype, $user)
                 $upd = true;
             }        			// if owned by the user then update
             else {
-                echo 'Error object exists'.$airid;
+                echo 'Error object exists'.$airid."\n\n";
                 exit();
             }
         }

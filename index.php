@@ -100,16 +100,16 @@ function devicetypeslen()
     return $devtypeslen;
 }
 
-function getflyobj($user)
+function getflyobj($user)		// get all the aircraft belonging to this user
 {
     $user=$_SESSION['user'];
     $flyobj = array();
     $dbh = Database::connect();
-    $cmd ='SELECT air_id FROM trackedobjects where air_userid = '.$user.';';
+    $cmd ='SELECT air_id, air_acreg FROM trackedobjects where air_userid = '.$user.';';
     $fly = $dbh->query($cmd) ;    // get data
     
     foreach ($fly as $fo){
-        array_push($flyobj, $fo['air_id']); 
+        array_push($flyobj, $fo['air_id'].' : '.$fo['air_acreg']); 
     }
     return $flyobj;
 }
@@ -151,14 +151,14 @@ function fillinuserforgot()
 }
 
 
-function fillindevair()
+function fillindevair()					// fill in device and aircraft
 {
     global $lang,$error,$devid,$airid, $devtype,$acreg,$accn,$actype,$notrack,$noident,$active,$user,$idtype,$twig;
-array('', '', '');
+    array('', '', '');
 
     $dtypc = devicetypes();
     $dtypc[$devtype] = 'selected';
-
+    $idtype   = array();
     $aircraft = array();
     $flyobjs = array();
     $dbh = Database::connect();
@@ -177,17 +177,17 @@ array('', '', '');
     $flyobjs=getflyobj($user);
     $template_vars = array(
         'aircrafts' => $aircraft,
-        'flyobjs' => $flyobjs,
-        'lang' => $lang,
-        'error' => $error,
-        'dtypc' => $dtypc,
-        'cnotrack' => ($notrack) ? 'checked' : '',
-        'cnoident' => ($noident) ? 'checked' : '',
-        'devid' => $devid,
-        'airid' => $airid,
-        'active' => $active,
-        'devtype' => $devtype,
-        'idtype' => $idtype,
+        'flyobjs'   => $flyobjs,
+        'lang'      => $lang,
+        'error'     => $error,
+        'dtypc'     => $dtypc,
+        'cnotrack'  => ($notrack) ? 'checked' : '',
+        'cnoident'  => ($noident) ? 'checked' : '',
+        'devid'     => $devid,
+        'airid'     => $airid,
+        'active'    => $active,
+        'devtype'   => $devtype,
+        'idtype'    => $idtype,
 
     );
     echo $twig->render('fillindevair.html.twig', $template_vars);
@@ -197,7 +197,7 @@ array('', '', '');
 function fillindevice()
 {
     global $lang,$error,$devid,$airid, $devtype,$acreg,$accn,$actype,$notrack,$noident,$active,$user,$idtype,$twig;
-array('', '', '');
+    array('', '', '');
 
     $dtypc = devicetypes();
     $dtypc[$devtype] = 'selected';
@@ -217,20 +217,20 @@ array('', '', '');
     }
 
     Database::disconnect();
-    $flyobjs=getflyobj($user);
+    $flyobjs=getflyobj($user);			// get all the aircrafts belongin to this user
     $template_vars = array(
         'aircrafts' => $aircraft,
-        'flyobjs' => $flyobjs,
-        'lang' => $lang,
-        'error' => $error,
-        'dtypc' => $dtypc,
-        'cnotrack' => ($notrack) ? 'checked' : '',
-        'cnoident' => ($noident) ? 'checked' : '',
-        'devid' => $devid,
-        'airid' => $airid,
-        'active' => $active,
-        'devtype' => $devtype,
-        'idtype' => $idtype,
+        'flyobjs'   => $flyobjs,
+        'lang'      => $lang,
+        'error'     => $error,
+        'dtypc'     => $dtypc,
+        'cnotrack'  => ($notrack) ? 'checked' : '',
+        'cnoident'  => ($noident) ? 'checked' : '',
+        'devid'     => $devid,
+        'airid'     => $airid,
+        'active'    => $active,
+        'devtype'   => $devtype,
+        'idtype'    => $idtype,
 
     );
     echo $twig->render('fillindevice.html.twig', $template_vars);
@@ -473,7 +473,7 @@ case 'deviceslist':        			// display device list
     break;
 }
 
-case 'aircraftlist':        			// display device list
+case 'aircraftlist':        			// display aircraft list
 {
     fromhome();
     $dbh = Database::connect();
@@ -492,6 +492,7 @@ case 'da':        				// fill in create device and aircraft
     } // test if user come from login page
     $_SESSION['devair'] = 'yes';
     $devtype = 2;        			// default type is Flarm
+    $idtype  = 1;				// default is type internal
     fillindevair();
     break;
 }
@@ -504,6 +505,7 @@ case 'n':        				// fill in create device
     } // test if user come from login page
     $_SESSION['dev'] = 'yes';
     $devtype = 2;        			// default type is Flarm
+    $idtype  = 1;				// default is type internal
     fillindevice();
     break;
 }
@@ -1435,11 +1437,14 @@ case 'createdevair':        // create device and object/aircraft
     $acreg = strtoupper($acreg);
     $accn  = strtoupper($accn);
     if ($acreg != ''){
+
+        if ($idtype == '2') {				// it is an ICAO ID ??
             $r=ICAOcheckreg($acreg, $devid); 		// CHECK
             if ($r == 0) {				// if invalid DEVID for the ICAO range
                 $error = $lang['error_invalid_ICAO_ID'];
                 echo $error;
                 }
+            }
     }
     if ($error != '') {
         fillindevair();

@@ -1,2 +1,7 @@
 DBuser='youruser'
 DBpasswd='yourpassword'
+DDBhost='your.server'
+DDBport=60082
+DDBurl1='http://yourserver:60082/download/?j=2'
+DDBurl2='http://DDB.glidernet.org/download/?j=2'
+prt=False

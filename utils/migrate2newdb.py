@@ -11,6 +11,7 @@ import urllib.request
 import urllib.error
 import urllib.parse
 from ddbfuncs import *
+from ognddbfuncs import *
 
 def repl (text, objid):		# replace the registration mistypes
     
@@ -140,17 +141,27 @@ prt      = args.prt			# print on|off
 trk      = args.trk			# migrate trkdevices on|off
 origin   = args.origin			# origin database
 dest     = args.dest			# destination database
+print ("Args:", 'prt:', prt, 'trk:', trk, "origin:", origin,"dest:",  dest, ":" )
 
+# ----------------------------------------------------------------- #
 sqldropdb  ="DROP DATABASE IF EXISTS `glidernet_devicesdb` ; "
+# ----------------------------------------------------------------- #
 sqlcopyacft="truncate `glidernet_devicesdb`.`aircraftstypes` ; \
 INSERT INTO `glidernet_devicesdb`.`aircraftstypes`(`ac_id`, `ac_type`, `ac_cat`) SELECT `ac_id`, `ac_type`, `ac_cat` FROM `glidernet_devicesdb_original`.`aircrafts`;"
 
+# ----------------------------------------------------------------- #
 sqlcopyusers="truncate `glidernet_devicesdb`.`users` ; \
 INSERT INTO `glidernet_devicesdb`.`users`(`usr_id`, `usr_adress`, `usr_pw`) SELECT `usr_id`, `usr_adress`, `usr_pw` FROM `glidernet_devicesdb_original`.`users`;"
 
+# ----------------------------------------------------------------- #
 sqlcopytmpu="truncate `glidernet_devicesdb`.`tmpusers` ; \
 INSERT INTO `glidernet_devicesdb`.`tmpusers`(`tusr_adress`, `tusr_pw`, `tusr_validation`, `tusr_time`) SELECT `tusr_adress`, `tusr_pw`, `tusr_validation`, `tusr_time` FROM `glidernet_devicesdb_original`.`tmpusers`;"
 
+# ----------------------------------------------------------------- #
+sqldeletetmpusr="DELETE FROM tmpusers WHERE tusr_time < UNIX_TIMESTAMP('2021-12-01');" 
+sqlcountair    ="SELECT COUNT(*) FROM aircraftstypes;"
+sqlcountusr    ="SELECT COUNT(*) FROM users;"
+sqlcounttmpusr ="SELECT COUNT(*) FROM tmpusers;"
 lastfix={}				# table with the last fix found
 url="http://glidertracking1.fai.org"
 url="http://localhost"
@@ -158,14 +169,15 @@ lastfix, oldestdeviceseen = buildlastfix(lastfix,url,prt=prt)		# build the lastf
 cntlastfix=len(lastfix)			# number of entries on the lastfix table
 #print(lastfix)
 import config				# import configuration values
-DBuser=config.DBuser
-DBpasswd=config.DBpasswd
+DBuser=config.DBuser			# DB User
+DBpasswd=config.DBpasswd		# and DB password from configuration file
 DBnameOrig='glidernet_devicesdb_original'
 DBnameDest='glidernet_devicesdb'
-if origin == ' ':
+if origin != '':
    DBnameOrig=origin
-if dest == ' ':
+if dest != '':
    DBnameDest=dest
+
 DBfile="./glidernet_devicesdb.sql"	# schema file
 print("MySQL: Database:", DBnameOrig, DBnameDest)
 conn  = MySQLdb.connect(user=DBuser, passwd=DBpasswd) # connect for seting the new DB
@@ -201,11 +213,19 @@ curs2 = conn2.cursor()			# cursor devices origin
 curs1.execute(sqlcopyacft)		# copy aircraftstypes
 curs1.execute(sqlcopyusers)		# copy users table
 curs1.execute(sqlcopytmpu)		# copy temp users table
+curs1.execute(sqldeletetmpusr)		# delete old temp users ... mostly because wrong emails
+curs1.execute(sqlcountair)		# count users
+print ("Aircrafts types: ", curs1.fetchone()[0])
+curs1.execute(sqlcountusr)		# count users
+print ("Users:           ", curs1.fetchone()[0])
+curs1.execute(sqlcounttmpusr)		# count temp users
+print ("Temp Users:      ", curs1.fetchone()[0])
+
 curs1.execute("truncate devices;")	# delete all records just in case
 curs1.execute("truncate trackedobjects;")
 conn1.commit()				# commit the changes
 oldestdeviceseen= oldestdeviceseen["lastFixTx"] #check on the LASTFIX table what is the oldest entry
-print ("Devices seen since:", oldestdeviceseen, cntlastfix, " devices ... By:", url)
+print ("Devices seen since:", oldestdeviceseen, ":::", cntlastfix, "::: devices ... By:", url)
 curs2.execute("select count(*) from devices;")
 rowg = curs2.fetchone() 		# find number of devices on the original table	
 print("DevicesDB Original", rowg[0])	# report number of devices origin
@@ -364,50 +384,69 @@ if trk:
    conn2 = MySQLdb.connect(user=DBuser, passwd=DBpasswd, db=DBname)
    curs1 = conn1.cursor()		# cursor for trkdevices origin
    curs2 = conn2.cursor()		# cursor for trkdevices destination			       
-   curs1.execute("SELECT dvt_name, dvt_id FROM devtypes;")
+   try:
+      curs1.execute("SELECT dvt_name, dvt_id FROM devtypes;")
+   except Exception as e:
+      print ("TRK1:", e, "devtypes")
+      exit(-1)
+
    devtypesl=curs1.fetchall()  
    devtypes=[]
    for d in devtypesl:
        devtypes.append(d[0][0:4])
    #print (devtypes)
-   curs1.execute("SELECT ac_type, ac_id FROM aircraftstypes ;")
+   try:
+      curs1.execute("SELECT ac_type, ac_id FROM aircraftstypes ;")
+   except Exception as e:
+      print ("TRK2:", e, "acrfttypes")
+      exit(-1)
+
    acfttypesl=curs1.fetchall()  
    acfttypes=[]
    for d in acfttypesl:
        acfttypes.append(d[0].upper().lstrip())
    #print (acfttypes)
-   sqlcmd="SELECT * FROM TRKDEVICES ORDER BY devicetype ; "		# get all the devices on the original table
+   sqlcmd="SELECT spotid, spotpasswd, compid, model, registration, active, devicetype, flarmid FROM TRKDEVICES ORDER BY devicetype ; "		# get all the devices on the original table
    try:
       curs2.execute(sqlcmd)	
    except Exception as e:
-      print ("TRK:", e)
+      print ("TRK3:", e, sqlcmd)
       exit(-1)
 
    row = curs2.fetchone()		# one by one
    while row:				# go thru all the devices
 
       cntrk += 1			# counter
-      dev_id 		= row[2] 	# device ID
-      dev_psw 		= row[3] 	# device password
-      dev_accn 		= row[4] 	# competition ID
-      model 		= row[5].upper().lstrip()# model 
-      dev_acreg		= row[6] 	# registration 
-      active 		= row[7] 	# active
-      actype		= row[8] 	# device type
-      flarmid 		= row[9] 	# Flarm ID
+      dev_id 		= row[0] 	# device ID
+      dev_psw 		= row[1] 	# device password
+      dev_accn 		= row[2] 	# competition ID
+      model 		= row[3].upper().lstrip()# model 
+      dev_acreg		= row[4] 	# registration 
+      active 		= row[5] 	# active
+      actype		= row[6] 	# device type
+      flarmid 		= row[7] 	# Flarm ID
       idtype		= 1		# by default type internal
       if actype in devtypes:
          devtyp=devtypes.index(actype)
       else:
          devtyp=0
+      if flarmid == None:
+         flarmid = getognflarmid(dev_acreg)
+         if flarmid == 'NOFlarm':
+            flarmid=None
+
       if model in acfttypes:
          dev_actype=acfttypes.index(model)+1	# index +1 as zero do not exist
       else:
          dev_actype=362
          if model != '' and model != "NOMODEL":
-            print("Val:", dev_id, dev_psw, dev_accn, model, dev_acreg, active, actype, devtyp, flarmid)
+            print("Wrong Model:", model, dev_accn, dev_acreg, active, actype, devtyp, flarmid)
+            model=getognmodel(flarmid[3:]).upper().lstrip()	# get the model from the DDB
+            print("New   Model:", model)
+            if model != '':
+               dev_actype=acfttypes.index(model)+1	# index +1 as zero do not exist
 
-      if flarmid == '' or flarmid == None:			# if FlarmID is provided
+      if flarmid == '' or flarmid == None:	# if FlarmID is NOT provided
          dev_userid=99999
          dev_notrack=0
          dev_noident=0
@@ -426,7 +465,7 @@ if trk:
             inscmd2 = "INSERT INTO devices VALUES ('" + str(dev_id) + "','"+str(dev_psw)+"'," + str(devtyp) + ","+str(airid)+"," + str(dev_userid) + "," + str(dev_notrack) + "," + str(dev_noident) + ", 1,"+str(idtype)+",'0')"
             #print("AirID1:", airid, dev_userid, dev_acreg, dev_accn, inscmd2)
             curs1.execute(inscmd2)	# add data to devices table
-      else:
+      else:				# if flramId is provided
          if flarmid[0:3] == "ICA" and devtyp == 2:
             idtype=2
          else:
@@ -437,7 +476,7 @@ if trk:
          curs1.execute(selcmd1)
          obj=curs1.fetchone()
          if obj == None:
-            print ("Wrong Flarmid:", flarmid, selcmd1)
+            print ("Wrong Flarmid:", flarmid, "SelCmd:", selcmd1)
             print("Val:", dev_id, dev_psw, dev_accn, model, dev_acreg, active, actype, devtyp, flarmid)
             row = curs2.fetchone()	# one by one
             continue
@@ -455,7 +494,7 @@ if trk:
    conn1.commit()			# commit the changes
    print ("TRK devices added:", cntrk, "\n")
 else:
-   print ("Regs objects: ", cnt-1)
+   print ("Regs objects:     ", cnt-1)
 # ------ end of IF TRK --------------- #
 curs1.execute("SELECT count(*) FROM devices;")
 rowg = curs1.fetchone() 	

@@ -156,8 +156,10 @@ function changepassword()
 function devicelist()
 {
     global $dbh,$lang,$error,$url,$twig;
-    $req2 = $dbh->prepare('SELECT * FROM devices,aircrafts where dev_userid=:us AND dev_actype=ac_id ORDER BY dev_id ASC');
+    $ttime = time() -31536000; 
+    $req2 = $dbh->prepare('SELECT * , ( :ti >= dev_updatetime) as dev_valid FROM devices,aircrafts where dev_userid=:us AND dev_actype=ac_id ORDER BY dev_id ASC');
     $req2->bindParam(':us', $_SESSION['user']);
+	$req2->bindParam(':ti', $ttime);
     $req2->execute();
     $template_vars = array(
         'devicelist' => $req2->fetchAll(),
@@ -715,18 +717,27 @@ case 'createdev':        // create device
     }
 
     $dbh = Database::connect();
-    $req = $dbh->prepare('select dev_id,dev_userid from devices where dev_id=:de');    // test if device is owned by another account
+    $req = $dbh->prepare('select dev_id,dev_userid,dev_updatetime from devices where dev_id=:de');    // test if device is owned by another account
     $req->bindParam(':de', $devid);
     $req->execute();
 
     $upd = false;
+    $trf = false;
     if ($req->rowCount() == 1) {        // if device already registred
         $result = $req->fetch();
         if ($result['dev_userid'] == $_SESSION['user']) {
             $upd = true;
         }        // if owned by the user then update
         else {
-            $error = $lang['error_devexists'];
+            $ttime=time()-31536000; //1 year;
+            if ($ttime >= $result['dev_updatetime']) {
+                $upd = true;
+                $trf = true;
+                //Transfer and update the device				
+            } 
+            else { 
+                $error = $lang['error_devexists'];
+            }
         }
     }
     $req->closeCursor();
@@ -735,10 +746,17 @@ case 'createdev':        // create device
         fillindevice();
     } else {
         if ($upd) {
-            $ins = $dbh->prepare('UPDATE devices SET dev_type=:dt, dev_actype=:ty, dev_acreg=:re, dev_accn=:cn, dev_notrack=:nt, dev_noident=:ni WHERE dev_id=:de AND dev_userid=:us');
+            if ($trf) {
+                $ins = $dbh->prepare('UPDATE devices SET dev_type=:dt, dev_actype=:ty, dev_acreg=:re, dev_accn=:cn, dev_notrack=:nt, dev_noident=:ni, dev_updatetime=:ti, dev_userid=:us WHERE dev_id=:de');
+                //Transfer expired device            
+            }
+            else {
+                $ins = $dbh->prepare('UPDATE devices SET dev_type=:dt, dev_actype=:ty, dev_acreg=:re, dev_accn=:cn, dev_notrack=:nt, dev_noident=:ni, dev_updatetime=:ti WHERE dev_id=:de AND dev_userid=:us');
+            }
         } else {
-            $ins = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_actype, dev_acreg, dev_accn, dev_userid, dev_notrack, dev_noident) VALUES (:de, :dt, :ty, :re, :cn, :us, :nt, :ni)');
+            $ins = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_actype, dev_acreg, dev_accn, dev_userid, dev_notrack, dev_noident,dev_updatetime) VALUES (:de, :dt, :ty, :re, :cn, :us, :nt, :ni, :ti)');
         }
+        $ttime = time();
         $ins->bindParam(':de', $devid);
         $ins->bindParam(':dt', $devtype);
         $ins->bindParam(':ty', $actype);
@@ -746,6 +764,7 @@ case 'createdev':        // create device
         $ins->bindParam(':cn', $accn);
         $ins->bindParam(':nt', $notrack);
         $ins->bindParam(':ni', $noident);
+        $ins->bindParam(':ti', $ttime);
         $ins->bindParam(':us', $_SESSION['user']);
 
         if ($ins->execute()) {    // insert ok, send email

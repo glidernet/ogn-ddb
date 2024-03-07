@@ -19,10 +19,6 @@
    cp sql.php.dist sql.php
    mysql --database scotchbox < database_schema.sql
    ```
-3.1 Database upgrade from an older version, not needed on a fresh installation
-   ```
-   mysql --database scotchbox < database_schema_upgrade.sql
-   ```
 
 4. Access your local ogn-ddb instance at [192.168.33.10](http://192.168.33.10)
 

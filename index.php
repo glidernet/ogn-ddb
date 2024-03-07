@@ -764,7 +764,7 @@ case 'createdev':        // create device
         $ins->bindParam(':cn', $accn);
         $ins->bindParam(':nt', $notrack);
         $ins->bindParam(':ni', $noident);
-		$ins->bindParam(':ti', $ttime);
+        $ins->bindParam(':ti', $ttime);
         $ins->bindParam(':us', $_SESSION['user']);
 
         if ($ins->execute()) {    // insert ok, send email

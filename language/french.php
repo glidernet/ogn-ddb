@@ -59,9 +59,13 @@ $languages['french'] = array (
     "table_accn2" => "N° de concours",
     "table_notrack" => "Tracking",
     "table_noident" => "Ident.",
+    "table_expiration" => "Expiration",
     "table_update" => "Modifier",
     "table_delete" => "Supprimer",
     "table_new" => "Ajouter",
+    "table_tt_expiration" => "L'enregistrement de cet appareil va expirer :",
+    "expiry_disclaimer" => "Les appareils dont l'enregistrement a expiré peuvent être enregistrés librement par d'autres utilisateurs, renouveler pour une année supplémentaire un appareil expiré, modifier et valider votre appareil, examiner les données, vérifier la certification de propriété de l'appareil et appuyer sur Soumettre.",
+    "expiry_warning" => "Avertissement : L'enregistrement de certains de vos appareils est EXPIRÉ, veuillez les vérifier",
     "disconnect" => "Déconnexion",
     //new:
     "home" => "Accueil",

@@ -749,7 +749,7 @@ case 'createdev':        // create device
             if ($trf) {
                 $ins = $dbh->prepare('UPDATE devices SET dev_type=:dt, dev_actype=:ty, dev_acreg=:re, dev_accn=:cn, dev_notrack=:nt, dev_noident=:ni, dev_updatetime=:ti, dev_userid=:us WHERE dev_id=:de');
                 //Transfer expired device            
-			}
+            }
             else {
                 $ins = $dbh->prepare('UPDATE devices SET dev_type=:dt, dev_actype=:ty, dev_acreg=:re, dev_accn=:cn, dev_notrack=:nt, dev_noident=:ni, dev_updatetime=:ti WHERE dev_id=:de AND dev_userid=:us');
             }

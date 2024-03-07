@@ -59,6 +59,7 @@ $languages['czech'] = array (
     "table_accn2" => "Soutěžní znak",
     "table_notrack" => "Tracking",
     "table_noident" => "Ident.",
+    "table_valid" => "Nevypršelo",
     "table_update" => "Aktualizace",
     "table_delete" => "Výmaz",
     "table_new" => "Přidat nové",

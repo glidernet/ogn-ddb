@@ -59,6 +59,7 @@ $languages['english'] = array (
     "table_accn2" => "Competition Number",
     "table_notrack" => "Tracking",
     "table_noident" => "Ident.",
+    "table_valid" => "Not Expired",
     "table_update" => "Update",
     "table_delete" => "Delete",
     "table_new" => "Add new",

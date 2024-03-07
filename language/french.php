@@ -59,6 +59,7 @@ $languages['french'] = array (
     "table_accn2" => "N° de concours",
     "table_notrack" => "Tracking",
     "table_noident" => "Ident.",
+    "table_valid" => "Non expiré",
     "table_update" => "Modifier",
     "table_delete" => "Supprimer",
     "table_new" => "Ajouter",

@@ -58,6 +58,7 @@ $languages['dutch'] = array (
     "table_accn" => "CN",
     "table_accn2" => "Callsign",
     "table_notrack" => "Tracking",
+    "table_valid" => "Niet verlopen",
     "table_noident" => "Ident.",
     "table_update" => "Update",
     "table_delete" => "Verwijder",

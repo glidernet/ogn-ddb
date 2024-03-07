@@ -79,6 +79,7 @@ $languages['german'] = array (
     "table_accn2" => "Wettbewerbskennzeichen",
     "table_notrack" => "Verfolgen (Tracking)",
     "table_noident" => "Identifizieren (Ident)",
+    "table_valid" => "Nicht abgelaufen",
     "table_update" => "Aktualisieren",
     "table_delete" => "Löschen",
     "table_new" => "Hinzufügen",

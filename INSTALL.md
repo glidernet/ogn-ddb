@@ -8,7 +8,7 @@
    vagrant up
    ```
 
-3. Clone ogn-ddb repository into the webroot of the Scotch Box
+3. Clone ogn-ddb repository into the webroot of the Cognac Box
    ```
    rm ./public/index.php
    git clone https://github.com/glidernet/ogn-ddb public
@@ -17,6 +17,7 @@
    cd /var/www/public
    composer update
    cp sql.php.dist sql.php
+   # On following line prompt, enter "root" as password
    mysql -uroot -p --database cognacbox < database_schema.sql
    ```
 

@@ -23,7 +23,16 @@
 
 4. Access your local ogn-ddb instance at [192.168.33.10](http://192.168.33.10)
 
-5. (optional, for email debugging) Run [MailCatcher](http://mailcatcher.me/), accessible at [192.168.33.10](http://192.168.33.10:1080)
+5. (optional, for email debugging) Configure [MailHog](https://github.com/mailhog/MailHog), accessible at [[192.168.33.10](http://192.168.33.10:8025/)]
+
+   MailHog is installed by default on CognacBox.
+   
+   Update `/etc/php/8.2/apache2/php.ini` by adding the follwoing line:
    ```
-   vagrant@scotchbox:~$ mailcatcher --http-ip=0.0.0.0
+   sendmail_path = /home/vagrant/go/bin/mhsendmail
    ```
+   Then restart apache to take it into account:
+   ```
+   sudo service apache2 restart
+   ```
+   

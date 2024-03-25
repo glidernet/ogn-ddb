@@ -1,9 +1,9 @@
 ## Development Setup
 1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/)
 
-2. Clone and run [Scotch Box](https://box.scotch.io/), a full-featured development environment for php
+2. Clone and run [Cognac Box](https://reddingitpro.com/2020/03/15/cognac-box-upgraded-scotchbox/), a full-featured development environment for php
    ```
-   git clone https://github.com/scotch-io/scotch-box.git ogn-ddb
+   git clone https://github.com/reddingwebpro/cognacbox.git ogn-ddb
    cd ogn-ddb
    vagrant up
    ```
@@ -17,7 +17,7 @@
    cd /var/www/public
    composer update
    cp sql.php.dist sql.php
-   mysql --database scotchbox < database_schema.sql
+   mysql -uroot -p --database cognacbox < database_schema.sql
    ```
 
 4. Access your local ogn-ddb instance at [192.168.33.10](http://192.168.33.10)

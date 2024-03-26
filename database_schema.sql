@@ -25,6 +25,7 @@ CREATE TABLE `devices` (
   `dev_userid` mediumint(8) unsigned NOT NULL,
   `dev_notrack` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `dev_noident` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `dev_updatetime` bigint(20) NOT NULL,
   UNIQUE KEY `dev_id` (`dev_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

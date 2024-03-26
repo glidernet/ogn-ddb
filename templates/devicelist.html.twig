@@ -4,6 +4,7 @@
     <style type="text/css">
         @media (max-width: 950px) {
             td:nth-of-type(1):before { content: "{{ lang.table_update }}:"; }
+            td:nth-of-type(10):before { content: "{{ lang.table_expiration }}:"; }			
             td:nth-of-type(2):before { content: "{{ lang.table_delete }}:"; }
             td:nth-of-type(3):before { content: "{{ lang.table_devtype }}:"; }
             td:nth-of-type(4):before { content: "{{ lang.table_devid }}:"; }
@@ -18,7 +19,9 @@
         {% if error!="" %}<h5 style="color:red">{{ error }}</h5>{% endif %}
     <TABLE class="tab1"><thead>
         <TR>
-            <TH colspan="2"></TH>
+            <TH></TH>
+            <TH>{{ lang.table_expiration }}</TH>
+            <TH></TH>
             <TH>{{ lang.table_devtype }}</TH>
             <TH>{{ lang.table_devid }}</TH>
             <TH>{{ lang.table_actype }}</TH>
@@ -29,13 +32,16 @@
         </TR>
         </thead>
         <tbody>
+        {% set hasexpired = false %}
         {% for device in devicelist %}
+        {% if device.dev_expired == 1 %}{% set hasexpired = true %}{% endif %}
         <tr>
             <td>
                 <a href="/?a=updatedev&devid={{ device.dev_id }}">
                     <img src="/pict/mod.gif" title="{{ lang.table_update }}" class="devbutton">
                 </a>
             </td>
+            <td class="tab2"><iMG SRC="/pict/ex{{ device.dev_expired }}.png" title="{{ lang.table_tt_expiration }} {{ (device.dev_updatetime+expirationdelta)|date('j F, Y') }} "></td>
             <td class="tab2">
                 <a href="/?a=deletedev&devid={{ device.dev_id }}">
                     <img src="/pict/bin.gif" title="{{ lang.table_delete }}" class="devbutton">
@@ -52,7 +58,9 @@
             {{ lang.error_nodevice }}, {{ lang.table_new }}: <A HREF="?a=n"><IMG style="border: none" SRC="/pict/plu.png" title="{{ lang.table_new }}"></A>
         {% endfor %}
         </tbody>
+        {% if hasexpired == true %} <p style="background-color:Tomato;color:white;font-weight: bold;text-align: center;">{{lang.expiry_warning}}</p>{% endif %}
     </TABLE>
+    {{ lang.expiry_disclaimer }}
 {% endblock %}
 
 {% block sidebar %}

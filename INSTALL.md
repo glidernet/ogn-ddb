@@ -17,8 +17,7 @@
    cd /var/www/public
    composer update
    cp sql.php.dist sql.php
-   # On following line prompt, enter "root" as password
-   mysql -uroot -p --database cognacbox < database_schema.sql
+   mysql -uroot -proot --database cognacbox < database_schema.sql
    ```
 
 4. Access your local ogn-ddb instance at [192.168.33.10](http://192.168.33.10)

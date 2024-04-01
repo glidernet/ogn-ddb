@@ -59,9 +59,13 @@ $languages['czech'] = array (
     "table_accn2" => "Soutěžní znak",
     "table_notrack" => "Tracking",
     "table_noident" => "Ident.",
+    "table_expiration" => "Vypršení",
     "table_update" => "Aktualizace",
     "table_delete" => "Výmaz",
     "table_new" => "Přidat nové",
+    "table_tt_expiration" => "Platnost registrace tohoto zařízení vyprší:",
+    "expiry_disclaimer" => "Zařízení s vypršenou registrací si mohou ostatní uživatelé zdarma zaregistrovat, obnovit zařízení s prošlou platností na další rok, upravit a ověřit své zařízení, zkontrolovat data, zkontrolovat certifikaci vlastnictví zařízení a stisknout Odeslat",
+    "expiry_warning" => "Upozornění: Platnost registrace některých vašich zařízení vypršela, zkontrolujte je",
     "disconnect" => "Odhlášení",
     //new
     "home" => "Domů",

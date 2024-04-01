@@ -79,9 +79,13 @@ $languages['german'] = array (
     "table_accn2" => "Wettbewerbskennzeichen",
     "table_notrack" => "Verfolgen (Tracking)",
     "table_noident" => "Identifizieren (Ident)",
+    "table_expiration" => "Ablauf",
     "table_update" => "Aktualisieren",
     "table_delete" => "Löschen",
     "table_new" => "Hinzufügen",
+    "table_tt_expiration" => "Diese Geräteregistrierung läuft ab:",
+    "expiry_disclaimer" => "Geräte mit abgelaufener Registrierung können von anderen Benutzern kostenlos registriert werden, ein abgelaufenes Gerät um ein weiteres Jahr verlängern, Ihr Gerät bearbeiten und validieren, die Daten überprüfen, die Eigentumsbescheinigung des Geräts überprüfen und auf Senden klicken",
+    "expiry_warning" => "Warnung: Einige Ihrer Geräteregistrierungen sind ABGELAUFEN. Bitte überprüfen Sie sie",
     "disconnect" => "Abmelden",
     //new:
     "home" => "Startseite",

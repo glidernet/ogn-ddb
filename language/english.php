@@ -59,9 +59,13 @@ $languages['english'] = array (
     "table_accn2" => "Competition Number",
     "table_notrack" => "Tracking",
     "table_noident" => "Ident.",
+    "table_expiration" => "Expiration",
     "table_update" => "Update",
     "table_delete" => "Delete",
     "table_new" => "Add new",
+    "table_tt_expiration" => "This device registration is going to expire the:",
+    "expiry_disclaimer" => "Devices with expired registration are free to be registered by other users, to renew for another year an expired device, edit and validate your device, review the data, check the device ownership certification and press submit",
+    "expiry_warning" => "Warning: Some of your devices registration are EXPIRED, please review them",
     "disconnect" => "Disconnect",
     //new
     "home" => "Home",

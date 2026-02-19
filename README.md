@@ -63,6 +63,89 @@ This returns all devices of the DDB in JSON. The output validates against the [o
 ### /download/download-fln.php
 This returns the device database in a flarmnet-compatible format.
 
+### /api/devices (authenticated)
+
+Authenticated REST API for managing your own devices. Requires a Bearer token (see **API Token** below) or an active login session cookie.
+
+#### Authentication
+
+Each account has one API token. It is shown once after generation (or on first login) in the **device list** page. To get a new token, click **Generate new token** — this immediately invalidates the previous one.
+
+Use the token in API requests via the `Authorization` header:
+
+```
+Authorization: Bearer <your_token>
+```
+
+#### Endpoints
+
+Method | Endpoint | Description
+------ | -------- | -----------
+GET | `/api/devices` | List all your devices
+GET | `/api/devices/{id}` | Get a single device
+POST | `/api/devices` | Create a device
+PUT | `/api/devices/{id}` | Update a device
+DELETE | `/api/devices/{id}` | Delete a device
+
+`{id}` is the 6-character hex device address (e.g. `DEADBE`).
+
+#### Request / Response format
+
+All requests and responses use JSON (`Content-Type: application/json`).
+
+Device object fields:
+
+Field | Type | Description
+----- | ---- | -----------
+`device_id` | string | 6-char hex address, e.g. `DEADBE`
+`device_type` | string | `I` (ICAO), `F` (Flarm), `O` (OGN)
+`aircraft_type_id` | integer | Aircraft type ID (from `aircrafts` table)
+`registration` | string | Aircraft registration (max 7 chars)
+`cn` | string | Competition number (max 3 chars)
+`no_track` | boolean | Opt out of tracking
+`no_ident` | boolean | Opt out of identification
+`updated_at` | integer | Unix timestamp of last update
+
+#### Examples
+
+```bash
+# List devices
+curl -H "Authorization: Bearer <token>" https://ddb.glidernet.org/api/devices
+
+# Create a device
+curl -X POST -H "Authorization: Bearer <token>" \
+     -H "Content-Type: application/json" \
+     -d '{"device_id":"DEADBE","device_type":"F","aircraft_type_id":1,"registration":"D-1234","cn":"AB","no_track":false,"no_ident":false}' \
+     https://ddb.glidernet.org/api/devices
+
+# Update a device
+curl -X PUT -H "Authorization: Bearer <token>" \
+     -H "Content-Type: application/json" \
+     -d '{"registration":"D-5678"}' \
+     https://ddb.glidernet.org/api/devices/DEADBE
+
+# Delete a device
+curl -X DELETE -H "Authorization: Bearer <token>" \
+     https://ddb.glidernet.org/api/devices/DEADBE
+```
+
+#### Error responses
+
+HTTP Status | Meaning
+----------- | -------
+400 | Bad request
+401 | Missing or invalid token / not logged in
+404 | Device not found (or not owned by you)
+405 | Method not allowed
+409 | Device already registered by another user
+422 | Validation error (see `error` field in response body)
+
+Each error response body: `{"error": "description"}`
+
+#### Device limit
+
+Each account can manage up to **20 devices** by default. This limit can be raised by an administrator directly in the database.
+
 ## ToDo
 - finish multi languages management
 - document accurate meaning of `tracked` and `identified`

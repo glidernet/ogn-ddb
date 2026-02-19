@@ -1,6 +1,7 @@
 <?php
 
 include 'sql.php';
+require_once 'lib/device_service.php';
 
 //
 // Localisation TODO:
@@ -20,7 +21,6 @@ require_once 'language/english.php';
 
 $url = 'https://ddb.glidernet.org/';
 $sender = 'contact@glidernet.org';
-const expirationdelta = 450*24*60*60; //device registration expiration time in seconds 
 
 function send_email($to, $subject, $message, $from = '')
 {
@@ -154,21 +154,30 @@ function changepassword()
     echo $twig->render('changepassword.html.twig', $template_vars);
 }
 
-function devicelist()
+function devicelist($new_token = null)
 {
     global $dbh,$lang,$error,$url,$twig;
-    $ttime = time() - expirationdelta; 
-    $req2 = $dbh->prepare('SELECT * , ( :ti >= dev_updatetime) as dev_expired FROM devices,aircrafts where dev_userid=:us AND dev_actype=ac_id ORDER BY dev_id ASC');
-    $req2->bindParam(':us', $_SESSION['user']);
-    $req2->bindParam(':ti', $ttime);
-    $req2->execute();
+
+    // Auto-generate a token if user has none yet
+    $user_id = $_SESSION['user'];
+    $tok_req = $dbh->prepare('SELECT usr_token_hash FROM users WHERE usr_id = :us');
+    $tok_req->bindParam(':us', $user_id);
+    $tok_req->execute();
+    $tok_row = $tok_req->fetch();
+    if ($tok_row && $tok_row['usr_token_hash'] === null && $new_token === null) {
+        $new_token = token_generate($dbh, $user_id);
+    }
+    $has_token = ($tok_row && $tok_row['usr_token_hash'] !== null) || $new_token !== null;
+
     $template_vars = array(
-        'devicelist' => $req2->fetchAll(),
+        'devicelist' => device_list($dbh, $user_id),
         'url' => $url,
         'lang' => $lang,
         'devicetypes' => array(1 => 'ICAO', 2 => 'Flarm', 3 => 'OGN'),
-        'expirationdelta' => expirationdelta,
-
+        'expirationdelta' => DEVICE_EXPIRATION_DELTA,
+        'new_token' => $new_token,
+        'has_token' => $has_token,
+        'error' => $error,
     );
     echo $twig->render('devicelist.html.twig', $template_vars);
 }
@@ -341,24 +350,14 @@ case 'deletedev':        // delete device
     fromhome();
     if (!isset($_SESSION['login'])) {
         exit();
-    } // test if user come from login page
+    }
     $_SESSION['dev'] = 'yes';
     if (isset($_REQUEST['devid'])) {
         $devid = $_REQUEST['devid'];
     }
     $dbh = Database::connect();
-    $req = $dbh->prepare('select * from devices where dev_id=:de AND dev_userid=:us');
-    $req->bindParam(':de', $devid);
-    $req->bindParam(':us', $_SESSION['user']);
-    $req->execute();
 
-    if ($req->rowCount() == 1) {
-        $req->closeCursor();
-        $del = $dbh->prepare('DELETE FROM devices where dev_id=:de AND dev_userid=:us');
-        $del->bindParam(':de', $devid);
-        $del->bindParam(':us', $_SESSION['user']);
-        $del->execute();
-
+    if (device_delete($dbh, $devid, $_SESSION['user'])) {
         $error = $lang['device_deleted'];
         devicelist();
     } else {
@@ -642,144 +641,60 @@ case 'createdev':        // create device
     $notrack = $noident = 0;
     if (!isset($_SESSION['login'])) {
         exit();
-    } // test if user come from login page
+    }
     if (!isset($_SESSION['dev'])) {
         exit();
-    } // test if user come from fill in device page
+    }
     if (!isset($_SESSION['user'])) {
         exit();
-    } // test if user id defined
-
-    if (isset($_REQUEST['devid'])) {
-        $devid = $_REQUEST['devid'];
-    } else {
-        $error = $lang['error_devid'];
-    }
-    if (isset($_REQUEST['devtype'])) {
-        $devtype = $_REQUEST['devtype'];
-    } else {
-        $error = $lang['error_devtype'];
-    }
-    if (isset($_REQUEST['actype'])) {
-        $actype = $_REQUEST['actype'];
-    } else {
-        $error = $lang['error_actype'];
-    }
-    if (isset($_REQUEST['acreg'])) {
-        $acreg = $_REQUEST['acreg'];
-    } else {
-        $error = $lang['error_acreg'];
-    }
-    if (isset($_REQUEST['accn'])) {
-        $accn = $_REQUEST['accn'];
-    } else {
-        $error = $lang['error_accn'];
-    }
-    if (isset($_REQUEST['notrack'])) {
-        if ($_REQUEST['notrack'] == 'yes') {
-            $notrack = 1;
-        }
-    }
-    if (isset($_REQUEST['noident'])) {
-        if ($_REQUEST['noident'] == 'yes') {
-            $noident = 1;
-        }
     }
 
-    if (isset($_REQUEST['owner'])) {
-        if ($_REQUEST['owner'] != 'yes') {
-            $error = $lang['error_owner'];
-        }
-    } else {
-        $error = $lang['error_owner'];
+    $devid  = isset($_REQUEST['devid'])   ? $_REQUEST['devid']   : '';
+    $devtype = isset($_REQUEST['devtype']) ? (int)$_REQUEST['devtype'] : 0;
+    $actype  = isset($_REQUEST['actype'])  ? (int)$_REQUEST['actype']  : 0;
+    $acreg   = isset($_REQUEST['acreg'])   ? $_REQUEST['acreg']   : '';
+    $accn    = isset($_REQUEST['accn'])    ? $_REQUEST['accn']    : '';
+
+    if (isset($_REQUEST['notrack']) && $_REQUEST['notrack'] == 'yes') {
+        $notrack = 1;
+    }
+    if (isset($_REQUEST['noident']) && $_REQUEST['noident'] == 'yes') {
+        $noident = 1;
     }
 
-    $devid = strtoupper($devid);
-    if (preg_match(' /[A-F0-9]{6}/ ', $devid)) {
-    } // ok
-    else {
-        $error = $lang['error_devid'];
-    }
+    $owner_confirmed = isset($_REQUEST['owner']) && $_REQUEST['owner'] == 'yes';
 
-    // Only allow alpha numeric characters and '.', '_', '-', ' ' in register/cn
-    $acreg = trim(preg_replace('/[^A-Za-z0-9._ -]/', '', $acreg));
-    $accn =  trim(preg_replace('/[^A-Za-z0-9._ -]/', '', $accn));
+    $san    = device_sanitise($devid, $acreg, $accn);
+    $errors = device_validate($san['devid'], $devtype, $actype, $san['acreg'], $san['accn'], $owner_confirmed);
 
-    if (strlen($devid) != 6) {
-        $error = $lang['error_devid'];
-    }
-    if (strlen($acreg) > 7) {
-        $error = $lang['error_acreg'];
-    }
-    if (strlen($accn) > 3) {
-        $error = $lang['error_accn'];
-    }
-    if ($devtype < 1 or $devtype > 3) {
-        $error = $lang['error_devtype'];
-    }
-
-    $dbh = Database::connect();
-    $req = $dbh->prepare('select dev_id,dev_userid,dev_updatetime from devices where dev_id=:de');    // test if device is owned by another account
-    $req->bindParam(':de', $devid);
-    $req->execute();
-
-    $upd = false;
-    $trf = false;
-    if ($req->rowCount() == 1) {        // if device already registred
-        $result = $req->fetch();
-        if ($result['dev_userid'] == $_SESSION['user']) {
-            $upd = true;
-        }        // if owned by the user then update
-        else {
-            $ttime=time() - expirationdelta;
-            if ($ttime >= $result['dev_updatetime']) {
-                $upd = true;
-                $trf = true;
-            } else { //Transfer and update the device 
-                $error = $lang['error_devexists'];
-            }
-        }
-    }
-    $req->closeCursor();
-
-    if ($error != '') {
+    if (!empty($errors)) {
+        $error = $lang[$errors[0]];
         fillindevice();
     } else {
-        if ($upd) {
-            if ($trf) {
-                $ins = $dbh->prepare('UPDATE devices SET dev_type=:dt, dev_actype=:ty, dev_acreg=:re, dev_accn=:cn, dev_notrack=:nt, dev_noident=:ni, dev_updatetime=:ti, dev_userid=:us WHERE dev_id=:de');
-                            
-            } else { //Transfer expired device
-                $ins = $dbh->prepare('UPDATE devices SET dev_type=:dt, dev_actype=:ty, dev_acreg=:re, dev_accn=:cn, dev_notrack=:nt, dev_noident=:ni, dev_updatetime=:ti WHERE dev_id=:de AND dev_userid=:us');
-            }
-        } else {
-            $ins = $dbh->prepare('INSERT INTO devices (dev_id, dev_type, dev_actype, dev_acreg, dev_accn, dev_userid, dev_notrack, dev_noident, dev_updatetime) VALUES (:de, :dt, :ty, :re, :cn, :us, :nt, :ni, :ti)');
-        }
-        $ttime = time();
-        $ins->bindParam(':de', $devid);
-        $ins->bindParam(':dt', $devtype);
-        $ins->bindParam(':ty', $actype);
-        $ins->bindParam(':re', $acreg);
-        $ins->bindParam(':cn', $accn);
-        $ins->bindParam(':nt', $notrack);
-        $ins->bindParam(':ni', $noident);
-        $ins->bindParam(':ti', $ttime);
-        $ins->bindParam(':us', $_SESSION['user']);
+        $dbh   = Database::connect();
+        $result = device_save($dbh, $san['devid'], $devtype, $actype, $san['acreg'], $san['accn'], $notrack, $noident, $_SESSION['user']);
 
-        if ($ins->execute()) {    // insert ok, send email
-            if ($upd) {
-                $error = $lang['device_updated'];
-            } else {
-                $error = $lang['device_inserted'];
-            }
+        if ($result['ok']) {
+            $error = $lang[$result['action'] === 'updated' ? 'device_updated' : 'device_inserted'];
             devicelist();
         } else {
-            $error = $lang['error_insert_device'];
+            $error = isset($lang[$result['error']]) ? $lang[$result['error']] : $result['error'];
             fillindevice();
         }
-        $ins->closeCursor();
+        Database::disconnect();
     }
+    break;
+}
 
+case 'regentoken':        // regenerate API token
+{
+    fromhome();
+    if (!isset($_SESSION['login']) || !isset($_SESSION['user'])) {
+        exit();
+    }
+    $dbh       = Database::connect();
+    $new_token = token_generate($dbh, $_SESSION['user']);
+    devicelist($new_token);
     Database::disconnect();
     break;
 }

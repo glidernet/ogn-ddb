@@ -50,6 +50,9 @@ CREATE TABLE `users` (
   `usr_id` mediumint unsigned NOT NULL AUTO_INCREMENT,
   `usr_adress` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `usr_pw` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `usr_token_hash` varchar(64) NULL DEFAULT NULL,
+  `usr_token_hint` varchar(24) NULL DEFAULT NULL,
+  `usr_device_limit` tinyint unsigned NOT NULL DEFAULT 20,
   PRIMARY KEY (`usr_id`),
   UNIQUE KEY `usr_adress` (`usr_adress`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;

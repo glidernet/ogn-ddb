@@ -199,22 +199,14 @@ function device_get($dbh, $devid, $user_id)
 function token_generate($dbh, $user_id)
 {
     $plaintext = bin2hex(random_bytes(24)); // 48-char hex token
-    $hash = hash('sha256', $plaintext);
+    $hash      = hash('sha256', $plaintext);
+    $hint      = substr($plaintext, 0, 6) . '****' . substr($plaintext, -6);
 
-    $upd = $dbh->prepare('UPDATE users SET usr_token_hash = :th WHERE usr_id = :us');
+    $upd = $dbh->prepare('UPDATE users SET usr_token_hash = :th, usr_token_hint = :hi WHERE usr_id = :us');
     $upd->bindParam(':th', $hash);
+    $upd->bindParam(':hi', $hint);
     $upd->bindParam(':us', $user_id);
     $upd->execute();
 
     return $plaintext;
-}
-
-/**
- * Mask a token for display: show first 4 and last 4 chars only.
- */
-function token_mask($token_hash)
-{
-    // We only have the hash stored, so we display a fixed masked placeholder.
-    // The actual token is only known right after generation.
-    return '********************************';
 }

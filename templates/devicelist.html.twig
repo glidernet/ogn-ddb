@@ -69,11 +69,14 @@
         <p><strong>{{ lang.api_token_new }}</strong></p>
         <code style="display:block;padding:8px;background:#f4f4f4;word-break:break-all;">{{ new_token }}</code>
     {% elseif has_token %}
-        <p>{{ lang.api_token_has_token }}</p>
+        <p>{{ lang.api_token_label }} <code>{{ token_hint ?? '...' }}</code> <small><em>{{ lang.api_token_hint_notice }}</em></small></p>
+    {% else %}
+        <p><em>{{ lang.api_token_none }}</em></p>
     {% endif %}
     <form method="post" action="/?a=regentoken" style="margin-top:8px;">
         <input type="submit" class="button" value="{{ lang.api_token_regen }}">
     </form>
+    <p><small>{{ lang.api_token_doc_notice }} <a href="https://github.com/glidernet/ogn-ddb" target="_blank">https://github.com/glidernet/ogn-ddb</a></small></p>
 {% endblock %}
 
 {% block sidebar %}

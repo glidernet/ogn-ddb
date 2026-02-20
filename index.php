@@ -160,14 +160,14 @@ function devicelist($new_token = null)
 
     // Auto-generate a token if user has none yet
     $user_id = $_SESSION['user'];
-    $tok_req = $dbh->prepare('SELECT usr_token_hash FROM users WHERE usr_id = :us');
+    $tok_req = $dbh->prepare('SELECT usr_token_hash, usr_token_hint FROM users WHERE usr_id = :us');
     $tok_req->bindParam(':us', $user_id);
     $tok_req->execute();
     $tok_row = $tok_req->fetch();
-    if ($tok_row && $tok_row['usr_token_hash'] === null && $new_token === null) {
-        $new_token = token_generate($dbh, $user_id);
-    }
-    $has_token = ($tok_row && $tok_row['usr_token_hash'] !== null) || $new_token !== null;
+    $has_token   = ($tok_row && $tok_row['usr_token_hash'] !== null) || $new_token !== null;
+    $token_hint  = ($new_token !== null)
+        ? substr($new_token, 0, 6) . '****' . substr($new_token, -6)
+        : ($tok_row['usr_token_hint'] ?? null);
 
     $template_vars = array(
         'devicelist' => device_list($dbh, $user_id),
@@ -177,6 +177,7 @@ function devicelist($new_token = null)
         'expirationdelta' => DEVICE_EXPIRATION_DELTA,
         'new_token' => $new_token,
         'has_token' => $has_token,
+        'token_hint' => $token_hint,
         'error' => $error,
     );
     echo $twig->render('devicelist.html.twig', $template_vars);

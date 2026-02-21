@@ -63,7 +63,7 @@ This returns all devices of the DDB in JSON. The output validates against the [o
 ### /download/download-fln.php
 This returns the device database in a flarmnet-compatible format.
 
-### /api/devices (authenticated)
+### /api/v1/devices (authenticated)
 
 Authenticated REST API for managing your own devices. Requires a Bearer token (see **API Token** below) or an active login session cookie.
 
@@ -81,11 +81,11 @@ Authorization: Bearer <your_token>
 
 Method | Endpoint | Description
 ------ | -------- | -----------
-GET | `/api/devices` | List all your devices
-GET | `/api/devices/{id}` | Get a single device
-POST | `/api/devices` | Create a device
-PUT | `/api/devices/{id}` | Update a device
-DELETE | `/api/devices/{id}` | Delete a device
+GET | `/api/v1/devices` | List all your devices
+GET | `/api/v1/devices/{id}` | Get a single device
+POST | `/api/v1/devices` | Create a device
+PUT | `/api/v1/devices/{id}` | Update a device
+DELETE | `/api/v1/devices/{id}` | Delete a device
 
 `{id}` is the 6-character hex device address (e.g. `DEADBE`).
 
@@ -110,23 +110,23 @@ Field | Type | Description
 
 ```bash
 # List devices
-curl -H "Authorization: Bearer <token>" https://ddb.glidernet.org/api/devices
+curl -H "Authorization: Bearer <token>" https://ddb.glidernet.org/api/v1/devices
 
 # Create a device
 curl -X POST -H "Authorization: Bearer <token>" \
      -H "Content-Type: application/json" \
      -d '{"device_id":"DEADBE","device_type":"F","aircraft_type_id":1,"registration":"D-1234","cn":"AB","no_track":false,"no_ident":false}' \
-     https://ddb.glidernet.org/api/devices
+     https://ddb.glidernet.org/api/v1/devices
 
 # Update a device
 curl -X PUT -H "Authorization: Bearer <token>" \
      -H "Content-Type: application/json" \
      -d '{"registration":"D-5678"}' \
-     https://ddb.glidernet.org/api/devices/DEADBE
+     https://ddb.glidernet.org/api/v1/devices/DEADBE
 
 # Delete a device
 curl -X DELETE -H "Authorization: Bearer <token>" \
-     https://ddb.glidernet.org/api/devices/DEADBE
+     https://ddb.glidernet.org/api/v1/devices/DEADBE
 ```
 
 #### Error responses

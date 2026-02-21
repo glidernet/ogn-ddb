@@ -14,10 +14,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Parse path: strip /api prefix and leading slash
+// Parse path: strip /api/v1 prefix and leading slash
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = preg_replace('#^/api#', '', $path);
+$path = preg_replace('#^/api/v1#', '', $path);
 $path = rtrim($path, '/');
+
+// Reject requests that don't match the /api/v1 prefix
+if ($path === parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) {
+    api_error(404, 'Not found. API is available at /api/v1/');
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
 $dbh    = Database::connect();
